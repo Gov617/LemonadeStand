@@ -16,7 +16,103 @@
 }
 
 *{box-sizing:border-box;}
+<!-- ================== PILOT SIGN-UP SECTION ================== -->
 
+<div style="margin-top:30px;
+            background:rgba(255,255,255,0.85);
+            border:1px solid rgba(0,0,0,0.08);
+            border-radius:18px;
+            padding:30px;
+            box-shadow:0 20px 40px rgba(0,0,0,0.06);">
+
+  <h2 style="margin-top:0; color:#1b2d65;">Join the Lemonade Class Pilot</h2>
+
+  <p style="color:#5a6576;">
+    We’re inviting a limited number of teachers to pilot Lemonade Class and help shape the next version.
+  </p>
+
+  <p style="color:#5a6576;">
+    <strong>Founder Note:</strong><br>
+    I’m Marcus, creator of Lemonade Class and the son of a special education teacher.
+    This tool was built to be accessible, engaging, and practical for real classrooms.
+  </p>
+
+  <form id="pilotFormInfo"
+        action="https://formspree.io/f/xwvnawjn"
+        method="POST"
+        style="display:grid; gap:14px; margin-top:20px; max-width:600px;">
+
+    <input type="text" name="teacher_name" placeholder="Full Name" required
+           style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
+
+    <input type="email" name="email" placeholder="School Email Address" required
+           style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
+
+    <input type="text" name="school_name" placeholder="School Name"
+           style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
+
+    <select name="grade_level"
+            style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
+      <option value="">Grade Level</option>
+      <option>6</option>
+      <option>7</option>
+      <option>Both</option>
+    </select>
+
+    <textarea name="notes" rows="3"
+              placeholder="Anything you'd like us to know?"
+              style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;"></textarea>
+
+    <button type="submit"
+            style="padding:12px;
+                   border:none;
+                   border-radius:12px;
+                   background:linear-gradient(135deg,#2b5cff,#1b2d65);
+                   color:white;
+                   font-weight:bold;
+                   cursor:pointer;">
+      Join Pilot Program
+    </button>
+
+  </form>
+
+  <div id="successInfo"
+       style="display:none;
+              margin-top:15px;
+              padding:15px;
+              background:#e9f1ff;
+              border-radius:12px;
+              color:#1b2d65;
+              font-weight:600;">
+    Thank you! You're on the pilot list. We’ll send next steps shortly.
+  </div>
+
+</div>
+
+<script>
+const formInfo = document.getElementById('pilotFormInfo');
+const successInfo = document.getElementById('successInfo');
+
+formInfo.addEventListener('submit', async function(event) {
+  event.preventDefault();
+  const data = new FormData(formInfo);
+
+  const response = await fetch(formInfo.action, {
+    method: formInfo.method,
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  });
+
+  if (response.ok) {
+    formInfo.reset();
+    successInfo.style.display = "block";
+  } else {
+    alert("There was a problem submitting the form.");
+  }
+});
+</script>
+
+<!-- ============================================================ -->
 body{
   margin:0;
   font-family:Arial, Helvetica, sans-serif;
