@@ -2,197 +2,127 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lemonade Class | Teacher Info</title>
- 
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lemonade Class | Teacher Information</title>
+
 <style>
 :root{
-  --primary:#1b2d65;
-  --accent:#f5c518;
-  --bg:#f8f9fc;
+  --brand:#1b2d65;
+  --accent:#2b5cff;
+  --bg:#f4f7ff;
   --card:#ffffff;
-  --text:#222;
-  --muted:#666;
+  --text:#1c2430;
+  --muted:#5c6678;
+  --radius:18px;
+  --shadow:0 20px 45px rgba(20,30,60,.08);
 }
 
-*{box-sizing:border-box;}
-<!-- ================== PILOT SIGN-UP SECTION ================== -->
-
-<div style="margin-top:30px;
-            background:rgba(255,255,255,0.85);
-            border:1px solid rgba(0,0,0,0.08);
-            border-radius:18px;
-            padding:30px;
-            box-shadow:0 20px 40px rgba(0,0,0,0.06);">
-
-  <h2 style="margin-top:0; color:#1b2d65;">Join the Lemonade Class Pilot</h2>
-
-  <p style="color:#5a6576;">
-    We’re inviting a limited number of teachers to pilot Lemonade Class and help shape the next version.
-  </p>
-
-  <p style="color:#5a6576;">
-    <strong>Founder Note:</strong><br>
-    I’m Marcus, creator of Lemonade Class and the son of a special education teacher.
-    This tool was built to be accessible, engaging, and practical for real classrooms.
-  </p>
-
-  <form id="pilotFormInfo"
-        action="https://formspree.io/f/xwvnawjn"
-        method="POST"
-        style="display:grid; gap:14px; margin-top:20px; max-width:600px;">
-
-    <input type="text" name="teacher_name" placeholder="Full Name" required
-           style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
-
-    <input type="email" name="email" placeholder="School Email Address" required
-           style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
-
-    <input type="text" name="school_name" placeholder="School Name"
-           style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
-
-    <select name="grade_level"
-            style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;">
-      <option value="">Grade Level</option>
-      <option>6</option>
-      <option>7</option>
-      <option>Both</option>
-    </select>
-
-    <textarea name="notes" rows="3"
-              placeholder="Anything you'd like us to know?"
-              style="padding:12px;border-radius:10px;border:1px solid #dfe5f3;"></textarea>
-
-    <button type="submit"
-            style="padding:12px;
-                   border:none;
-                   border-radius:12px;
-                   background:linear-gradient(135deg,#2b5cff,#1b2d65);
-                   color:white;
-                   font-weight:bold;
-                   cursor:pointer;">
-      Join Pilot Program
-    </button>
-
-  </form>
-
-  <div id="successInfo"
-       style="display:none;
-              margin-top:15px;
-              padding:15px;
-              background:#e9f1ff;
-              border-radius:12px;
-              color:#1b2d65;
-              font-weight:600;">
-    Thank you! You're on the pilot list. We’ll send next steps shortly.
-  </div>
-
-</div>
-
-<script>
-const formInfo = document.getElementById('pilotFormInfo');
-const successInfo = document.getElementById('successInfo');
-
-formInfo.addEventListener('submit', async function(event) {
-  event.preventDefault();
-  const data = new FormData(formInfo);
-
-  const response = await fetch(formInfo.action, {
-    method: formInfo.method,
-    body: data,
-    headers: { 'Accept': 'application/json' }
-  });
-
-  if (response.ok) {
-    formInfo.reset();
-    successInfo.style.display = "block";
-  } else {
-    alert("There was a problem submitting the form.");
-  }
-});
-</script>
-
-<!-- ============================================================ -->
 body{
   margin:0;
-  font-family:Arial, Helvetica, sans-serif;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
   background:var(--bg);
   color:var(--text);
 }
 
 .container{
-  max-width:900px;
+  max-width:1000px;
   margin:auto;
-  padding:40px 20px;
+  padding:30px 20px 60px;
 }
 
 .logo{
-  text-align:center;
-  margin-bottom:30px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
 }
 
 .logo img{
-  max-width:280px;
+  width:65px;
+  border-radius:14px;
+  background:white;
+  padding:6px;
 }
 
-h1{
-  text-align:center;
-  color:var(--primary);
-  margin-bottom:10px;
-}
-
-.subtitle{
-  text-align:center;
-  color:var(--muted);
-  margin-bottom:40px;
+.logo h1{
+  margin:0;
+  color:var(--brand);
+  font-size:24px;
 }
 
 .card{
   background:var(--card);
-  padding:25px;
-  margin-bottom:20px;
-  border-radius:10px;
-  box-shadow:0 5px 18px rgba(0,0,0,0.05);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:30px;
+  margin-bottom:25px;
 }
 
-.card h2{
-  color:var(--primary);
+h2{
   margin-top:0;
+  color:var(--brand);
+}
+
+p{
+  color:var(--muted);
+  line-height:1.5;
 }
 
 ul{
-  padding-left:20px;
+  margin-left:18px;
+  color:var(--muted);
 }
 
-li{
-  margin-bottom:8px;
-}
-
-.faq-question{
+button{
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--brand));
+  color:white;
   font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+}
+
+input, select, textarea{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #dfe5f3;
+  font-size:14px;
+}
+
+form{
+  display:grid;
+  gap:14px;
+  max-width:600px;
+}
+
+.success{
+  display:none;
+  padding:18px;
+  border-radius:14px;
+  background:#e9f1ff;
+  color:var(--brand);
+  font-weight:600;
   margin-top:15px;
 }
 
-.button-wrap{
-  text-align:center;
-  margin-top:40px;
-}
-
-.btn{
+.launch-btn{
   display:inline-block;
-  padding:12px 22px;
-  background:var(--primary);
+  margin-top:15px;
+  padding:12px 24px;
+  background:linear-gradient(135deg,var(--accent),var(--brand));
   color:white;
+  border-radius:12px;
   text-decoration:none;
-  border-radius:6px;
   font-weight:bold;
 }
 
 .footer{
-  text-align:center;
   margin-top:40px;
+  text-align:center;
+  font-size:13px;
   color:var(--muted);
-  font-size:14px;
 }
 </style>
 </head>
@@ -201,102 +131,105 @@ li{
 
 <div class="container">
 
-  <div class="logo">
-    <img src="logo-white.jpg" alt="Lemonade Class Logo">
-  </div>
-
+<div class="logo">
+  <img src="logo-white.jpg" alt="Lemonade Class Logo">
   <h1>Lemonade Class</h1>
-  <div class="subtitle">
-    A classroom-ready micro-business simulation for Grades 6–7
-  </div>
+</div>
 
-  <div class="card">
-    <h2>What is Lemonade Class?</h2>
-    <p>
-      Lemonade Class is a fast, engaging business simulation where students run a lemonade stand for multiple “days.”
-      Students make three decisions each round:
-    </p>
-    <ul>
-      <li>How many cups to produce</li>
-      <li>What price to charge</li>
-      <li>Whether to spend on marketing</li>
-    </ul>
-    <p>
-      The simulation calculates revenue, costs, profit, waste, demand changes, and reputation automatically.
-    </p>
-  </div>
+<div class="card">
+<h2>What is Lemonade Class?</h2>
+<p>
+Lemonade Class is a classroom-ready micro-business simulation designed for Grades 6–7.
+Students run a lemonade stand across multiple “days,” making real decisions about pricing, production, and marketing.
+</p>
 
-  <div class="card">
-    <h2>What Students Learn</h2>
-    <ul>
-      <li>Revenue vs. Profit</li>
-      <li>Fixed vs. Variable Costs (COGS)</li>
-      <li>Demand & Price Sensitivity</li>
-      <li>Inventory & Waste</li>
-      <li>Decision-making using data</li>
-      <li>Business strategy and iteration</li>
-    </ul>
-  </div>
+<ul>
+<li>Revenue vs. Profit</li>
+<li>Fixed vs. Variable Costs</li>
+<li>Pricing & Demand</li>
+<li>Inventory & Waste</li>
+<li>Data-Driven Decision Making</li>
+</ul>
 
-  <div class="card">
-    <h2>How It Fits in Class</h2>
-    <ul>
-      <li>✔ One 45–60 minute lesson</li>
-      <li>✔ 5-day mini unit</li>
-      <li>✔ 2-week project expansion</li>
-      <li>✔ Math, Financial Literacy, Social Studies, or Advisory</li>
-    </ul>
-  </div>
+<a href="index.html" class="launch-btn">Launch the Simulation</a>
+</div>
 
-  <div class="card">
-    <h2>Frequently Asked Questions</h2>
+<div class="card">
+<h2>Founder Note</h2>
+<p>
+Hi — I’m Marcus, creator of Lemonade Class and the <strong>son of a special education teacher</strong>.
+I built this tool to be engaging, accessible, and practical for real classrooms.
+</p>
 
-    <div class="faq-question">Is this aligned to standards?</div>
-    <p>
-      Yes. It supports financial literacy, decimal/percentage math, multi-step problem solving,
-      and written justification using data.
-    </p>
+<p>
+This isn’t just vocabulary practice — students see how decisions impact real numbers,
+then adjust strategy based on results.
+</p>
+</div>
 
-    <div class="faq-question">Do students need accounts?</div>
-    <p>
-      No accounts required. The game runs in the browser and resets easily for the next class.
-    </p>
+<div class="card">
+<h2>Join the Pilot Program</h2>
 
-    <div class="faq-question">What devices work?</div>
-    <p>
-      Chromebooks, laptops, tablets — any modern browser.
-    </p>
+<p>
+We’re inviting a limited group of teachers to pilot Lemonade Class
+and help shape the next version of the platform.
+</p>
 
-    <div class="faq-question">How long does it take?</div>
-    <p>
-      Each simulation “day” runs quickly. Most classes complete a full 7-day simulation in one period.
-    </p>
+<form id="pilotForm" action="https://formspree.io/f/xwvnawjn" method="POST">
 
-    <div class="faq-question">Is there a teacher view?</div>
-    <p>
-      Yes. Teacher Mode allows settings control and reset options for classroom management.
-    </p>
-  </div>
+<input type="text" name="teacher_name" placeholder="Full Name" required>
+<input type="email" name="email" placeholder="School Email Address" required>
+<input type="text" name="school_name" placeholder="School Name">
+<input type="text" name="district" placeholder="District (Optional)">
 
-  <div class="card">
-    <h2>Classroom Benefits</h2>
-    <ul>
-      <li>Students immediately see how decisions impact profit</li>
-      <li>Engaging and repeatable</li>
-      <li>Encourages strategic thinking</li>
-      <li>Printable reflection sheet for assessment</li>
-    </ul>
-  </div>
+<select name="grade_level">
+<option value="">Grade Level</option>
+<option>6</option>
+<option>7</option>
+<option>Both</option>
+</select>
 
-  <div class="button-wrap">
-    <a href="index.html" class="btn">Launch Lemonade Class</a>
-  </div>
+<textarea name="notes" rows="4" placeholder="Anything you'd like us to know?"></textarea>
 
-  <div class="footer">
-    © Lemonade Class | Created for classroom financial literacy
-  </div>
+<button type="submit">Join Pilot Program</button>
+
+</form>
+
+<div class="success" id="successMessage">
+Thank you! You’re officially on the pilot list.
+We’ll send classroom materials and next steps shortly.
+</div>
 
 </div>
+
+<div class="footer">
+© Lemonade Class | Classroom Financial Literacy Simulation
+</div>
+
+</div>
+
+<script>
+const form = document.getElementById('pilotForm');
+const success = document.getElementById('successMessage');
+
+form.addEventListener('submit', async function(event) {
+  event.preventDefault();
+  const data = new FormData(form);
+
+  const response = await fetch(form.action, {
+    method: form.method,
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  });
+
+  if (response.ok) {
+    form.reset();
+    success.style.display = "block";
+  } else {
+    alert("There was a problem submitting the form.");
+  }
+});
+</script>
 
 </body>
 </html>
