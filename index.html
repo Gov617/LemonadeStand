@@ -30,8 +30,6 @@
         radial-gradient(1100px 700px at 15% 0%, #1b2d65 0%, var(--bg) 60%),
         radial-gradient(900px 600px at 90% 10%, #162552 0%, transparent 50%);
     }
-
-    /* Teacher mode = visibly different feel */
     body[data-role="teacher"]{
       background:
         radial-gradient(1100px 700px at 15% 0%, #2a1b65 0%, #0b1220 60%),
@@ -228,7 +226,6 @@
 
     .hide{display:none !important}
 
-    /* Settings Drawer */
     .drawer{
       margin-top:12px;
       padding:12px;
@@ -240,7 +237,6 @@
     .drawerHead b{font-size:14px}
     .drawerBody{margin-top:10px}
 
-    /* Home hero */
     .homeHero{
       display:flex;
       gap:14px;
@@ -262,7 +258,6 @@
     }
     .heroLogo img{width:100%; height:100%; object-fit:contain; display:block; transform: scale(1.02);}
 
-    /* Splash */
     #splash{
       position:fixed; inset:0;
       background: radial-gradient(900px 600px at 20% 0%, rgba(255,209,102,.18), transparent 55%),
@@ -308,7 +303,6 @@
       transition: width 1.6s linear;
     }
 
-    /* Modal (Teacher PIN) */
     .modalBack{
       position:fixed; inset:0;
       background: rgba(0,0,0,.55);
@@ -343,17 +337,16 @@
       color: rgba(233,238,252,.92);
     }
 
-    /* Teacher-only panel feel */
     body[data-role="teacher"] .teacherPanel{
       border:1px solid rgba(255,255,255,.18);
       background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(0,0,0,.10));
     }
 
+    /* Print: show quick start + reflection cleanly */
     @media print{
       body{background:#fff; color:#000}
       .wrap{max-width:100%; padding:0}
-      .nav, #historyCard, #startView, #dayView, #teacherView { display:none !important; }
-      #resultView{display:block !important}
+      .nav, #historyCard, #startView, #dayView { display:none !important; }
       .card{box-shadow:none; border:1px solid #ddd; background:#fff}
       .pill, .chip{background:#f3f3f3; border-color:#ddd; color:#111}
       .muted{color:#222}
@@ -361,6 +354,10 @@
       .callout{color:#111; background:#eaf0ff; border-color:#b6c6ff}
       button{display:none !important}
       textarea{border:1px solid #bbb; background:#fff; color:#000}
+      /* If printing teacher quick start only */
+      #printQuickStartOnly #resultView,
+      #printQuickStartOnly #teacherView,
+      #printQuickStartOnly #reflectionSheet { display:none !important; }
     }
   </style>
 </head>
@@ -386,14 +383,14 @@
       </div>
       <div class="modalMsg">
         Enter the <b>4-digit Teacher PIN</b> to open <span class="kbd">Teacher Mode</span>.
-        <div class="mini" style="margin-top:6px;">Default PIN is set by the teacher (MVP ships with <b>1111</b>).</div>
+        <div class="mini" style="margin-top:6px;">MVP default PIN is <b>1111</b> (teacher can change it in Class Controls).</div>
       </div>
 
       <div class="two" style="margin-top:12px;">
         <div>
           <label>Teacher PIN</label>
           <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" />
-          <div class="mini" style="margin-top:6px;">Tip: PIN is stored locally on this device.</div>
+          <div class="mini" style="margin-top:6px;">Tip: Teacher access can be remembered for this tab.</div>
         </div>
         <div>
           <label>Remember for this tab session</label>
@@ -493,8 +490,8 @@
               <div id="lockWrap">
                 <label>Lock Student Settings (Teacher)</label>
                 <select id="lockStudentSettings">
-                  <option value="no" selected>No</option>
-                  <option value="yes">Yes (hide Settings for students)</option>
+                  <option value="no">No</option>
+                  <option value="yes" selected>Yes (hide Settings for students)</option>
                 </select>
               </div>
             </div>
@@ -577,7 +574,7 @@
             </div>
 
             <div class="hint" style="margin-top:12px">
-              <b>Teacher note:</b> Waste cost is shown as a teaching callout. Fixed costs + reputation make “autopilot profit” impossible.
+              <b>Teacher note:</b> Fixed costs + reputation make “autopilot profit” unlikely. Students must justify decisions.
             </div>
 
           </div>
@@ -664,6 +661,9 @@
           <div id="homeTeach" class="hide" style="margin-top:12px">
             <div class="muted">
               Teacher Mode adds a dashboard + class controls. Students keep a clean game experience.
+            </div>
+            <div class="hint">
+              Tomorrow-ready: run Day 1, then debrief with 3 questions. Teacher quick start is inside the Teacher dashboard.
             </div>
           </div>
 
@@ -810,8 +810,43 @@
 
           <div class="sep"></div>
 
+          <!-- Teacher Quick Start -->
+          <div id="teacherQuickStart" class="card teacherPanel" style="padding:14px;">
+            <h2 style="margin-bottom:6px;">Teacher Quick Start (60 seconds)</h2>
+            <div class="muted">
+              Goal: students learn <b>profit vs revenue</b> through 3 daily decisions (cups, price, marketing) and a short debrief.
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="list">
+              <div class="li"><span><b>1)</b> Open <span class="kbd">Settings</span> → set Class Code (optional) → lock student settings</span><b>✅</b></div>
+              <div class="li"><span><b>2)</b> Students play <b>Day 1</b> (2–4 minutes)</span><b>✅</b></div>
+              <div class="li"><span><b>3)</b> Debrief (5 minutes): ask 3 questions below</span><b>✅</b></div>
+              <div class="li"><span><b>4)</b> Students continue Days 2–5/7 over time + print reflection at end</span><b>✅</b></div>
+            </div>
+
+            <div class="hint" style="margin-top:12px;">
+              <b>Debrief questions:</b><br/>
+              1) What’s the difference between <b>revenue</b> and <b>profit</b>?<br/>
+              2) Which mistake hurts more: <b>waste</b> or <b>selling out</b>? Why?<br/>
+              3) What will you change tomorrow — <b>price</b> or <b>cups</b> — and why?
+            </div>
+
+            <div class="callout" style="margin-top:12px;">
+              <b>Quick rubric (1 line):</b> Student earns full credit if they can explain profit vs revenue and justify their Day 2 change using costs + demand.
+            </div>
+
+            <div class="row" style="margin-top:12px;">
+              <button class="ghost" id="btnPrintQuickStart">Print Quick Start</button>
+              <button class="ghost" id="btnOpenSettingsFromTeacher">Open Class Controls</button>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
           <div class="card teacherPanel" style="padding:14px;">
-            <div style="font-weight:950;">Class KPIs</div>
+            <div style="font-weight:950;">Run KPIs (this device)</div>
             <div class="list" id="teacherKPIs" style="margin-top:10px;"></div>
           </div>
 
@@ -820,6 +855,7 @@
           <div class="row" style="margin-top:14px">
             <button class="ok" id="btnTeacherCSV">Download CSV</button>
             <button class="ghost" id="btnTeacherPrint">Print Reflection</button>
+            <button class="danger" id="btnResetNextStudent">Reset for Next Student</button>
             <button class="ghost" id="btnBackToGame">Back to Game</button>
           </div>
         </div>
@@ -854,7 +890,7 @@ const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
 const pct = (n) => `${(n*100).toFixed(0)}%`;
 const safeDiv = (a,b) => b===0 ? 0 : a/b;
 
-const STORE_KEY = "lemonade_class_mvp_teacher_pin_v3";
+const STORE_KEY = "lemonade_class_mvp_teacher_pin_v4";
 const SESSION_TEACHER_AUTH = "lc_teacher_authed";
 const LOGO_PRIMARY = "./logo.png";
 const LOGO_FALLBACK = "./logo-bg.jpg";
@@ -902,10 +938,9 @@ function pickWeighted(items){
 }
 function randBetween(a,b){ return a + Math.random()*(b-a); }
 
-/* Tougher demand + diminishing marketing (prevents “autopilot profit”) */
 function marketingFactor(mkt){
   const x = clamp(mkt,0,20);
-  return 1 + 0.22 * (1 - Math.exp(-x/6)); // max ~ +22%
+  return 1 + 0.22 * (1 - Math.exp(-x/6));
 }
 function priceFactor(price, difficulty, elasticity){
   const sweet = 1.75;
@@ -933,7 +968,7 @@ function competitorFactor(price, rivalPrice, difficulty){
   }
 }
 function dailyDemand({weatherMult, eventMult, price, mkt, rivalPrice, difficulty, trafficMult, elasticity}){
-  const base = 56; // slightly lower
+  const base = 56;
   const pf = priceFactor(price, difficulty, elasticity);
   const mf = marketingFactor(mkt);
   const cf = competitorFactor(price, rivalPrice, difficulty);
@@ -946,7 +981,6 @@ function dailyFixedCost(difficulty, trafficKey){
   return +(base * trafficMult).toFixed(2);
 }
 
-/* Math audit: guarantees everything is consistent */
 function mathAuditDay(record, cogsPerCup){
   const revenue2 = +(record.cupsSold * record.price).toFixed(2);
   const cost2    = +(record.cupsMade * cogsPerCup).toFixed(2);
@@ -979,9 +1013,8 @@ function narrativeFor({weatherKey, eventKey, price, rivalPrice, soldOut, repMult
 function freshState(){
   return {
     view:"start",
-    // settings
     userRole:"student",
-    lockStudentSettings:false,
+    lockStudentSettings:true,
     playerName:"",
     classCode:"",
     teacherName:"",
@@ -995,10 +1028,9 @@ function freshState(){
     scenarioMix:"balanced",
     teacherPin:"1111",
 
-    // run
     day:1,
     cash:100,
-    reputation: 0.50, // 0..1
+    reputation: 0.50,
     todays:null,
     history:[]
   };
@@ -1017,17 +1049,13 @@ function clearState(){
   state = freshState();
   render();
 }
-function isTeacherAuthed(){
-  return sessionStorage.getItem(SESSION_TEACHER_AUTH) === "1";
-}
+function isTeacherAuthed(){ return sessionStorage.getItem(SESSION_TEACHER_AUTH) === "1"; }
 function setTeacherAuthed(on){
   if(on) sessionStorage.setItem(SESSION_TEACHER_AUTH, "1");
   else sessionStorage.removeItem(SESSION_TEACHER_AUTH);
 }
 
-function applyRoleTheme(){
-  document.body.dataset.role = state.userRole || "student";
-}
+function applyRoleTheme(){ document.body.dataset.role = state.userRole || "student"; }
 
 function show(view){
   state.view = view;
@@ -1053,12 +1081,8 @@ function canStudentOpenSettings(){
 
 function enforceRoleUI(){
   $("btnTeacher").classList.toggle("hide", state.userRole !== "teacher");
-
   $("btnToggleSettings").classList.toggle("hide", !canStudentOpenSettings());
-
   $("settingsTitle").textContent = (state.userRole==="teacher") ? "Class Controls" : "Settings";
-
-  // teacher-only fields
   $("lockWrap").classList.toggle("hide", state.userRole !== "teacher");
   $("pinWrap").classList.toggle("hide", state.userRole !== "teacher");
 }
@@ -1130,11 +1154,7 @@ function submitPin(){
 }
 
 function requestTeacherMode(after){
-  // if already authed this tab, allow immediately
-  if(isTeacherAuthed()){
-    after();
-    return;
-  }
+  if(isTeacherAuthed()){ after(); return; }
   openPinModal(after);
 }
 
@@ -1146,7 +1166,6 @@ function syncInputs(){
   const cups = parseInt($("cups").value,10);
   const mkt = parseInt($("mkt").value,10);
 
-  // cost per cup (may include quality multiplier)
   const baseCogs = Number(state.cogsPerCup ?? 0.50);
   const qualityKey = $("quality") ? $("quality").value : "standard";
   const qMult = (state.costMode === "advanced") ? (QUALITY[qualityKey]?.costMult ?? 1.0) : 1.0;
@@ -1206,7 +1225,6 @@ function renderDay(){
   $("trafficPill").textContent = TRAFFIC[state.scenarioTraffic].label;
   $("mixPill").textContent = MIX[state.scenarioMix].label;
 
-  // show/hide quality choice
   $("qualityWrap").classList.toggle("hide", state.costMode !== "advanced");
 
   $("cups").value = 80;
@@ -1399,9 +1417,8 @@ async function sellDay(){
     elasticity
   });
 
-  // Reputation affects demand strongly
   const rep = clamp(state.reputation ?? 0.50, 0, 1);
-  const repMult = 0.75 + rep * 0.60; // 0.75..1.35
+  const repMult = 0.75 + rep * 0.60;
   const demandEff = Math.max(0, Math.round(demandRaw * repMult));
 
   const cupsSold = Math.min(cupsMade, demandEff);
@@ -1413,11 +1430,10 @@ async function sellDay(){
   const wasteCost = +(waste * cogsPerCup).toFixed(2);
 
   const fixedCost = dailyFixedCost(state.difficulty, state.scenarioTraffic);
-  const spoilagePenalty = +(waste * cogsPerCup * 0.35).toFixed(2); // extra sting for waste
+  const spoilagePenalty = +(waste * cogsPerCup * 0.35).toFixed(2);
 
   const upfrontSpend = +(cost + marketing + fixedCost).toFixed(2);
 
-  // Need cash up-front
   if(upfrontSpend > state.cash){
     $("dayHint").classList.remove("hide");
     $("dayHint").textContent =
@@ -1425,12 +1441,10 @@ async function sellDay(){
     return;
   }
 
-  // Pay up-front
   state.cash = +(state.cash - upfrontSpend).toFixed(2);
   saveState();
   setHeader();
 
-  // Selling phase UI
   $("sellingBox").classList.remove("hide");
   $("btnSell").disabled = true;
   $("sellingMsg").textContent = `Paid ${money(upfrontSpend)} up-front. Selling now...`;
@@ -1465,32 +1479,20 @@ async function sellDay(){
   $("btnSell").disabled = false;
   $("sellingBox").classList.add("hide");
 
-  // Add revenue after selling; subtract spoilage penalty
   state.cash = +(state.cash + revenue - spoilagePenalty).toFixed(2);
 
   const netProfit = +(revenue - upfrontSpend - spoilagePenalty).toFixed(2);
 
-  // Reputation update
   const soldOut = (cupsSold === cupsMade && demandEff > cupsMade && cupsMade > 0);
   const wasteRate = cupsMade ? (waste / cupsMade) : 0;
 
   let repDelta = 0;
-
-  // quality nudges rep (advanced mode only)
   if(state.costMode === "advanced") repDelta += q.repDelta;
-
-  // pricing: too high hurts; fair helps slightly
   if(price > 2.50) repDelta -= 0.05;
   else if(price >= 1.25 && price <= 2.25) repDelta += 0.02;
-
-  // stockouts hurt future trust
   if(soldOut) repDelta -= 0.06;
-
-  // big waste looks sloppy
   if(wasteRate >= 0.25) repDelta -= 0.05;
   else if(wasteRate <= 0.10 && !soldOut) repDelta += 0.02;
-
-  // heavy marketing cannot fully replace trust
   if(marketing >= 10) repDelta += 0.01;
 
   state.reputation = clamp((state.reputation ?? 0.50) + repDelta, 0, 1);
@@ -1520,7 +1522,6 @@ async function sellDay(){
     lesson
   };
 
-  // --- Math audit ---
   const audit = mathAuditDay(record, cogsPerCup);
   record.mathOk = audit.ok;
   record.mathExpected = audit.expected;
@@ -1564,7 +1565,6 @@ function playAgain(){
   const keepSettings = {
     userRole: state.userRole,
     lockStudentSettings: state.lockStudentSettings,
-    playerName: state.playerName,
     classCode: state.classCode,
     teacherName: state.teacherName,
     explainMode: state.explainMode,
@@ -1579,6 +1579,7 @@ function playAgain(){
   };
   state = freshState();
   Object.assign(state, keepSettings);
+  state.playerName = "";
   state.day = 1;
   state.cash = state.startingCash;
   state.reputation = 0.50;
@@ -1632,7 +1633,6 @@ function resumeGame(){
 function applySettings(restartRunFlag){
   const wantedRole = $("userRole").value;
 
-  // If trying to switch to teacher, require PIN
   const doApply = () => {
     state.userRole = wantedRole;
     state.explainMode = $("explainMode").value;
@@ -1651,7 +1651,6 @@ function applySettings(restartRunFlag){
     state.scenarioTraffic = $("scenarioTraffic").value;
     state.scenarioMix = $("scenarioMix").value;
 
-    // Teacher-only: set PIN if in teacher role
     if(state.userRole === "teacher"){
       const pin = ($("teacherPin").value || "").trim();
       if(/^\d{4}$/.test(pin)) state.teacherPin = pin;
@@ -1703,7 +1702,6 @@ function startGameFromHome(){
     state.scenarioMix = "balanced";
 
     if(state.userRole === "teacher"){
-      // common teacher default
       state.lockStudentSettings = true;
     }
 
@@ -1787,8 +1785,6 @@ function downloadCSV(){
   URL.revokeObjectURL(url);
 }
 function printReflection(){
-  $("summaryBox").classList.remove("hide");
-  $("reflectionSheet").classList.remove("hide");
   window.print();
 }
 
@@ -1800,7 +1796,7 @@ function renderTeacherDashboard(){
 
   if(state.history.length === 0){
     box.innerHTML = `<div class="li"><span>No data yet</span><b>Play at least 1 day</b></div>`;
-    insights.textContent = "Tip: Pause after Day 1 and ask students to explain their profit using costs + demand + reputation.";
+    insights.textContent = "Tip: After Day 1, ask students to explain profit using costs + demand + reputation (not just “I made money”).";
     return;
   }
 
@@ -1849,6 +1845,69 @@ function openTeacher(){
   });
 }
 
+/* NEW: Teacher-only reset for next student */
+function resetForNextStudent(){
+  requestTeacherMode(() => {
+    const name = state.playerName ? ` (${state.playerName})` : "";
+    const ok = confirm(
+      `Reset for Next Student${name}?\n\nThis will clear:\n- Student name\n- Day progress + history\n- Cash + reputation\n\nIt will keep:\n- Teacher PIN + class settings\n- Class code + teacher name\n\nContinue?`
+    );
+    if(!ok) return;
+
+    // keep settings
+    const keep = {
+      userRole: "teacher",
+      lockStudentSettings: state.lockStudentSettings,
+      classCode: state.classCode,
+      teacherName: state.teacherName,
+      explainMode: state.explainMode,
+      daysTotal: state.daysTotal,
+      difficulty: state.difficulty,
+      startingCash: state.startingCash,
+      cogsPerCup: state.cogsPerCup,
+      costMode: state.costMode,
+      scenarioTraffic: state.scenarioTraffic,
+      scenarioMix: state.scenarioMix,
+      teacherPin: state.teacherPin
+    };
+
+    state = freshState();
+    Object.assign(state, keep);
+
+    state.playerName = "";
+    state.day = 1;
+    state.cash = state.startingCash;
+    state.reputation = 0.50;
+    state.history = [];
+    state.todays = null;
+
+    saveState();
+    show("day");
+    renderDay();
+    render();
+    alert("Reset complete. Ready for the next student.");
+  });
+}
+
+/* NEW: Print teacher quick start only */
+function printQuickStart(){
+  requestTeacherMode(() => {
+    // temporarily hide everything except teacher quick start
+    const prevView = state.view;
+    show("teacher");
+    renderTeacherDashboard();
+    // Use a body attribute to simplify print CSS if needed
+    document.body.setAttribute("data-print", "quickstart");
+    // open print
+    window.print();
+    // cleanup
+    document.body.removeAttribute("data-print");
+    // return to previous view
+    show(prevView);
+    render();
+  });
+}
+
 function render(){
   applyRoleTheme();
   setHeader();
@@ -1858,13 +1917,10 @@ function render(){
   if(state.view === "teacher"){
     renderTeacherDashboard();
   } else if(state.view === "result" && state.history.length){
-    show("result");
     renderResult(state.history[state.history.length - 1]);
   } else if(state.view === "day"){
-    show("day");
     renderDay();
   } else {
-    show("start");
     renderStart();
   }
 
@@ -1900,10 +1956,15 @@ $("btnRestart").addEventListener("click", restartRun);
 $("btnTeacher").addEventListener("click", openTeacher);
 $("btnTeacherCSV").addEventListener("click", downloadCSV);
 $("btnTeacherPrint").addEventListener("click", printReflection);
+$("btnResetNextStudent").addEventListener("click", resetForNextStudent);
+
 $("btnBackToGame").addEventListener("click", () => {
   if(state.history.length) show("result"); else show("day");
   render();
 });
+
+$("btnPrintQuickStart").addEventListener("click", printQuickStart);
+$("btnOpenSettingsFromTeacher").addEventListener("click", () => { openSettings(); });
 
 $("btnToggleSettings").addEventListener("click", () => {
   if($("settingsDrawer").classList.contains("hide")) openSettings();
@@ -1926,12 +1987,10 @@ $("pinInput").addEventListener("keydown", (e)=>{ if(e.key === "Enter") submitPin
 
 /* On load */
 (function init(){
-  // logos
   setLogo($("navLogo"));
   setLogo($("homeLogo"));
   setLogo($("splashLogo"));
 
-  // splash once per session
   const splash = $("splash");
   const splashFill = $("splashFill");
   if(!sessionStorage.getItem("lc_splash_seen")){
@@ -1944,10 +2003,10 @@ $("pinInput").addEventListener("keydown", (e)=>{ if(e.key === "Enter") submitPin
   const saved = loadState();
   if(saved) state = saved;
 
-  // ensure defaults exist
   if(!state.teacherPin) state.teacherPin = "1111";
   if(state.reputation == null) state.reputation = 0.50;
   if(!state.costMode) state.costMode = "simple";
+  if(state.lockStudentSettings == null) state.lockStudentSettings = true;
 
   if(!state.view) state.view = "start";
 
