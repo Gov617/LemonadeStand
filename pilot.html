@@ -1,310 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Lemonade Class | Pilot Sign-Up</title>
-<meta name="description" content="Pilot sign-up for Lemonade Class — a classroom-ready micro-business simulation for Grades 6–7." />
 
 <style>
-  :root{
-    --bg:#f6f8ff;
-    --card:#ffffff;
-    --ink:#121826;
-    --muted:#5a6576;
-    --brand:#1b2d65;
-    --brand2:#2b5cff;
-    --accent:#f5c518;
-    --line:rgba(20,30,60,.12);
-    --shadow:0 16px 40px rgba(14, 25, 60, 0.10);
-    --radius:18px;
-  }
- 
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    color:var(--ink);
-    background:
-      radial-gradient(950px 520px at 12% 0%, rgba(43,92,255,.14), transparent 55%),
-      radial-gradient(900px 520px at 95% 10%, rgba(245,197,24,.18), transparent 55%),
-      var(--bg);
-  }
+:root{
+  --brand:#1b2d65;
+  --accent:#2b5cff;
+  --bg:#f4f7ff;
+  --card:#ffffff;
+  --text:#1c2430;
+  --muted:#5c6678;
+  --radius:18px;
+  --shadow:0 20px 45px rgba(20,30,60,.08);
+}
 
-  .wrap{max-width:1000px; margin:0 auto; padding:26px 18px 60px;}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
 
-  .topbar{
-    display:flex; gap:14px; align-items:center; justify-content:space-between;
-    padding:14px 14px; background:rgba(255,255,255,.78);
-    border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow);
-    backdrop-filter: blur(10px);
-    position: sticky; top: 10px; z-index: 10;
-  }
+.container{
+  max-width:960px;
+  margin:auto;
+  padding:30px 20px 60px;
+}
 
-  .brand{
-    display:flex; align-items:center; gap:12px;
-  }
-  .brand img{
-    width:54px; height:54px; border-radius:14px;
-    border:1px solid var(--line); background:#fff; object-fit:cover;
-  }
-  .brand .t1{font-weight:900; color:var(--brand); line-height:1.1}
-  .brand .t2{font-size:12px; color:var(--muted); margin-top:2px}
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:25px;
+}
 
-  .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    padding:10px 14px; border-radius:12px;
-    border:1px solid var(--line);
-    text-decoration:none; font-weight:800; font-size:14px;
-    background:#fff; color:var(--brand);
-    box-shadow: 0 6px 18px rgba(20,30,60,.06);
-    cursor:pointer;
-  }
-  .btn.primary{
-    background: linear-gradient(135deg, var(--brand2), var(--brand));
-    color:#fff; border:none;
-  }
-  .btn.ghost{
-    background: transparent;
-  }
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
 
-  .hero{
-    margin-top:18px;
-    display:grid;
-    grid-template-columns: 1.2fr .8fr;
-    gap:14px;
-  }
-  @media (max-width: 900px){
-    .hero{grid-template-columns:1fr}
-    .actions{justify-content:flex-start}
-  }
+.logo img{
+  width:55px;
+  border-radius:14px;
+  background:#fff;
+  padding:5px;
+}
 
-  .card{
-    background:rgba(255,255,255,.82);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:18px 18px;
-    backdrop-filter: blur(10px);
-  }
+.logo h1{
+  margin:0;
+  font-size:20px;
+  color:var(--brand);
+}
 
-  h1{margin:6px 0 6px; font-size:28px; color:var(--brand); letter-spacing:-.2px}
-  p{margin:8px 0; color:var(--muted); line-height:1.5}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:28px;
+  margin-bottom:20px;
+}
 
-  .pillrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
-  .pill{
-    font-size:12px; font-weight:800;
-    padding:6px 10px; border-radius:999px;
-    border:1px solid var(--line);
-    background:#fff;
-    color:var(--brand);
-  }
+h2{
+  margin-top:0;
+  color:var(--brand);
+}
 
-  .list{margin:10px 0 0 18px; color:var(--muted)}
-  .list li{margin:8px 0}
+form{
+  display:grid;
+  gap:14px;
+}
 
-  .sectionTitle{
-    font-weight:900; color:var(--ink);
-    margin:10px 0 8px;
-  }
+input, select, textarea{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #dfe5f3;
+  font-size:14px;
+}
 
-  .divider{height:1px; background:var(--line); margin:14px 0;}
+textarea{
+  resize:vertical;
+}
 
-  .qrWrap{
-    display:flex; gap:14px; align-items:center; justify-content:space-between;
-    flex-wrap:wrap;
-  }
-  .qrBox{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:12px;
-    width:200px;
-    text-align:center;
-  }
-  #qrcode{display:flex; justify-content:center;}
-  .qrBox small{display:block; color:var(--muted); margin-top:8px}
+button{
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--brand));
+  color:white;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+}
 
-  .formCard{
-    padding:0;
-    overflow:hidden;
-  }
-  .formHeader{
-    padding:16px 18px;
-    background: linear-gradient(135deg, rgba(43,92,255,.10), rgba(27,45,101,.08));
-    border-bottom:1px solid var(--line);
-  }
-  .formHeader .kicker{
-    font-size:12px; font-weight:900; color:var(--brand);
-    text-transform:uppercase; letter-spacing:.08em;
-  }
-  .formHeader .sub{
-    margin-top:6px;
-    color:var(--muted);
-    font-size:13px;
-  }
+.success{
+  display:none;
+  padding:18px;
+  border-radius:14px;
+  background:#e9f1ff;
+  color:var(--brand);
+  font-weight:600;
+  margin-top:15px;
+}
 
-  .formBody{
-    padding:16px 18px 18px;
-  }
-
-  .formLink{
-    display:flex; gap:10px; flex-wrap:wrap;
-    margin-top:10px;
-  }
-
-  .notice{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:10px;
-  }
-
-  .footer{
-    margin-top:18px;
-    text-align:center;
-    color:var(--muted);
-    font-size:13px;
-  }
+.footer{
+  margin-top:25px;
+  font-size:13px;
+  color:var(--muted);
+  text-align:center;
+}
 </style>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
-<div class="wrap">
+<div class="container">
 
-  <div class="topbar">
-    <div class="brand">
-      <img src="logo-white.jpg" alt="Lemonade Class logo" />
-      <div>
-        <div class="t1">Lemonade Class</div>
-        <div class="t2">Pilot program sign-up • Grades 6–7</div>
-      </div>
-    </div>
-
-    <div class="actions">
-      <a class="btn" href="info.html">Teacher Info</a>
-      <a class="btn" href="index.html">Launch Game</a>
-      <a class="btn primary" href="#signup">Join Pilot</a>
-    </div>
+<div class="header">
+  <div class="logo">
+    <img src="logo-white.jpg">
+    <h1>Lemonade Class Pilot Program</h1>
   </div>
+</div>
 
-  <section class="hero">
+<div class="card">
+<h2>Bring Lemonade Class to Your Classroom</h2>
 
-    <div class="card">
-      <h1>Bring Lemonade Class to your classroom</h1>
-      <p>
-        Lemonade Class is a classroom-ready micro-business simulation that helps students practice
-        <b>profit</b>, <b>pricing</b>, <b>costs</b>, and <b>data-driven decision making</b> in a way that feels fun.
-      </p>
+<p>
+Lemonade Class is a classroom-ready micro-business simulation for Grades 6–7.  
+We are inviting a limited number of teachers to pilot the tool and help shape the next version.
+</p>
 
-      <div class="pillrow">
-        <span class="pill">Grades 6–7</span>
-        <span class="pill">Chromebook-friendly</span>
-        <span class="pill">No accounts required</span>
-        <span class="pill">45–60 min lesson or mini-unit</span>
-      </div>
+<p><strong>Founder Note:</strong><br>
+I’m Marcus, creator of Lemonade Class and the son of a special education teacher.  
+This was built to be accessible, engaging, and practical in real classrooms — not just another worksheet.
+</p>
 
-      <div class="divider"></div>
+</div>
 
-      <div class="sectionTitle">What pilot teachers receive</div>
-      <ul class="list">
-        <li>Printable 1-page teacher guide + lesson flow</li>
-        <li>Quick-start link for students</li>
-        <li>Optional reflection sheet / assessment rubric</li>
-        <li>Direct line to request features + improvements</li>
-      </ul>
+<div class="card">
+<h2>Pilot Sign-Up</h2>
 
-      <div class="sectionTitle">What we ask from pilot teachers</div>
-      <ul class="list">
-        <li>Try it with students at least once</li>
-        <li>Share 3–5 minutes of feedback (Google Form)</li>
-        <li>Optional: send student reflections or class observations</li>
-      </ul>
+<form id="pilotForm" action="https://formspree.io/f/xwvnawjn" method="POST">
 
-      <div class="divider"></div>
+<input type="text" name="teacher_name" placeholder="Full Name" required>
+<input type="email" name="email" placeholder="School Email Address" required>
+<input type="text" name="school_name" placeholder="School Name">
+<input type="text" name="district" placeholder="District (Optional)">
 
-      <div class="sectionTitle">Founder note</div>
-      <p>
-        I’m Marcus, the creator of Lemonade Class. I’m the <b>son of a special education teacher</b>,
-        so I’m building this to be accessible, classroom-friendly, and engaging for different learning styles.
-      </p>
-    </div>
+<select name="grade_level">
+<option value="">Grade Level</option>
+<option>6</option>
+<option>7</option>
+<option>Both</option>
+</select>
 
-    <div class="card formCard" id="signup">
-      <div class="formHeader">
-        <div class="kicker">Pilot Sign-Up</div>
-        <div class="sub">Secure your spot. Takes ~60 seconds.</div>
-      </div>
+<textarea name="notes" rows="4" placeholder="Anything you'd like us to know?"></textarea>
 
-      <div class="formBody">
-        <!-- ✅ Replace FORM_URL with your real form link -->
-        <script>
-          const FORM_URL = "https://forms.gle/PASTE_YOUR_REAL_FORM_LINK_HERE";
-        </script>
+<button type="submit">Request Pilot Access</button>
 
-        <p>
-          Click below to complete the pilot interest form. You’ll receive the teacher materials and the classroom link.
-        </p>
+</form>
 
-        <div class="formLink">
-          <a id="formBtn" class="btn primary" href="#" target="_blank" rel="noopener">Open Pilot Interest Form</a>
-          <a class="btn" href="index.html">Preview Game</a>
-        </div>
+<div class="success" id="successMessage">
+Thank you! You’re officially on the pilot list.  
+We’ll send next steps and classroom materials shortly.
+</div>
 
-        <div class="qrWrap" style="margin-top:14px;">
-          <div class="qrBox">
-            <div id="qrcode" aria-label="QR code to pilot form"></div>
-            <small>Scan to open form</small>
-          </div>
+</div>
 
-          <div style="flex:1; min-width: 220px;">
-            <div class="sectionTitle" style="margin-top:0;">Best for:</div>
-            <ul class="list" style="margin-top:6px;">
-              <li>Math + Financial Literacy</li>
-              <li>Social Studies/Econ</li>
-              <li>Advisory/SEL (goal setting + reflection)</li>
-            </ul>
-            <div class="notice" id="formNote"></div>
-          </div>
-        </div>
-
-        <div class="notice">
-          If your district blocks Google Forms, we can provide an alternate sign-up method.
-        </div>
-      </div>
-    </div>
-
-  </section>
-
-  <div class="footer">
-    © Lemonade Class • Pilot Program
-  </div>
+<div class="footer">
+© Lemonade Class | Classroom Financial Literacy Simulation
+</div>
 
 </div>
 
 <script>
-  const btn = document.getElementById("formBtn");
-  const note = document.getElementById("formNote");
+const form = document.getElementById('pilotForm');
+const success = document.getElementById('successMessage');
 
-  function isValidUrl(u){ return typeof u === "string" && u.startsWith("http"); }
+form.addEventListener('submit', async function(event) {
+  event.preventDefault();
+  const data = new FormData(form);
 
-  if (!isValidUrl(FORM_URL) || FORM_URL.includes("PASTE_YOUR_REAL_FORM_LINK_HERE")) {
-    btn.href = "#";
-    btn.style.opacity = "0.65";
-    btn.textContent = "Add Your Form Link";
-    note.textContent = "To activate: replace FORM_URL in pilot.html with your real Google Form link.";
+  const response = await fetch(form.action, {
+    method: form.method,
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  });
+
+  if (response.ok) {
+    form.reset();
+    success.style.display = "block";
   } else {
-    btn.href = FORM_URL;
-    note.textContent = "Pilot form link is active.";
-    new QRCode(document.getElementById("qrcode"), {
-      text: FORM_URL,
-      width: 165,
-      height: 165,
-      correctLevel: QRCode.CorrectLevel.M
-    });
+    alert("There was a problem submitting the form.");
   }
+});
 </script>
 
 </body>
