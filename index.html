@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Lemonade Class — Classroom MVP</title>
   <meta name="description" content="Lemonade Class: a classroom-ready micro-business simulation that teaches revenue, profit, margin, and decision-making." />
+
   <style>
     :root{
       --bg:#0b1220;
@@ -30,7 +31,7 @@
         radial-gradient(900px 600px at 90% 10%, #162552 0%, transparent 50%);
     }
 
-    /* Teacher mode = different feel */
+    /* Teacher mode = visibly different feel */
     body[data-role="teacher"]{
       background:
         radial-gradient(1100px 700px at 15% 0%, #2a1b65 0%, #0b1220 60%),
@@ -66,16 +67,11 @@
       box-shadow: 0 10px 22px rgba(0,0,0,.25);
       flex: 0 0 auto;
     }
-    .brandMark img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      display:block;
-      transform: scale(1.03);
-    }
+    .brandMark img{ width:100%; height:100%; object-fit:contain; display:block; transform: scale(1.03); }
     .title{display:flex; flex-direction:column; line-height:1.1;}
     .title b{font-size:16px; letter-spacing:-.01em}
     .title span{font-size:12px; color:rgba(233,238,252,.70)}
+
     .navRight{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .chip{
       display:flex; gap:8px; align-items:center; white-space:nowrap;
@@ -98,6 +94,7 @@
       letter-spacing: .08em;
     }
     .navBtns{display:flex; gap:10px; flex-wrap:wrap}
+
     button{
       border:1px solid var(--line);
       background: rgba(255,255,255,.08);
@@ -132,7 +129,7 @@
     .row{display:flex; gap:10px; flex-wrap:wrap}
     label{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px}
 
-    input[type="text"], select{
+    input[type="text"], input[type="password"], select{
       width:100%;
       padding:12px 12px;
       border-radius:14px;
@@ -243,39 +240,7 @@
     .drawerHead b{font-size:14px}
     .drawerBody{margin-top:10px}
 
-    /* Reflection & Summary */
-    .sheet{
-      margin-top:12px;
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.12);
-    }
-    .sheet h3{margin:0 0 10px; font-size:15px}
-    .q{
-      display:grid; gap:8px;
-      padding:10px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      margin-top:10px;
-    }
-    .q b{font-size:13px}
-    .q textarea{
-      width:100%;
-      min-height:70px;
-      resize:vertical;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.18);
-      color:var(--text);
-      padding:10px;
-      outline:none;
-      font-family: inherit;
-      font-size:13px;
-    }
-
-    /* Home hero logo */
+    /* Home hero */
     .homeHero{
       display:flex;
       gap:14px;
@@ -343,7 +308,42 @@
       transition: width 1.6s linear;
     }
 
-    /* Teacher dashboard "panel" style */
+    /* Modal (Teacher PIN) */
+    .modalBack{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      place-items:center;
+      z-index: 10000;
+      backdrop-filter: blur(6px);
+    }
+    .modal{
+      width:min(520px, 92vw);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.16);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.18));
+      box-shadow: 0 30px 80px rgba(0,0,0,.65);
+      padding:16px;
+    }
+    .modalHead{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      margin-bottom:10px;
+    }
+    .modalHead b{font-size:14px}
+    .modalMsg{color: rgba(233,238,252,.78); font-size:13px; line-height:1.35}
+    .modalErr{margin-top:10px; color: #ffb0b0; font-weight:900; font-size:13px; display:none;}
+    .kbd{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      font-weight:950;
+      font-size:12px;
+      color: rgba(233,238,252,.92);
+    }
+
+    /* Teacher-only panel feel */
     body[data-role="teacher"] .teacherPanel{
       border:1px solid rgba(255,255,255,.18);
       background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(0,0,0,.10));
@@ -364,6 +364,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Splash -->
   <div id="splash">
@@ -373,6 +374,42 @@
       <div class="splashSub">A classroom-ready business simulation</div>
       <div class="splashBar"><div class="splashFill" id="splashFill"></div></div>
       <div class="mini">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Teacher PIN modal -->
+  <div id="pinModalBack" class="modalBack">
+    <div class="modal">
+      <div class="modalHead">
+        <b>Teacher Access</b>
+        <button class="ghost" id="btnPinClose">Close</button>
+      </div>
+      <div class="modalMsg">
+        Enter the <b>4-digit Teacher PIN</b> to open <span class="kbd">Teacher Mode</span>.
+        <div class="mini" style="margin-top:6px;">Default PIN is set by the teacher (MVP ships with <b>1111</b>).</div>
+      </div>
+
+      <div class="two" style="margin-top:12px;">
+        <div>
+          <label>Teacher PIN</label>
+          <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" />
+          <div class="mini" style="margin-top:6px;">Tip: PIN is stored locally on this device.</div>
+        </div>
+        <div>
+          <label>Remember for this tab session</label>
+          <select id="pinRemember">
+            <option value="yes" selected>Yes (recommended)</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="primary" id="btnPinSubmit">Unlock Teacher Mode</button>
+        <button class="ghost" id="btnPinCancel">Cancel</button>
+      </div>
+
+      <div id="pinErr" class="modalErr">Incorrect PIN.</div>
     </div>
   </div>
 
@@ -393,6 +430,7 @@
       <div class="navRight">
         <div class="chip">💵 Cash: <b id="cashPill">$0.00</b></div>
         <div class="chip">📅 Day: <b id="dayPill">—</b></div>
+        <div class="chip">⭐ Rep: <b id="repPill">—</b></div>
         <div class="chip">🧠 Explain: <b id="explainPill">On</b></div>
         <div class="roleBadge" id="roleBadge">STUDENT</div>
 
@@ -423,7 +461,7 @@
                 <label>Mode</label>
                 <select id="userRole">
                   <option value="student" selected>Student Mode</option>
-                  <option value="teacher">Teacher Mode</option>
+                  <option value="teacher">Teacher Mode (PIN)</option>
                 </select>
                 <div class="mini" style="margin-top:6px">Teacher Mode unlocks analytics + class controls.</div>
               </div>
@@ -458,11 +496,15 @@
                   <option value="no" selected>No</option>
                   <option value="yes">Yes (hide Settings for students)</option>
                 </select>
-                <div class="mini" style="margin-top:6px">If enabled, only Teacher Mode can change settings.</div>
               </div>
             </div>
 
             <div class="two" style="margin-top:10px">
+              <div id="pinWrap">
+                <label>Teacher PIN (4 digits)</label>
+                <input id="teacherPin" type="password" inputmode="numeric" maxlength="4" placeholder="1111" />
+                <div class="mini" style="margin-top:6px">Teacher-only. Students never see this field.</div>
+              </div>
               <div>
                 <label>Game length</label>
                 <select id="gameLen">
@@ -470,55 +512,62 @@
                   <option value="7" selected>7 days</option>
                 </select>
               </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
               <div>
                 <label>Difficulty</label>
                 <select id="difficulty">
                   <option value="guided">Guided (gentle)</option>
                   <option value="standard" selected>Standard</option>
-                  <option value="competitive">Competitive (no bailout)</option>
+                  <option value="competitive">Competitive (hard)</option>
                 </select>
               </div>
-            </div>
-
-            <div class="two" style="margin-top:10px">
               <div>
                 <label>Starting cash</label>
                 <select id="startingCash">
                   <option value="50">$50 (hard)</option>
                   <option value="100" selected>$100 (normal)</option>
                   <option value="150">$150 (easier)</option>
-                  <option value="200">$200 (very easy)</option>
-                </select>
-              </div>
-              <div>
-                <label>Ingredient cost (COGS per cup)</label>
-                <select id="cogsPerCup">
-                  <option value="0.35">$0.35 (low cost)</option>
-                  <option value="0.50" selected>$0.50 (default)</option>
-                  <option value="0.70">$0.70 (higher cost)</option>
-                  <option value="1.00">$1.00 (very high)</option>
                 </select>
               </div>
             </div>
 
             <div class="two" style="margin-top:10px">
               <div>
-                <label>Scenario: Foot Traffic Level</label>
+                <label>Cost mode</label>
+                <select id="costMode">
+                  <option value="simple" selected>Simple (1 cost per cup)</option>
+                  <option value="advanced">Advanced (adds “Quality” choice)</option>
+                </select>
+              </div>
+              <div>
+                <label>Base ingredient cost (COGS per cup)</label>
+                <select id="cogsPerCup">
+                  <option value="0.35">$0.35</option>
+                  <option value="0.50" selected>$0.50 (default)</option>
+                  <option value="0.70">$0.70</option>
+                  <option value="1.00">$1.00</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Foot traffic level</label>
                 <select id="scenarioTraffic">
                   <option value="low">Low foot traffic</option>
                   <option value="med" selected>Medium foot traffic</option>
                   <option value="high">High foot traffic</option>
                 </select>
-                <div class="mini" style="margin-top:6px">Changes how many customers might show up overall.</div>
               </div>
               <div>
-                <label>Scenario: Customer Mix</label>
+                <label>Customer mix</label>
                 <select id="scenarioMix">
                   <option value="price">Price-sensitive shoppers</option>
                   <option value="balanced" selected>Balanced shoppers</option>
                   <option value="convenience">Convenience-focused shoppers</option>
                 </select>
-                <div class="mini" style="margin-top:6px">Changes how sensitive demand is to price.</div>
               </div>
             </div>
 
@@ -528,7 +577,7 @@
             </div>
 
             <div class="hint" style="margin-top:12px">
-              <b>Teacher note:</b> Waste cost is shown as a teaching callout, but it is already included in COGS (COGS = cost per cup × cups made).
+              <b>Teacher note:</b> Waste cost is shown as a teaching callout. Fixed costs + reputation make “autopilot profit” impossible.
             </div>
 
           </div>
@@ -538,7 +587,7 @@
         <div id="startView">
           <h2>Home</h2>
           <div class="muted">
-            Build your lemonade stand for <b>5 or 7 days</b>. Learn the difference between <b>revenue</b> and <b>profit</b>.
+            Run a lemonade stand for <b>5 or 7 days</b>. Learn <b>revenue vs profit</b> with real tradeoffs.
           </div>
 
           <div class="homeHero">
@@ -548,7 +597,7 @@
             <div>
               <div style="font-weight:950; font-size:14px;">Welcome to Lemonade Class</div>
               <div class="mini" style="margin-top:6px;">
-                Make decisions → see results → reflect → improve. Perfect for computer labs & tablets.
+                Decide → sell → review results → reflect. Built for computer labs & tablets.
               </div>
             </div>
           </div>
@@ -560,7 +609,7 @@
               <label>Mode</label>
               <select id="userRole2">
                 <option value="student" selected>Student Mode</option>
-                <option value="teacher">Teacher Mode</option>
+                <option value="teacher">Teacher Mode (PIN)</option>
               </select>
             </div>
             <div>
@@ -568,7 +617,7 @@
               <select id="preset">
                 <option value="standard" selected>Standard classroom</option>
                 <option value="guided">Guided (easier)</option>
-                <option value="competitive">Competitive (harder)</option>
+                <option value="competitive">Competitive (hard)</option>
               </select>
             </div>
           </div>
@@ -600,22 +649,21 @@
 
           <div id="homeLearn" style="margin-top:12px">
             <div class="callout">
-              <b>Fast lesson:</b> If you sell a cup for $2 and it costs $0.50 to make, you have <b>$1.50 gross profit</b> per cup.
-              But marketing + waste can reduce your final profit.
+              <b>Fast lesson:</b> Revenue is money you collect. Profit is what’s left after costs.
+              You’ll face <b>fixed costs</b> and <b>reputation</b> (trust) that affect future demand.
             </div>
             <div class="hint">
-              In business, you win by matching <b>price</b> + <b>inventory</b> to <b>demand</b>.
+              Win by matching <b>price</b> + <b>inventory</b> to <b>demand</b>—while protecting reputation.
             </div>
           </div>
 
           <div id="homePlay" class="hide" style="margin-top:12px">
-            <div class="muted">Hit Start and run the stand. You’ll get a print-ready reflection sheet at the end.</div>
+            <div class="muted">Start the run. You’ll get a print-ready reflection sheet at the end.</div>
           </div>
 
           <div id="homeTeach" class="hide" style="margin-top:12px">
             <div class="muted">
-              Teacher Mode unlocks a Dashboard (KPIs + insights) and Class Controls (settings + lockout).
-              Students still get the clean “game” experience.
+              Teacher Mode adds a dashboard + class controls. Students keep a clean game experience.
             </div>
           </div>
 
@@ -631,7 +679,7 @@
           <h2 id="dayTitle">Day</h2>
 
           <div class="pillRow">
-            <div class="pill">🌦️ Forecast: <b id="wxPill">—</b></div>
+            <div class="pill">🌦️ Weather: <b id="wxPill">—</b></div>
             <div class="pill">🎪 Event: <b id="eventPill">—</b></div>
             <div class="pill">🥤 Rival: <b id="rivalPill">—</b></div>
             <div class="pill">👟 Traffic: <b id="trafficPill">—</b></div>
@@ -652,6 +700,16 @@
             <div class="rangeVal" id="priceVal">$2.00</div>
           </div>
 
+          <div id="qualityWrap" class="hide">
+            <label>Quality (Advanced costs)</label>
+            <select id="quality">
+              <option value="cheap">Cheap (lower cost, hurts reputation)</option>
+              <option value="standard" selected>Standard (balanced)</option>
+              <option value="premium">Premium (higher cost, boosts reputation)</option>
+            </select>
+            <div class="mini" style="margin-top:6px;">Students choose quality only in Advanced mode.</div>
+          </div>
+
           <label>Marketing spend</label>
           <div class="rangeRow">
             <input id="mkt" type="range" min="0" max="20" value="0" step="1" />
@@ -660,7 +718,9 @@
 
           <div class="callout">
             Up-front spend today: <b id="upfrontSpendVal">$0.00</b>
-            <span class="mini"> (COGS <span id="cogsTag">$0.50</span> × cups + marketing)</span>
+            <span class="mini">
+              (COGS <span id="cogsTag">$0.50</span> × cups + marketing + fixed cost <span id="fixedTag">$0.00</span>)
+            </span>
           </div>
 
           <div id="explainTips" class="hint hide"></div>
@@ -703,13 +763,14 @@
             <button class="ghost" id="btnPrint">Print Reflection</button>
           </div>
 
-          <div id="summaryBox" class="sheet hide">
-            <h3>End-of-Run Summary</h3>
+          <div id="summaryBox" class="card teacherPanel hide" style="margin-top:12px;">
+            <h2>End-of-Run Summary</h2>
             <div class="list" id="summaryList"></div>
           </div>
 
-          <div id="reflectionSheet" class="sheet hide">
-            <h3>Reflection Sheet (Lemonade Class)</h3>
+          <div id="reflectionSheet" class="card hide" style="margin-top:12px;">
+            <h2>Reflection Sheet</h2>
+
             <div class="pillRow" style="margin-top:6px">
               <div class="pill">👤 Student: <b id="refName">—</b></div>
               <div class="pill">🏫 Class: <b id="refClass">—</b></div>
@@ -719,38 +780,33 @@
               <div class="pill">📈 Total profit: <b id="refTotalProfit">—</b></div>
             </div>
 
+            <div class="sep"></div>
+
             <div class="q">
-              <b>1) What was your most profitable day, and why do you think it worked?</b>
-              <textarea id="q1" placeholder="Write 2–4 sentences..."></textarea>
+              <label><b>1) What decision helped your profit the most? Why?</b></label>
+              <textarea id="q1" style="width:100%;min-height:70px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background: rgba(0,0,0,.18);color:var(--text);padding:10px;outline:none;font-family:inherit;font-size:13px;"></textarea>
             </div>
-            <div class="q">
-              <b>2) Describe one mistake you made and what you learned.</b>
-              <textarea id="q2" placeholder="Write 2–4 sentences..."></textarea>
+            <div class="q" style="margin-top:10px;">
+              <label><b>2) When did you waste cups or sell out? What will you change next time?</b></label>
+              <textarea id="q2" style="width:100%;min-height:70px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background: rgba(0,0,0,.18);color:var(--text);padding:10px;outline:none;font-family:inherit;font-size:13px;"></textarea>
             </div>
-            <div class="q">
-              <b>3) If you played again, what strategy would you try?</b>
-              <textarea id="q3" placeholder="Write 2–4 sentences..."></textarea>
-            </div>
-            <div class="q">
-              <b>4) Revenue vs Profit: In your own words, what’s the difference?</b>
-              <textarea id="q4" placeholder="Write 1–3 sentences..."></textarea>
+            <div class="q" style="margin-top:10px;">
+              <label><b>3) Explain: Revenue vs Profit (your own words)</b></label>
+              <textarea id="q3" style="width:100%;min-height:70px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background: rgba(0,0,0,.18);color:var(--text);padding:10px;outline:none;font-family:inherit;font-size:13px;"></textarea>
             </div>
 
-            <div class="callout">
-              <b>Definitions:</b>
-              Revenue = price × cups sold • Profit = revenue − (COGS + marketing) • Margin = profit ÷ revenue
+            <div class="callout" style="margin-top:10px;">
+              <b>Definitions:</b> Revenue = price × cups sold • Profit = revenue − (COGS + marketing + fixed costs + spoilage penalty)
             </div>
 
-            <div class="mini" style="margin-top:10px">
-              Print this page (or Save as PDF). Answers are not uploaded anywhere in the MVP.
-            </div>
+            <div class="mini" style="margin-top:10px">Print (or Save as PDF). MVP does not upload answers anywhere.</div>
           </div>
         </div>
 
         <!-- TEACHER VIEW -->
         <div id="teacherView" class="hide">
           <h2>Teacher Dashboard</h2>
-          <div class="muted">Analytics + class controls. Students still see a clean game experience.</div>
+          <div class="muted">Analytics + class controls. Students keep the clean game flow.</div>
 
           <div class="sep"></div>
 
@@ -778,14 +834,15 @@
         <div class="list" id="history"></div>
         <div class="sep"></div>
         <div class="muted">
-          <b>Teaches:</b> profit vs revenue, cost & margin, inventory waste, price sensitivity, demand changes, and iteration.
+          <b>Teaches:</b> profit vs revenue, cost & margin, inventory waste, price sensitivity, demand changes, fixed costs, reputation, and iteration.
         </div>
       </div>
+
     </div>
   </div>
 
 <script>
-/** Lemonade Class — single-file classroom MVP (Teacher/Student split)
+/** Lemonade Class — single-file classroom MVP (Teacher PIN)
  *  REQUIRED in SAME directory:
  *   - logo.png (transparent)
  *   - logo-bg.jpg (optional fallback)
@@ -797,7 +854,8 @@ const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
 const pct = (n) => `${(n*100).toFixed(0)}%`;
 const safeDiv = (a,b) => b===0 ? 0 : a/b;
 
-const STORE_KEY = "lemonade_class_teacher_student_v2";
+const STORE_KEY = "lemonade_class_mvp_teacher_pin_v3";
+const SESSION_TEACHER_AUTH = "lc_teacher_authed";
 const LOGO_PRIMARY = "./logo.png";
 const LOGO_FALLBACK = "./logo-bg.jpg";
 
@@ -826,9 +884,15 @@ const TRAFFIC = {
 };
 
 const MIX = {
-  price:      { label:"Price-sensitive", elasticity: 1.25 },
-  balanced:   { label:"Balanced", elasticity: 1.00 },
-  convenience:{ label:"Convenience-focused", elasticity: 0.80 },
+  price:       { label:"Price-sensitive", elasticity: 1.25 },
+  balanced:    { label:"Balanced", elasticity: 1.00 },
+  convenience: { label:"Convenience-focused", elasticity: 0.80 },
+};
+
+const QUALITY = {
+  cheap:    { label:"Cheap",    costMult: 0.85, repDelta: -0.03 },
+  standard: { label:"Standard", costMult: 1.00, repDelta:  0.00 },
+  premium:  { label:"Premium",  costMult: 1.20, repDelta:  0.03 },
 };
 
 function pickWeighted(items){
@@ -838,21 +902,25 @@ function pickWeighted(items){
 }
 function randBetween(a,b){ return a + Math.random()*(b-a); }
 
+/* Tougher demand + diminishing marketing (prevents “autopilot profit”) */
+function marketingFactor(mkt){
+  const x = clamp(mkt,0,20);
+  return 1 + 0.22 * (1 - Math.exp(-x/6)); // max ~ +22%
+}
 function priceFactor(price, difficulty, elasticity){
-  const sweet = 2.00;
+  const sweet = 1.75;
   const delta = price - sweet;
-  const harsh = (difficulty === "competitive") ? 1.15 : (difficulty === "guided" ? 0.85 : 1.0);
+  const harsh = (difficulty === "competitive") ? 1.35 : (difficulty === "guided" ? 0.85 : 1.05);
   const e = elasticity ?? 1.0;
 
   if(delta > 0){
-    const f = 1 - (0.18 * harsh * e) * delta;
-    return clamp(f, 0.20, 1.00);
+    const f = 1 - (0.28 * harsh * e) * delta;
+    return clamp(f, 0.10, 1.00);
   } else {
-    const f = 1 + (0.10 * (1/harsh) * (1/e)) * Math.abs(delta);
-    return clamp(f, 0.60, 1.40);
+    const f = 1 + (0.08 * (1/harsh) * (1/e)) * Math.abs(delta);
+    return clamp(f, 0.70, 1.20);
   }
 }
-function marketingFactor(mkt){ return 1 + 0.015 * clamp(mkt,0,20); }
 function competitorFactor(price, rivalPrice, difficulty){
   const d = price - rivalPrice;
   const harsh = (difficulty === "competitive") ? 1.1 : (difficulty === "guided" ? 0.9 : 1.0);
@@ -864,25 +932,18 @@ function competitorFactor(price, rivalPrice, difficulty){
     return clamp(f, 0.70, 1.25);
   }
 }
-
 function dailyDemand({weatherMult, eventMult, price, mkt, rivalPrice, difficulty, trafficMult, elasticity}){
-  const base = 60;
+  const base = 56; // slightly lower
   const pf = priceFactor(price, difficulty, elasticity);
   const mf = marketingFactor(mkt);
   const cf = competitorFactor(price, rivalPrice, difficulty);
-  const noise = randBetween(0.85, 1.15);
+  const noise = randBetween(0.82, 1.18);
   return Math.max(0, Math.round(base * weatherMult * eventMult * trafficMult * pf * mf * cf * noise));
 }
-
-function lessonFor({profit, wasteCost, missedSales}){
-  if(profit < 0) return "You lost money today. That’s feedback, not failure. Adjust price, cups, or marketing tomorrow.";
-  if(wasteCost >= 5) return `Your waste cost was ${money(wasteCost)}. Try making fewer cups or raising price slightly.`;
-  if(missedSales >= 10) return `You sold out and missed about ${missedSales} sales. Consider producing more or raising price.`;
-  return "Strong day. You balanced price + inventory with demand.";
-}
-function narrativeFor({weatherKey, eventKey, price, rivalPrice, soldOut}){
-  if(soldOut) return `You sold out on a ${weatherKey} day. Rival was ${money(rivalPrice)} — demand stayed high.`;
-  return `Day conditions: ${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}. Your price was ${money(price)}.`;
+function dailyFixedCost(difficulty, trafficKey){
+  const base = (difficulty === "competitive") ? 22 : (difficulty === "guided" ? 10 : 16);
+  const trafficMult = (trafficKey === "high") ? 1.15 : (trafficKey === "low" ? 0.90 : 1.0);
+  return +(base * trafficMult).toFixed(2);
 }
 
 /* Math audit: guarantees everything is consistent */
@@ -891,7 +952,7 @@ function mathAuditDay(record, cogsPerCup){
   const cost2    = +(record.cupsMade * cogsPerCup).toFixed(2);
   const waste2   = Math.max(0, record.cupsMade - record.cupsSold);
   const wasteCost2 = +(waste2 * cogsPerCup).toFixed(2);
-  const net2     = +(revenue2 - cost2 - record.marketing).toFixed(2);
+  const net2     = +(revenue2 - cost2 - record.marketing - record.fixedCost - record.spoilagePenalty).toFixed(2);
 
   const ok =
     revenue2 === record.revenue &&
@@ -901,6 +962,18 @@ function mathAuditDay(record, cogsPerCup){
     net2 === record.netProfit;
 
   return { ok, expected: { revenue2, cost2, waste2, wasteCost2, net2 } };
+}
+
+function lessonFor({profit, wasteCost, missedSales, fixedCost, reputationAfter}){
+  if(profit < 0) return `You lost money today. Fixed costs were ${money(fixedCost)}. Adjust price/cups to beat overhead.`;
+  if(reputationAfter < 0.40) return "Your reputation dropped. Selling out too much, wasting a lot, or poor quality can reduce future demand.";
+  if(wasteCost >= 8) return `High waste cost (${money(wasteCost)}). Try making fewer cups or raising price slightly.`;
+  if(missedSales >= 12) return `You sold out and missed about ${missedSales} sales. Make more cups or raise price.`;
+  return "Strong day. You matched price + inventory to demand and protected reputation.";
+}
+function narrativeFor({weatherKey, eventKey, price, rivalPrice, soldOut, repMult}){
+  if(soldOut) return `Sold out on a ${weatherKey} day. Rival was ${money(rivalPrice)}. Reputation effect: ×${repMult.toFixed(2)} demand.`;
+  return `Conditions: ${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}. Your price was ${money(price)}. Reputation effect: ×${repMult.toFixed(2)} demand.`;
 }
 
 function freshState(){
@@ -917,15 +990,20 @@ function freshState(){
     difficulty:"standard",
     startingCash:100,
     cogsPerCup:0.50,
+    costMode:"simple",
     scenarioTraffic:"med",
     scenarioMix:"balanced",
+    teacherPin:"1111",
+
     // run
     day:1,
     cash:100,
+    reputation: 0.50, // 0..1
     todays:null,
     history:[]
   };
 }
+
 let state = loadState() ?? freshState();
 
 function saveState(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
@@ -935,8 +1013,16 @@ function loadState(){
 }
 function clearState(){
   localStorage.removeItem(STORE_KEY);
+  sessionStorage.removeItem(SESSION_TEACHER_AUTH);
   state = freshState();
   render();
+}
+function isTeacherAuthed(){
+  return sessionStorage.getItem(SESSION_TEACHER_AUTH) === "1";
+}
+function setTeacherAuthed(on){
+  if(on) sessionStorage.setItem(SESSION_TEACHER_AUTH, "1");
+  else sessionStorage.removeItem(SESSION_TEACHER_AUTH);
 }
 
 function applyRoleTheme(){
@@ -955,6 +1041,7 @@ function show(view){
 function setHeader(){
   $("cashPill").textContent = money(state.cash);
   $("dayPill").textContent = (state.view === "start") ? "—" : `${Math.min(state.day, state.daysTotal)} / ${state.daysTotal}`;
+  $("repPill").textContent = `${Math.round(clamp(state.reputation ?? 0.5,0,1) * 100)}/100`;
   $("explainPill").textContent = (state.explainMode === "on") ? "On" : "Off";
   $("roleBadge").textContent = (state.userRole==="teacher") ? "TEACHER" : "STUDENT";
 }
@@ -965,17 +1052,15 @@ function canStudentOpenSettings(){
 }
 
 function enforceRoleUI(){
-  // Teacher button only in teacher mode
   $("btnTeacher").classList.toggle("hide", state.userRole !== "teacher");
 
-  // Settings button hides if locked and student
   $("btnToggleSettings").classList.toggle("hide", !canStudentOpenSettings());
 
-  // Settings title shifts for teacher
   $("settingsTitle").textContent = (state.userRole==="teacher") ? "Class Controls" : "Settings";
 
-  // Lock control visible only in teacher mode
+  // teacher-only fields
   $("lockWrap").classList.toggle("hide", state.userRole !== "teacher");
+  $("pinWrap").classList.toggle("hide", state.userRole !== "teacher");
 }
 
 function renderHistory(){
@@ -1008,6 +1093,51 @@ function newDayContext(){
   saveState();
 }
 
+/* PIN modal */
+let pendingTeacherAction = null;
+
+function openPinModal(onSuccess){
+  pendingTeacherAction = onSuccess;
+  $("pinInput").value = "";
+  $("pinErr").style.display = "none";
+  $("pinModalBack").style.display = "grid";
+  setTimeout(()=> $("pinInput").focus(), 50);
+}
+function closePinModal(){
+  $("pinModalBack").style.display = "none";
+  pendingTeacherAction = null;
+}
+function submitPin(){
+  const pin = ($("pinInput").value || "").trim();
+  const expected = String(state.teacherPin || "1111").padStart(4,"0");
+
+  if(!/^\d{4}$/.test(pin)){
+    $("pinErr").textContent = "PIN must be 4 digits.";
+    $("pinErr").style.display = "block";
+    return;
+  }
+  if(pin !== expected){
+    $("pinErr").textContent = "Incorrect PIN.";
+    $("pinErr").style.display = "block";
+    return;
+  }
+
+  const remember = $("pinRemember").value === "yes";
+  setTeacherAuthed(remember);
+
+  closePinModal();
+  if(typeof pendingTeacherAction === "function") pendingTeacherAction();
+}
+
+function requestTeacherMode(after){
+  // if already authed this tab, allow immediately
+  if(isTeacherAuthed()){
+    after();
+    return;
+  }
+  openPinModal(after);
+}
+
 function syncInputs(){
   $("cupsVal").textContent = `${$("cups").value}`;
   $("priceVal").textContent = money(parseFloat($("price").value));
@@ -1015,16 +1145,24 @@ function syncInputs(){
 
   const cups = parseInt($("cups").value,10);
   const mkt = parseInt($("mkt").value,10);
-  const cogs = Number(state.cogsPerCup ?? 0.50);
-  const upfront = (cups * cogs) + mkt;
+
+  // cost per cup (may include quality multiplier)
+  const baseCogs = Number(state.cogsPerCup ?? 0.50);
+  const qualityKey = $("quality") ? $("quality").value : "standard";
+  const qMult = (state.costMode === "advanced") ? (QUALITY[qualityKey]?.costMult ?? 1.0) : 1.0;
+  const cogs = +(baseCogs * qMult).toFixed(2);
+
+  const fixed = dailyFixedCost(state.difficulty, state.scenarioTraffic);
+  const upfront = +(cups * cogs + mkt + fixed).toFixed(2);
 
   $("cogsTag").textContent = money(cogs);
+  $("fixedTag").textContent = money(fixed);
   $("upfrontSpendVal").textContent = money(upfront);
 
   if(state.explainMode === "on"){
     $("explainTips").classList.remove("hide");
     $("explainTips").textContent =
-      "Teaching tip: Your up-front spend happens before selling. Profit depends on demand, price, and waste.";
+      "Up-front spend happens BEFORE selling (COGS + marketing + fixed cost). Profit depends on demand, price, waste, and reputation.";
   } else {
     $("explainTips").classList.add("hide");
   }
@@ -1043,14 +1181,17 @@ function renderStart(){
   $("difficulty").value = state.difficulty || "standard";
   $("startingCash").value = String(state.startingCash || 100);
   $("cogsPerCup").value = String(state.cogsPerCup ?? 0.50);
+  $("costMode").value = state.costMode || "simple";
   $("scenarioTraffic").value = state.scenarioTraffic || "med";
   $("scenarioMix").value = state.scenarioMix || "balanced";
 
   $("userRole").value = state.userRole || "student";
   $("userRole2").value = state.userRole || "student";
   $("lockStudentSettings").value = state.lockStudentSettings ? "yes" : "no";
+  $("teacherPin").value = String(state.teacherPin || "1111");
 
   maybeShowResume();
+  enforceRoleUI();
 }
 
 function renderDay(){
@@ -1065,9 +1206,13 @@ function renderDay(){
   $("trafficPill").textContent = TRAFFIC[state.scenarioTraffic].label;
   $("mixPill").textContent = MIX[state.scenarioMix].label;
 
+  // show/hide quality choice
+  $("qualityWrap").classList.toggle("hide", state.costMode !== "advanced");
+
   $("cups").value = 80;
   $("price").value = 2.00;
   $("mkt").value = 0;
+  if($("quality")) $("quality").value = "standard";
 
   $("sellingBox").classList.add("hide");
   $("dayHint").classList.add("hide");
@@ -1081,6 +1226,8 @@ function computeTotals(){
   const totalRevenue = state.history.reduce((s,h)=>s+h.revenue,0);
   const totalCOGS = state.history.reduce((s,h)=>s+h.cost,0);
   const totalMkt = state.history.reduce((s,h)=>s+h.marketing,0);
+  const totalFixed = state.history.reduce((s,h)=>s+h.fixedCost,0);
+  const totalSpoil = state.history.reduce((s,h)=>s+h.spoilagePenalty,0);
   const totalProfit = state.history.reduce((s,h)=>s+h.netProfit,0);
   const totalMade = state.history.reduce((s,h)=>s+h.cupsMade,0);
   const totalSold = state.history.reduce((s,h)=>s+h.cupsSold,0);
@@ -1095,7 +1242,7 @@ function computeTotals(){
 
   const mathOK = state.history.every(h => h.mathOk !== false);
 
-  return { totalRevenue,totalCOGS,totalMkt,totalProfit,totalMade,totalSold,totalWaste,missed,gm,pm,best,worst,mathOK };
+  return { totalRevenue,totalCOGS,totalMkt,totalFixed,totalSpoil,totalProfit,totalMade,totalSold,totalWaste,missed,gm,pm,best,worst,mathOK };
 }
 
 function fillSummary(){
@@ -1109,6 +1256,8 @@ function fillSummary(){
     ["Total Revenue", money(t.totalRevenue)],
     ["Total COGS", money(t.totalCOGS)],
     ["Total Marketing", money(t.totalMkt)],
+    ["Total Fixed Costs", money(t.totalFixed)],
+    ["Total Spoilage Penalty", money(t.totalSpoil)],
     ["Total Profit", `<span class="${t.totalProfit>=0?'good':'bad'}">${money(t.totalProfit)}</span>`],
     ["Gross Margin", pct(t.gm)],
     ["Profit Margin", pct(t.pm)],
@@ -1142,8 +1291,9 @@ function fillReflection(){
   if(state.history.length){
     const best = state.history.reduce((a,b)=> b.netProfit>a.netProfit?b:a, state.history[0]);
     const worst = state.history.reduce((a,b)=> b.netProfit<a.netProfit?b:a, state.history[0]);
-    if(!$("q1").value) $("q1").value = `My most profitable day was Day ${best.day}. I think it worked because my price and cups matched demand.`;
-    if(!$("q2").value) $("q2").value = `One mistake I made was on Day ${worst.day}. Next time I will adjust cups/price/marketing based on demand.`;
+    if(!$("q1").value) $("q1").value = `My most profitable day was Day ${best.day}. I matched my price and cups to demand and protected reputation.`;
+    if(!$("q2").value) $("q2").value = `On Day ${worst.day}, I wasted cups or sold out. Next time I will adjust cups/price and watch fixed costs.`;
+    if(!$("q3").value) $("q3").value = `Revenue is money collected. Profit is money left after costs like COGS, marketing, fixed costs, and spoilage.`;
   }
 }
 
@@ -1163,15 +1313,18 @@ function renderResult(last){
   list.innerHTML = "";
   const rows = [
     ["Math check", last.mathOk ? `<span class="good">✅ Verified</span>` : `<span class="bad">❌ Check failed</span>`],
-    ["Customers (demand)", String(last.demand)],
+    ["Demand (raw → rep)", `${last.demandRaw} → ${last.demandEff}`],
+    ["Reputation (after)", `${Math.round(last.reputationAfter*100)}/100`],
+    ["Customers served", String(last.cupsSold)],
     ["Cups made", String(last.cupsMade)],
-    ["Cups sold", String(last.cupsSold)],
     ["Missed sales", String(last.missedSales)],
     ["Cups wasted", String(last.waste)],
     ["Waste cost", money(last.wasteCost)],
     ["Revenue", money(last.revenue)],
     ["COGS", money(last.cost)],
     ["Marketing", money(last.marketing)],
+    ["Fixed cost", money(last.fixedCost)],
+    ["Spoilage penalty", money(last.spoilagePenalty)],
     ["Net profit", `<span class="${last.netProfit>=0?'good':'bad'}">${money(last.netProfit)}</span>`],
     ["Gross margin", pct(grossMargin)],
     ["Profit margin", pct(profitMargin)],
@@ -1213,6 +1366,7 @@ function resetDayInputs(){
   $("cups").value = 80;
   $("price").value = 2.00;
   $("mkt").value = 0;
+  if($("quality")) $("quality").value = "standard";
   syncInputs();
 }
 
@@ -1222,7 +1376,6 @@ async function sellDay(){
   const cupsMade = parseInt($("cups").value, 10);
   const price = parseFloat($("price").value);
   const marketing = parseInt($("mkt").value, 10);
-  const cogsPerCup = Number(state.cogsPerCup ?? 0.50);
 
   if(!state.todays) newDayContext();
   const { weather, event, rivalPrice } = state.todays;
@@ -1230,7 +1383,12 @@ async function sellDay(){
   const trafficMult = TRAFFIC[state.scenarioTraffic].mult;
   const elasticity = MIX[state.scenarioMix].elasticity;
 
-  const demand = dailyDemand({
+  const baseCogs = Number(state.cogsPerCup ?? 0.50);
+  const qualityKey = ($("quality") && state.costMode === "advanced") ? $("quality").value : "standard";
+  const q = QUALITY[qualityKey] || QUALITY.standard;
+  const cogsPerCup = +(baseCogs * (state.costMode === "advanced" ? q.costMult : 1.0)).toFixed(2);
+
+  const demandRaw = dailyDemand({
     weatherMult: weather.mult,
     eventMult: event.mult,
     price,
@@ -1241,20 +1399,29 @@ async function sellDay(){
     elasticity
   });
 
-  const cupsSold = Math.min(cupsMade, demand);
-  const missedSales = Math.max(0, demand - cupsSold);
+  // Reputation affects demand strongly
+  const rep = clamp(state.reputation ?? 0.50, 0, 1);
+  const repMult = 0.75 + rep * 0.60; // 0.75..1.35
+  const demandEff = Math.max(0, Math.round(demandRaw * repMult));
+
+  const cupsSold = Math.min(cupsMade, demandEff);
+  const missedSales = Math.max(0, demandEff - cupsSold);
   const waste = Math.max(0, cupsMade - cupsSold);
 
   const revenue = +(cupsSold * price).toFixed(2);
   const cost = +(cupsMade * cogsPerCup).toFixed(2);
   const wasteCost = +(waste * cogsPerCup).toFixed(2);
-  const upfrontSpend = +(cost + marketing).toFixed(2);
+
+  const fixedCost = dailyFixedCost(state.difficulty, state.scenarioTraffic);
+  const spoilagePenalty = +(waste * cogsPerCup * 0.35).toFixed(2); // extra sting for waste
+
+  const upfrontSpend = +(cost + marketing + fixedCost).toFixed(2);
 
   // Need cash up-front
   if(upfrontSpend > state.cash){
     $("dayHint").classList.remove("hide");
     $("dayHint").textContent =
-      `You need ${money(upfrontSpend)} to make ${cupsMade} cups + marketing, but you only have ${money(state.cash)}. Lower cups or marketing.`;
+      `You need ${money(upfrontSpend)} (COGS + marketing + fixed cost), but you only have ${money(state.cash)}. Lower cups or marketing.`;
     return;
   }
 
@@ -1272,13 +1439,13 @@ async function sellDay(){
   $("kCupsLeft").textContent = String(cupsMade);
   $("kRevenue").textContent = "$0";
 
-  const durationMs = 8200;
+  const durationMs = 8000;
   const steps = 28;
   const stepMs = Math.round(durationMs/steps);
 
   for(let i=1;i<=steps;i++){
     const t = i/steps;
-    const shownCustomers = Math.round(demand * t);
+    const shownCustomers = Math.round(demandEff * t);
     const shownSold = Math.min(cupsMade, Math.round(cupsSold * t));
     const shownLeft = Math.max(0, cupsMade - shownSold);
     const shownRevenue = +(shownSold * price).toFixed(2);
@@ -1288,7 +1455,7 @@ async function sellDay(){
     $("kRevenue").textContent = money(shownRevenue);
 
     if(shownLeft === 0 && cupsMade > 0){
-      $("sellingMsg").textContent = "Sold out! You had more customers than cups.";
+      $("sellingMsg").textContent = "Sold out! Some customers left for the rival.";
       await sleep(650);
       break;
     }
@@ -1298,32 +1465,62 @@ async function sellDay(){
   $("btnSell").disabled = false;
   $("sellingBox").classList.add("hide");
 
-  // Add revenue after selling
-  state.cash = +(state.cash + revenue).toFixed(2);
+  // Add revenue after selling; subtract spoilage penalty
+  state.cash = +(state.cash + revenue - spoilagePenalty).toFixed(2);
 
-  const netProfit = +(revenue - upfrontSpend).toFixed(2);
+  const netProfit = +(revenue - upfrontSpend - spoilagePenalty).toFixed(2);
+
+  // Reputation update
+  const soldOut = (cupsSold === cupsMade && demandEff > cupsMade && cupsMade > 0);
+  const wasteRate = cupsMade ? (waste / cupsMade) : 0;
+
+  let repDelta = 0;
+
+  // quality nudges rep (advanced mode only)
+  if(state.costMode === "advanced") repDelta += q.repDelta;
+
+  // pricing: too high hurts; fair helps slightly
+  if(price > 2.50) repDelta -= 0.05;
+  else if(price >= 1.25 && price <= 2.25) repDelta += 0.02;
+
+  // stockouts hurt future trust
+  if(soldOut) repDelta -= 0.06;
+
+  // big waste looks sloppy
+  if(wasteRate >= 0.25) repDelta -= 0.05;
+  else if(wasteRate <= 0.10 && !soldOut) repDelta += 0.02;
+
+  // heavy marketing cannot fully replace trust
+  if(marketing >= 10) repDelta += 0.01;
+
+  state.reputation = clamp((state.reputation ?? 0.50) + repDelta, 0, 1);
 
   bailoutIfNeeded();
 
-  const soldOut = (cupsSold === cupsMade && demand > cupsMade && cupsMade > 0);
-  const narrative = narrativeFor({weatherKey: weather.key, eventKey: event.key, price, rivalPrice, soldOut});
-  const lesson = lessonFor({profit: netProfit, wasteCost, missedSales});
+  const narrative = narrativeFor({weatherKey: weather.key, eventKey: event.key, price, rivalPrice, soldOut, repMult});
+  const lesson = lessonFor({profit: netProfit, wasteCost, missedSales, fixedCost, reputationAfter: state.reputation});
 
   const record = {
     day: state.day,
     weather, event, rivalPrice,
     cupsMade, price, marketing,
-    demand, cupsSold, missedSales,
+    quality: qualityKey,
+    demandRaw, demandEff,
+    cupsSold, missedSales,
     waste, wasteCost,
     revenue,
     cost,
+    fixedCost,
+    spoilagePenalty,
     netProfit,
     cashAfter: state.cash,
+    reputationAfter: state.reputation,
+    repDelta,
     narrative,
     lesson
   };
 
-  // --- Math audit (never let bad math slip through) ---
+  // --- Math audit ---
   const audit = mathAuditDay(record, cogsPerCup);
   record.mathOk = audit.ok;
   record.mathExpected = audit.expected;
@@ -1351,7 +1548,7 @@ async function sellDay(){
   if(state.day > state.daysTotal){
     const totalProfit = +(state.cash - state.startingCash).toFixed(2);
     $("resultNarrative").textContent = (totalProfit >= 0)
-      ? `Finish strong. You grew ${money(state.startingCash)} into ${money(state.cash)}. What would you reinvest in next?`
+      ? `Finish strong. You grew ${money(state.startingCash)} into ${money(state.cash)}. What would you reinvest in?`
       : `You finished at ${money(state.cash)}. What one change would make you profitable next time?`;
   }
 }
@@ -1375,13 +1572,16 @@ function playAgain(){
     difficulty: state.difficulty,
     startingCash: state.startingCash,
     cogsPerCup: state.cogsPerCup,
+    costMode: state.costMode,
     scenarioTraffic: state.scenarioTraffic,
     scenarioMix: state.scenarioMix,
+    teacherPin: state.teacherPin,
   };
   state = freshState();
   Object.assign(state, keepSettings);
   state.day = 1;
   state.cash = state.startingCash;
+  state.reputation = 0.50;
   state.history = [];
   state.todays = null;
   saveState();
@@ -1394,6 +1594,7 @@ function playAgain(){
 function restartRun(){
   state.day = 1;
   state.cash = state.startingCash;
+  state.reputation = 0.50;
   state.history = [];
   state.todays = null;
   saveState();
@@ -1429,69 +1630,100 @@ function resumeGame(){
 }
 
 function applySettings(restartRunFlag){
-  state.userRole = $("userRole").value;
-  state.explainMode = $("explainMode").value;
+  const wantedRole = $("userRole").value;
 
-  state.playerName = ($("playerName").value || "").trim();
-  state.classCode = ($("classCode").value || "").trim();
-  state.teacherName = ($("teacherName").value || "").trim();
+  // If trying to switch to teacher, require PIN
+  const doApply = () => {
+    state.userRole = wantedRole;
+    state.explainMode = $("explainMode").value;
 
-  state.lockStudentSettings = ($("lockStudentSettings").value === "yes");
+    state.playerName = ($("playerName").value || "").trim();
+    state.classCode = ($("classCode").value || "").trim();
+    state.teacherName = ($("teacherName").value || "").trim();
 
-  state.daysTotal = parseInt($("gameLen").value, 10);
-  state.difficulty = $("difficulty").value;
-  state.startingCash = parseFloat($("startingCash").value);
-  state.cogsPerCup = parseFloat($("cogsPerCup").value);
-  state.scenarioTraffic = $("scenarioTraffic").value;
-  state.scenarioMix = $("scenarioMix").value;
+    state.lockStudentSettings = ($("lockStudentSettings").value === "yes");
 
-  if(restartRunFlag){
-    state.day = 1;
-    state.cash = state.startingCash;
-    state.history = [];
-    state.todays = null;
-    saveState();
-    show("day");
-    renderDay();
+    state.daysTotal = parseInt($("gameLen").value, 10);
+    state.difficulty = $("difficulty").value;
+    state.startingCash = parseFloat($("startingCash").value);
+    state.cogsPerCup = parseFloat($("cogsPerCup").value);
+    state.costMode = $("costMode").value;
+    state.scenarioTraffic = $("scenarioTraffic").value;
+    state.scenarioMix = $("scenarioMix").value;
+
+    // Teacher-only: set PIN if in teacher role
+    if(state.userRole === "teacher"){
+      const pin = ($("teacherPin").value || "").trim();
+      if(/^\d{4}$/.test(pin)) state.teacherPin = pin;
+      else state.teacherPin = String(state.teacherPin || "1111").padStart(4,"0");
+    }
+
+    if(restartRunFlag){
+      state.day = 1;
+      state.cash = state.startingCash;
+      state.reputation = 0.50;
+      state.history = [];
+      state.todays = null;
+      saveState();
+      show("day");
+      renderDay();
+    } else {
+      saveState();
+    }
+
+    closeSettings();
+    render();
+  };
+
+  if(wantedRole === "teacher" && state.userRole !== "teacher"){
+    requestTeacherMode(doApply);
   } else {
-    saveState();
+    doApply();
   }
-
-  closeSettings();
-  render();
 }
 
 function startGameFromHome(){
-  state.userRole = $("userRole2").value;
+  const wantedRole = $("userRole2").value;
 
-  state.playerName = ($("playerName2").value || "").trim() || "Student";
-  state.classCode = ($("classCode2").value || "").trim();
-  state.teacherName = ($("teacherName2").value || "").trim();
+  const doStart = () => {
+    state.userRole = wantedRole;
 
-  const preset = $("preset").value;
-  state.difficulty = preset;
-  state.daysTotal = 7;
-  state.explainMode = "on";
-  state.startingCash = (preset === "guided") ? 150 : 100;
-  state.cogsPerCup = 0.50;
-  state.scenarioTraffic = "med";
-  state.scenarioMix = "balanced";
+    state.playerName = ($("playerName2").value || "").trim() || "Student";
+    state.classCode = ($("classCode2").value || "").trim();
+    state.teacherName = ($("teacherName2").value || "").trim();
 
-  // If they started in Teacher Mode, default lock = yes
-  if(state.userRole === "teacher" && state.lockStudentSettings == null){
-    state.lockStudentSettings = true;
+    const preset = $("preset").value;
+    state.difficulty = preset;
+    state.daysTotal = 7;
+    state.explainMode = "on";
+    state.startingCash = (preset === "guided") ? 150 : (preset === "competitive" ? 100 : 100);
+    state.cogsPerCup = 0.50;
+    state.costMode = "simple";
+    state.scenarioTraffic = "med";
+    state.scenarioMix = "balanced";
+
+    if(state.userRole === "teacher"){
+      // common teacher default
+      state.lockStudentSettings = true;
+    }
+
+    state.day = 1;
+    state.cash = state.startingCash;
+    state.reputation = 0.50;
+    state.history = [];
+    state.todays = null;
+
+    saveState();
+    show("day");
+    renderDay();
+    render();
+  };
+
+  if(wantedRole === "teacher"){
+    requestTeacherMode(doStart);
+  } else {
+    doStart();
   }
-
-  // reset run
-  state.day = 1;
-  state.cash = state.startingCash;
-  state.history = [];
-  state.todays = null;
-
-  saveState();
-  show("day");
-  renderDay();
-  render();
 }
 
 function toCSV(){
@@ -1499,12 +1731,15 @@ function toCSV(){
     "userRole","lockStudentSettings",
     "studentName","classCode","teacherName",
     "daysTotal","difficulty","explainMode",
-    "startingCash","cogsPerCup",
+    "startingCash","cogsPerCup","costMode",
     "scenarioTraffic","scenarioMix",
     "day","weather","event","rivalPrice",
+    "quality","demandRaw","demandEff",
     "cupsMade","price","marketing",
-    "demand","cupsSold","missedSales","waste","wasteCost",
-    "revenue","cogsCost","netProfit","cashAfter","mathOk"
+    "cupsSold","missedSales","waste","wasteCost",
+    "reputationAfter","repDelta",
+    "revenue","cogsCost","fixedCost","spoilagePenalty",
+    "netProfit","cashAfter","mathOk"
   ];
   const esc = (v) => {
     const s = String(v ?? "");
@@ -1518,12 +1753,15 @@ function toCSV(){
       state.userRole, state.lockStudentSettings ? "yes" : "no",
       state.playerName, state.classCode, state.teacherName,
       state.daysTotal, state.difficulty, state.explainMode,
-      state.startingCash, state.cogsPerCup,
+      state.startingCash, state.cogsPerCup, state.costMode,
       state.scenarioTraffic, state.scenarioMix,
       h.day, h.weather.key, h.event.key, h.rivalPrice.toFixed(2),
+      h.quality ?? "standard", h.demandRaw, h.demandEff,
       h.cupsMade, h.price.toFixed(2), h.marketing,
-      h.demand, h.cupsSold, h.missedSales, h.waste, h.wasteCost.toFixed(2),
-      h.revenue.toFixed(2), h.cost.toFixed(2), h.netProfit.toFixed(2), h.cashAfter.toFixed(2),
+      h.cupsSold, h.missedSales, h.waste, h.wasteCost.toFixed(2),
+      (h.reputationAfter ?? 0.5).toFixed(2), (h.repDelta ?? 0).toFixed(2),
+      h.revenue.toFixed(2), h.cost.toFixed(2), h.fixedCost.toFixed(2), h.spoilagePenalty.toFixed(2),
+      h.netProfit.toFixed(2), h.cashAfter.toFixed(2),
       h.mathOk ? "true" : "false"
     ].map(esc);
     lines.push(row.join(","));
@@ -1562,7 +1800,7 @@ function renderTeacherDashboard(){
 
   if(state.history.length === 0){
     box.innerHTML = `<div class="li"><span>No data yet</span><b>Play at least 1 day</b></div>`;
-    insights.textContent = "Tip: Have students play Day 1, then pause and discuss why demand changed (weather/event/price).";
+    insights.textContent = "Tip: Pause after Day 1 and ask students to explain their profit using costs + demand + reputation.";
     return;
   }
 
@@ -1570,18 +1808,16 @@ function renderTeacherDashboard(){
   const wasteRate = t.totalMade ? (t.totalWaste / t.totalMade) : 0;
   const selloutDays = state.history.filter(h=>h.missedSales>0 && h.waste===0).length;
   const wasteDays = state.history.filter(h=>h.waste>0).length;
-
   const avgProfit = t.totalProfit / state.history.length;
 
   const rows = [
     ["Math Verified", t.mathOK ? `<span class="good">✅ All days verified</span>` : `<span class="bad">❌ Needs review</span>`],
     ["Total Profit", `<span class="${t.totalProfit>=0?'good':'bad'}">${money(t.totalProfit)}</span>`],
     ["Avg Profit / Day", `<span class="${avgProfit>=0?'good':'bad'}">${money(avgProfit)}</span>`],
-    ["Gross Margin", pct(t.gm)],
-    ["Profit Margin", pct(t.pm)],
     ["Waste Rate", pct(wasteRate)],
     ["Sell-out Days", `${selloutDays} / ${state.history.length}`],
     ["Waste Days", `${wasteDays} / ${state.history.length}`],
+    ["Total Fixed Costs", money(t.totalFixed)],
     ["Best Day", `Day ${t.best.day} (${money(t.best.netProfit)})`],
     ["Worst Day", `Day ${t.worst.day} (${money(t.worst.netProfit)})`],
   ];
@@ -1592,25 +1828,27 @@ function renderTeacherDashboard(){
     box.appendChild(div);
   });
 
-  // Insight text (simple but “teacher-feel”)
-  const mainIssue = (wasteRate >= 0.20) ? "overproduction (waste)" : (selloutDays >= Math.ceil(state.history.length/2) ? "selling out (missed sales)" : "balance");
-  if(mainIssue === "overproduction (waste)"){
-    insights.textContent = "Insight: Students are overproducing. Coach them to reduce cups or raise price slightly and compare profit vs waste the next day.";
-  } else if(mainIssue === "selling out (missed sales)"){
-    insights.textContent = "Insight: Students are selling out often. Coach them to increase cups or raise price and measure how profit margin changes.";
+  if(wasteRate >= 0.20){
+    insights.textContent = "Insight: Students are overproducing. Coach them to reduce cups or raise price slightly and compare profit vs waste tomorrow.";
+  } else if(selloutDays >= Math.ceil(state.history.length/2)){
+    insights.textContent = "Insight: Students are selling out often. Coach them to increase cups or raise price and watch how reputation changes demand.";
   } else {
-    insights.textContent = "Insight: Strong balance. Ask students to justify their decisions using revenue, COGS, and margin—not just profit.";
+    insights.textContent = "Insight: Strong balance. Ask students to justify decisions using overhead, reputation, and margin—not just profit.";
   }
 }
 
 function openTeacher(){
-  if(state.userRole !== "teacher") return;
-  show("teacher");
-  renderTeacherDashboard();
-  setHeader();
+  requestTeacherMode(() => {
+    state.userRole = "teacher";
+    saveState();
+    show("teacher");
+    renderTeacherDashboard();
+    setHeader();
+    enforceRoleUI();
+    applyRoleTheme();
+  });
 }
 
-/* Init + render */
 function render(){
   applyRoleTheme();
   setHeader();
@@ -1641,6 +1879,7 @@ function render(){
 $("cups").addEventListener("input", syncInputs);
 $("price").addEventListener("input", syncInputs);
 $("mkt").addEventListener("input", syncInputs);
+$("quality")?.addEventListener("change", syncInputs);
 
 $("btnStart").addEventListener("click", startGameFromHome);
 $("btnResume").addEventListener("click", resumeGame);
@@ -1662,7 +1901,6 @@ $("btnTeacher").addEventListener("click", openTeacher);
 $("btnTeacherCSV").addEventListener("click", downloadCSV);
 $("btnTeacherPrint").addEventListener("click", printReflection);
 $("btnBackToGame").addEventListener("click", () => {
-  // go back to whatever makes sense
   if(state.history.length) show("result"); else show("day");
   render();
 });
@@ -1679,6 +1917,12 @@ $("btnSaveSettings").addEventListener("click", () => applySettings(false));
 $("tabLearn").addEventListener("click", ()=>setHomeTab("learn"));
 $("tabPlay").addEventListener("click", ()=>setHomeTab("play"));
 $("tabTeach").addEventListener("click", ()=>setHomeTab("teach"));
+
+/* PIN modal events */
+$("btnPinSubmit").addEventListener("click", submitPin);
+$("btnPinCancel").addEventListener("click", closePinModal);
+$("btnPinClose").addEventListener("click", closePinModal);
+$("pinInput").addEventListener("keydown", (e)=>{ if(e.key === "Enter") submitPin(); });
 
 /* On load */
 (function init(){
@@ -1700,7 +1944,13 @@ $("tabTeach").addEventListener("click", ()=>setHomeTab("teach"));
   const saved = loadState();
   if(saved) state = saved;
 
+  // ensure defaults exist
+  if(!state.teacherPin) state.teacherPin = "1111";
+  if(state.reputation == null) state.reputation = 0.50;
+  if(!state.costMode) state.costMode = "simple";
+
   if(!state.view) state.view = "start";
+
   setHomeTab("learn");
   render();
 })();
