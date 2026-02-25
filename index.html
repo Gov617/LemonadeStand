@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lemonade Class — MVP</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#0f1a33; --card2:#0c1730; --text:#e9eefc; --muted:#a9b7e6;
+      --line:rgba(255,255,255,.10); --good:#26d07c; --bad:#ff4d4d; --warn:#ffd166;
+      --btn:#2b5cff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 800px at 20% 0%, #162552 0%, var(--bg) 55%);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .wrap{max-width:980px; margin:0 auto; padding:24px}
+    .top{
+      display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .brand{display:flex; gap:10px; align-items:center}
+    .logo{
+      width:38px;height:38px;border-radius:10px;
+      background: linear-gradient(135deg, #ffdd57 0%, #ffd166 35%, #2b5cff 100%);
+      box-shadow: 0 8px 22px rgba(43,92,255,.25);
+    }
+    h1{font-size:18px; margin:0}
+    .sub{color:var(--muted); font-size:13px}
+    .grid{display:grid; grid-template-columns: 1.4fr .9fr; gap:14px}
+    @media (max-width: 860px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+    }
+    .card h2{margin:0 0 10px; font-size:16px}
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .pill{
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:13px;
+      color:var(--muted);
+      display:flex; gap:8px; align-items:center;
+      white-space:nowrap;
+    }
+    .pill b{color:var(--text); font-weight:700}
+    label{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px}
+    input[type="text"], select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.15);
+      color:var(--text);
+      outline:none;
+    }
+    input[type="range"]{width:100%}
+    .rangeRow{display:flex; gap:10px; align-items:center}
+    .rangeVal{
+      min-width:92px;
+      text-align:right;
+      color:var(--text);
+      font-weight:700;
+    }
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    button{
+      border:0; border-radius:12px; padding:12px 14px;
+      background: rgba(255,255,255,.08);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:700;
+      border:1px solid var(--line);
+      transition: transform .05s ease;
+    }
+    button.primary{background: var(--btn); border-color: rgba(43,92,255,.6)}
+    button:active{transform: scale(.98)}
+    button.danger{background: rgba(255,77,77,.15); border-color: rgba(255,77,77,.45)}
+    button.ok{background: rgba(38,208,124,.12); border-color: rgba(38,208,124,.45)}
+    .muted{color:var(--muted); font-size:13px; line-height:1.4}
+    .big{
+      font-size:34px; font-weight:900; letter-spacing:-.02em; margin:4px 0 6px;
+    }
+    .big.good{color:var(--good)}
+    .big.bad{color:var(--bad)}
+    .sep{height:1px;background:var(--line); margin:14px 0}
+    .list{display:grid; gap:8px; margin-top:8px}
+    .li{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size:13px; color:var(--muted);
+      padding:10px 10px;
+      background: rgba(0,0,0,.12);
+      border:1px solid var(--line);
+      border-radius:12px;
+    }
+    .li b{color:var(--text)}
+    .selling{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      padding:12px;
+      background: rgba(255,255,255,.06);
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px;
+      margin-top:10px;
+    }
+    .meter{display:flex; gap:10px; flex-wrap:wrap}
+    .kpi{
+      padding:10px 12px; border-radius:14px;
+      background: rgba(0,0,0,.15);
+      border:1px solid var(--line);
+      min-width:150px;
+    }
+    .kpi .k{font-size:12px;color:var(--muted)}
+    .kpi .v{font-size:18px;font-weight:900;margin-top:2px}
+    .hide{display:none !important}
+    .hint{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,209,102,.35);
+      background: rgba(255,209,102,.10);
+      color: #ffe7a7;
+      font-size:13px;
+      line-height:1.35;
+    }
+    footer{margin-top:18px; color:rgba(233,238,252,.55); font-size:12px}
+    .mini{font-size:12px;color:rgba(233,238,252,.65)}
+
+    /* Reflection sheet */
+    .sheet{
+      margin-top:12px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.12);
+    }
+    .sheet h3{margin:0 0 10px; font-size:15px}
+    .q{
+      display:grid; gap:8px;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      margin-top:10px;
+    }
+    .q b{font-size:13px}
+    .q textarea{
+      width:100%;
+      min-height:70px;
+      resize:vertical;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      padding:10px;
+      outline:none;
+      font-family: inherit;
+      font-size:13px;
+    }
+
+    /* Print styles */
+    @media print{
+      body{background:#fff; color:#000}
+      .wrap{max-width:100%; padding:0}
+      .top, #historyCard, #startView, #dayView { display:none !important; }
+      #resultView{display:block !important}
+      .card{box-shadow:none; border:1px solid #ddd; background:#fff}
+      .pill{background:#f3f3f3; border-color:#ddd; color:#111}
+      .muted{color:#222}
+      .hint{color:#111; background:#fff6d6; border-color:#e7cf7a}
+      button{display:none !important}
+      textarea{border:1px solid #bbb; background:#fff; color:#000}
+      a{color:#000; text-decoration:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Lemonade Class <span class="sub">— MVP</span></h1>
+          <div class="sub">A quick micro-business simulation (no login, no backend)</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="pill">💵 Cash: <b id="cashPill">$100.00</b></div>
+        <div class="pill">📅 Day: <b id="dayPill">—</b></div>
+        <div class="pill">🏙️ Mode: <b id="modePill">City (Sim)</b></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: Main -->
+      <div class="card">
+        <!-- START SCREEN -->
+        <div id="startView">
+          <h2>Start</h2>
+          <div class="muted">Run your stand for 5 or 7 days. Make decisions, watch sales happen, and learn what drives profit.</div>
+
+          <label>Player name</label>
+          <input id="playerName" type="text" placeholder="e.g., Marcus" maxlength="24" />
+
+          <div class="row" style="margin-top:12px">
+            <div style="flex:1">
+              <label>Game length</label>
+              <select id="gameLen">
+                <option value="5">5 days</option>
+                <option value="7" selected>7 days</option>
+              </select>
+            </div>
+            <div style="flex:1">
+              <label>Difficulty</label>
+              <select id="difficulty">
+                <option value="guided">Guided</option>
+                <option value="standard" selected>Standard</option>
+                <option value="competitive">Competitive</option>
+              </select>
+              <div class="mini" style="margin-top:6px;">
+                Guided = gentler penalties. Competitive = no “bailout”.
+              </div>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="primary" id="btnStart">Start Game</button>
+            <button id="btnResume" class="hide">Resume Saved Game</button>
+            <button class="danger hide" id="btnClear">Clear Save</button>
+          </div>
+
+          <div class="hint">
+            Teacher tip: this MVP runs entirely in the browser. For classroom leaderboards later, we’ll add a database (Supabase/Firebase).
+          </div>
+        </div>
+
+        <!-- DAY DECISION -->
+        <div id="dayView" class="hide">
+          <h2 id="dayTitle">Day</h2>
+
+          <div class="row">
+            <div class="pill">🌦️ Forecast: <b id="wxPill">—</b></div>
+            <div class="pill">🎪 City event: <b id="eventPill">—</b></div>
+            <div class="pill">🥤 Rival price: <b id="rivalPill">—</b></div>
+          </div>
+
+          <div class="sep"></div>
+
+          <label>Cups to make</label>
+          <div class="rangeRow">
+            <input id="cups" type="range" min="0" max="200" value="80" />
+            <div class="rangeVal" id="cupsVal">80</div>
+          </div>
+
+          <label>Price per cup</label>
+          <div class="rangeRow">
+            <input id="price" type="range" min="0.5" max="5" value="2.00" step="0.05" />
+            <div class="rangeVal" id="priceVal">$2.00</div>
+          </div>
+
+          <label>Marketing spend</label>
+          <div class="rangeRow">
+            <input id="mkt" type="range" min="0" max="20" value="0" step="1" />
+            <div class="rangeVal" id="mktVal">$0</div>
+          </div>
+
+          <div class="btns">
+            <button class="primary" id="btnSell">Start Selling</button>
+            <button id="btnResetDay">Reset Inputs</button>
+          </div>
+
+          <div id="sellingBox" class="selling hide">
+            <div style="min-width:240px">
+              <b>Selling…</b> <span class="muted" id="sellingMsg">Customers are arriving.</span>
+              <div class="mini" id="sellingSub">Watch what your price + inventory does.</div>
+            </div>
+            <div class="meter">
+              <div class="kpi"><div class="k">Customers</div><div class="v" id="kCustomers">0</div></div>
+              <div class="kpi"><div class="k">Cups left</div><div class="v" id="kCupsLeft">—</div></div>
+              <div class="kpi"><div class="k">Revenue</div><div class="v" id="kRevenue">$0</div></div>
+            </div>
+          </div>
+
+          <div id="dayHint" class="hint hide"></div>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="resultView" class="hide">
+          <h2 id="resultTitle">Results</h2>
+          <div id="profitBig" class="big">$0.00</div>
+          <div class="muted" id="resultNarrative">—</div>
+
+          <div class="sep"></div>
+
+          <div class="list" id="resultList"></div>
+
+          <div id="lessonBox" class="hint"></div>
+
+          <!-- NEW: Teacher-friendly exports -->
+          <div class="btns">
+            <button class="primary" id="btnNext">Next Day</button>
+            <button id="btnPlayAgain" class="hide">Play Again</button>
+            <button class="ok" id="btnCSV" title="Download a CSV of your run">Download CSV</button>
+            <button id="btnPrint" title="Print / Save as PDF reflection sheet">Print Reflection</button>
+          </div>
+
+          <!-- NEW: Reflection Sheet -->
+          <div id="reflectionSheet" class="sheet hide">
+            <h3>Reflection Sheet (Lemonade Class)</h3>
+            <div class="row" style="margin-top:6px">
+              <div class="pill">👤 Student: <b id="refName">—</b></div>
+              <div class="pill">📅 Days: <b id="refDays">—</b></div>
+              <div class="pill">💵 Final cash: <b id="refFinalCash">—</b></div>
+              <div class="pill">📈 Total profit: <b id="refTotalProfit">—</b></div>
+            </div>
+
+            <div class="q">
+              <b>1) What was your most profitable day, and why do you think it worked?</b>
+              <textarea id="q1" placeholder="Write 2–4 sentences..."></textarea>
+            </div>
+
+            <div class="q">
+              <b>2) Describe one mistake you made (price, production, marketing) and what you learned from it.</b>
+              <textarea id="q2" placeholder="Write 2–4 sentences..."></textarea>
+            </div>
+
+            <div class="q">
+              <b>3) If you played again, what strategy would you try?</b>
+              <textarea id="q3" placeholder="Write 2–4 sentences..."></textarea>
+            </div>
+
+            <div class="q">
+              <b>4) Revenue vs Profit: In your own words, what’s the difference?</b>
+              <textarea id="q4" placeholder="Write 1–3 sentences..."></textarea>
+            </div>
+
+            <div class="mini" style="margin-top:10px">
+              Teacher note: Students can print this page (or Save as PDF). Responses are not saved to a server in the MVP.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Sidebar -->
+      <div class="card" id="historyCard">
+        <h2>Scoreboard</h2>
+        <div class="muted">This is your personal run (local). Later we’ll add teacher codes + class leaderboards.</div>
+
+        <div class="sep"></div>
+
+        <div class="list" id="history"></div>
+
+        <div class="sep"></div>
+
+        <div class="muted">
+          <b>What this teaches:</b>
+          revenue vs profit, inventory waste, price sensitivity, demand shifts (weather/events), and reinvestment mindset.
+        </div>
+
+        <footer>© MVP build — “Lemonade Class” prototype. Hosted free on GitHub Pages/Vercel.</footer>
+      </div>
+    </div>
+  </div>
+
+<script>
+/** -----------------------------
+ *  Lemonade Class — MVP Engine
+ *  Single-file, no backend.
+ *  State persists via localStorage.
+ *  CSV export + printable reflection sheet included.
+ *  ----------------------------- */
+
+const $ = (id) => document.getElementById(id);
+const money = (n) => (n < 0 ? `-$${Math.abs(n).toFixed(2)}` : `$${n.toFixed(2)}`);
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+const STORE_KEY = "lemonade_class_mvp_v1";
+
+const WEATHER = [
+  { key:"Hot",   icon:"☀️", mult:1.35 },
+  { key:"Mild",  icon:"🌤️", mult:1.00 },
+  { key:"Rainy", icon:"🌧️", mult:0.60 },
+];
+
+const EVENTS = [
+  { key:"None", icon:"—", mult:1.00, chance:0.50 },
+  { key:"Street Fair", icon:"🎪", mult:1.40, chance:0.18 },
+  { key:"Construction", icon:"🚧", mult:0.75, chance:0.16 },
+  { key:"Sports Game Nearby", icon:"🏀", mult:1.20, chance:0.16 },
+];
+
+function pickWeighted(items){
+  const r = Math.random();
+  let s = 0;
+  for(const it of items){
+    s += it.chance;
+    if(r <= s) return it;
+  }
+  return items[items.length-1];
+}
+
+function randBetween(a,b){ return a + Math.random()*(b-a); }
+
+function priceFactor(price, difficulty){
+  const sweet = 2.00;
+  const delta = price - sweet;
+  const harsh = (difficulty === "competitive") ? 1.15 : (difficulty === "guided" ? 0.85 : 1.0);
+
+  if(delta > 0){
+    const f = 1 - (0.18 * harsh) * delta;
+    return clamp(f, 0.20, 1.00);
+  } else {
+    const f = 1 + (0.10 * (1/harsh)) * Math.abs(delta);
+    return clamp(f, 0.60, 1.40);
+  }
+}
+
+function marketingFactor(mkt){
+  return 1 + 0.015 * clamp(mkt, 0, 20);
+}
+
+function competitorFactor(price, rivalPrice, difficulty){
+  const d = price - rivalPrice;
+  const harsh = (difficulty === "competitive") ? 1.1 : (difficulty === "guided" ? 0.9 : 1.0);
+
+  if(d > 0){
+    const f = 1 - (0.22 * harsh) * d;
+    return clamp(f, 0.35, 1.00);
+  } else {
+    const f = 1 + 0.10 * Math.abs(d);
+    return clamp(f, 0.70, 1.25);
+  }
+}
+
+function dailyDemand({weatherMult, eventMult, price, mkt, rivalPrice, difficulty}){
+  const base = 60;
+  const pf = priceFactor(price, difficulty);
+  const mf = marketingFactor(mkt);
+  const cf = competitorFactor(price, rivalPrice, difficulty);
+  const noise = randBetween(0.85, 1.15);
+  return Math.max(0, Math.round(base * weatherMult * eventMult * pf * mf * cf * noise));
+}
+
+function lessonFor({cupsMade, cupsSold, price, profit, demand}){
+  const waste = cupsMade - cupsSold;
+  if(cupsSold === 0 && cupsMade > 0) return "Your price + conditions crushed demand. In business, the market can say “no.”";
+  if(waste >= Math.max(10, Math.round(cupsMade*0.25))) return "You over-produced. Unsold inventory still costs money — waste hurts profit.";
+  if(cupsSold === cupsMade && demand > cupsMade) return "You sold out. Great demand — next time produce more to capture missed sales.";
+  if(profit < 0) return "You lost money today. That’s okay — adjust price, production, or marketing and try to recover.";
+  if(price > 2.75) return "Higher prices can raise margin, but demand can fall fast. Find the sweet spot for the day.";
+  if(price < 1.25) return "Low prices can boost demand, but you may give away profit. Margin matters.";
+  return "Nice balance. The best strategy matches price + inventory to real demand.";
+}
+
+function narrativeFor({weatherKey, eventKey, rivalPrice, price, cupsSold, cupsMade}){
+  const waste = cupsMade - cupsSold;
+  if(cupsSold === cupsMade && cupsMade > 0) return `You sold out on a ${weatherKey} day. Rival was at ${money(rivalPrice)} — your pricing kept demand strong.`;
+  if(waste > 0) return `Demand was softer than expected (${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}). Your leftover cups turned into waste.`;
+  return `A steady day (${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}). Pricing at ${money(price)} kept things moving.`;
+}
+
+// ----------- State -----------
+function freshState(){
+  return {
+    playerName: "",
+    daysTotal: 7,
+    difficulty: "standard",
+    day: 1,
+    cash: 100,
+    history: [],
+    todays: null,
+    view: "start"
+  };
+}
+
+let state = loadState() ?? freshState();
+
+function saveState(){
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+function clearState(){
+  localStorage.removeItem(STORE_KEY);
+  state = freshState();
+  render();
+}
+
+// ----------- UI wiring -----------
+function show(view){
+  $("startView").classList.toggle("hide", view !== "start");
+  $("dayView").classList.toggle("hide", view !== "day");
+  $("resultView").classList.toggle("hide", view !== "result");
+  state.view = view;
+  saveState();
+}
+
+function setHeader(){
+  $("cashPill").textContent = money(state.cash);
+  $("dayPill").textContent = state.view === "start" ? "—" : `${Math.min(state.day, state.daysTotal)} / ${state.daysTotal}`;
+  $("modePill").textContent = "City (Sim)";
+}
+
+function renderHistory(){
+  const box = $("history");
+  box.innerHTML = "";
+  if(state.history.length === 0){
+    box.innerHTML = `<div class="li"><span>No days yet</span><b>—</b></div>`;
+    return;
+  }
+  state.history.slice().reverse().forEach((h) => {
+    const label = `Day ${h.day} • ${h.weather.icon} ${h.weather.key}`;
+    const value = `<span style="color:${h.netProfit>=0?'var(--good)':'var(--bad)'};font-weight:900">${money(h.netProfit)}</span>`;
+    const div = document.createElement("div");
+    div.className = "li";
+    div.innerHTML = `<span>${label}</span><b>${value}</b>`;
+    box.appendChild(div);
+  });
+}
+
+function maybeShowResume(){
+  const hasSave = !!loadState();
+  $("btnResume").classList.toggle("hide", !(hasSave && state.view === "start" && state.history.length>0));
+  $("btnClear").classList.toggle("hide", !(hasSave && state.view === "start" && state.history.length>0));
+}
+
+function renderStart(){
+  $("playerName").value = state.playerName || "";
+  $("gameLen").value = String(state.daysTotal || 7);
+  $("difficulty").value = state.difficulty || "standard";
+  maybeShowResume();
+}
+
+function newDayContext(){
+  const weather = WEATHER[Math.floor(Math.random()*WEATHER.length)];
+  const event = pickWeighted(EVENTS);
+  const rivalPrice = clamp(randBetween(1.10, 2.90), 0.75, 3.25);
+  state.todays = { weather, event, rivalPrice };
+  saveState();
+}
+
+function renderDay(){
+  if(!state.todays) newDayContext();
+
+  const { weather, event, rivalPrice } = state.todays;
+
+  $("dayTitle").textContent = `Day ${state.day} — Make your decisions`;
+  $("wxPill").textContent = `${weather.icon} ${weather.key}`;
+  $("eventPill").textContent = `${event.icon} ${event.key}`;
+  $("rivalPill").textContent = money(rivalPrice);
+
+  $("cups").value = 80;
+  $("price").value = 2.00;
+  $("mkt").value = 0;
+
+  syncInputs();
+
+  $("sellingBox").classList.add("hide");
+  $("dayHint").classList.add("hide");
+  $("dayHint").textContent = "";
+}
+
+function syncInputs(){
+  $("cupsVal").textContent = `${$("cups").value}`;
+  $("priceVal").textContent = money(parseFloat($("price").value));
+  $("mktVal").textContent = money(parseFloat($("mkt").value)).replace(".00","");
+}
+
+function fillReflectionSheet(){
+  const finalCash = state.cash;
+  const totalProfit = finalCash - 100;
+
+  $("refName").textContent = state.playerName || "Student";
+  $("refDays").textContent = `${state.daysTotal}`;
+  $("refFinalCash").textContent = money(finalCash);
+  $("refTotalProfit").textContent = money(totalProfit);
+
+  // Pre-fill Q1 with their best day
+  if(state.history.length > 0){
+    const best = state.history.reduce((a,b)=> (b.netProfit>a.netProfit?b:a), state.history[0]);
+    const worst = state.history.reduce((a,b)=> (b.netProfit<a.netProfit?b:a), state.history[0]);
+    const q1Default = `My most profitable day was Day ${best.day} (${best.weather.key}). I think it worked because my price was ${money(best.price)} and I made ${best.cupsMade} cups.`;
+    const q2Default = `One mistake I made was on Day ${worst.day}. I ${worst.waste>0 ? "made too many cups and wasted inventory" : "didn't capture enough demand / priced wrong"}. Next time I would adjust my price or production.`;
+    if(!$("q1").value) $("q1").value = q1Default;
+    if(!$("q2").value) $("q2").value = q2Default;
+  }
+}
+
+function renderResult(last){
+  $("resultTitle").textContent = (state.day > state.daysTotal) ? "Final Results" : `Day ${last.day} Results`;
+
+  const big = $("profitBig");
+  big.textContent = money(last.netProfit);
+  big.className = "big " + (last.netProfit >= 0 ? "good" : "bad");
+
+  $("resultNarrative").textContent = last.narrative;
+
+  const list = $("resultList");
+  list.innerHTML = "";
+  const rows = [
+    ["Customers (demand)", String(last.demand)],
+    ["Cups made", String(last.cupsMade)],
+    ["Cups sold", String(last.cupsSold)],
+    ["Cups wasted", String(last.waste)],
+    ["Revenue", money(last.revenue)],
+    ["COGS (cost)", money(last.cost)],
+    ["Marketing", money(last.marketing)],
+    ["Net profit", money(last.netProfit)],
+    ["Cash balance", money(last.cashAfter)],
+  ];
+  rows.forEach(([k,v]) => {
+    const div = document.createElement("div");
+    div.className = "li";
+    div.innerHTML = `<span>${k}</span><b>${v}</b>`;
+    list.appendChild(div);
+  });
+
+  $("lessonBox").textContent = "📌 " + last.lesson;
+
+  const finished = state.day > state.daysTotal;
+  $("btnNext").classList.toggle("hide", finished);
+  $("btnPlayAgain").classList.toggle("hide", !finished);
+
+  // Show reflection sheet only when finished
+  $("reflectionSheet").classList.toggle("hide", !finished);
+  if(finished) fillReflectionSheet();
+
+  // Update export button state
+  $("btnCSV").disabled = (state.history.length === 0);
+  $("btnPrint").disabled = !finished;
+}
+
+function bailoutIfNeeded(){
+  if(state.cash >= 0) return;
+  if(state.difficulty === "competitive") return;
+
+  const loan = Math.abs(state.cash) + 25;
+  state.cash += loan;
+  state._bailoutNote = `Emergency bailout: you received ${money(loan)} so you can finish the simulation. In real life this could be savings, family help, or a small loan.`;
+}
+
+function render(){
+  setHeader();
+  renderHistory();
+
+  if(state.view === "start"){
+    show("start"); renderStart();
+  } else if(state.view === "day"){
+    show("day"); renderDay();
+  } else if(state.view === "result"){
+    show("result");
+  }
+  setHeader();
+  renderHistory();
+}
+
+// ----------- CSV export -----------
+function toCSV(){
+  const headers = [
+    "playerName","daysTotal","difficulty",
+    "day","weather","event","rivalPrice",
+    "cupsMade","price","marketing",
+    "demand","cupsSold","waste",
+    "revenue","cost","netProfit","cashAfter"
+  ];
+
+  const esc = (v) => {
+    const s = String(v ?? "");
+    if(s.includes(",") || s.includes('"') || s.includes("\n")){
+      return `"${s.replaceAll('"','""')}"`;
+    }
+    return s;
+  };
+
+  const lines = [];
+  lines.push(headers.join(","));
+
+  for(const h of state.history){
+    const row = [
+      state.playerName,
+      state.daysTotal,
+      state.difficulty,
+      h.day,
+      h.weather.key,
+      h.event.key,
+      h.rivalPrice.toFixed(2),
+      h.cupsMade,
+      h.price.toFixed(2),
+      h.marketing,
+      h.demand,
+      h.cupsSold,
+      h.waste,
+      h.revenue.toFixed(2),
+      h.cost.toFixed(2),
+      h.netProfit.toFixed(2),
+      h.cashAfter.toFixed(2),
+    ].map(esc);
+    lines.push(row.join(","));
+  }
+
+  // Add totals row at bottom
+  const finalCash = state.cash;
+  const totalProfit = finalCash - 100;
+  lines.push("");
+  lines.push(`Totals,,,,,,,,,,,,,,,`);
+  lines.push(`Final Cash,${finalCash.toFixed(2)}`);
+  lines.push(`Total Profit,${totalProfit.toFixed(2)}`);
+
+  return lines.join("\n");
+}
+
+function downloadCSV(){
+  const csv = toCSV();
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const safeName = (state.playerName || "student").replace(/[^a-z0-9_-]/gi,"_");
+  a.href = url;
+  a.download = `lemonade_class_${safeName}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function printReflection(){
+  // Ensure reflection is visible for print
+  $("reflectionSheet").classList.remove("hide");
+  window.print();
+}
+
+// ----------- Game actions -----------
+async function startGame(){
+  const name = $("playerName").value.trim() || "Player";
+  state = freshState();
+  state.playerName = name;
+  state.daysTotal = parseInt($("gameLen").value, 10);
+  state.difficulty = $("difficulty").value;
+  state.day = 1;
+  state.cash = 100;
+  state.history = [];
+  state.todays = null;
+  state.view = "day";
+  saveState();
+  render();
+}
+
+function resumeGame(){
+  const loaded = loadState();
+  if(loaded){
+    state = loaded;
+    render();
+  }
+}
+
+function resetDayInputs(){
+  $("cups").value = 80;
+  $("price").value = 2.00;
+  $("mkt").value = 0;
+  syncInputs();
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+async function sellDay(){
+  const cupsMade = parseInt($("cups").value, 10);
+  const price = parseFloat($("price").value);
+  const marketing = parseInt($("mkt").value, 10);
+
+  if(marketing > state.cash){
+    $("dayHint").classList.remove("hide");
+    $("dayHint").textContent = `You only have ${money(state.cash)}. Lower marketing or play cheaper.`;
+    return;
+  }
+
+  const { weather, event, rivalPrice } = state.todays;
+  const demand = dailyDemand({
+    weatherMult: weather.mult,
+    eventMult: event.mult,
+    price,
+    mkt: marketing,
+    rivalPrice,
+    difficulty: state.difficulty
+  });
+
+  const cupsSold = Math.min(cupsMade, demand);
+  const waste = Math.max(0, cupsMade - cupsSold);
+  const revenue = cupsSold * price;
+
+  const cogsPerCup = 0.50;
+  const cost = cupsMade * cogsPerCup;
+  const netProfit = revenue - cost - marketing;
+
+  // Selling Phase UI
+  $("sellingBox").classList.remove("hide");
+  $("btnSell").disabled = true;
+
+  $("kCustomers").textContent = "0";
+  $("kCupsLeft").textContent = String(cupsMade);
+  $("kRevenue").textContent = "$0";
+
+  const durationMs = 9000;
+  const steps = 30;
+  const stepMs = Math.round(durationMs/steps);
+
+  for(let i=1;i<=steps;i++){
+    const t = i/steps;
+    const shownCustomers = Math.round(demand * t);
+    const shownSold = Math.min(cupsMade, Math.round(cupsSold * t));
+    const shownLeft = Math.max(0, cupsMade - shownSold);
+    const shownRevenue = shownSold * price;
+
+    $("kCustomers").textContent = String(shownCustomers);
+    $("kCupsLeft").textContent = String(shownLeft);
+    $("kRevenue").textContent = money(shownRevenue);
+
+    if(shownLeft === 0 && cupsMade > 0){
+      $("sellingMsg").textContent = "Sold out! You’re leaving customers unserved.";
+      await sleep(700);
+      break;
+    }
+    await sleep(stepMs);
+  }
+
+  $("btnSell").disabled = false;
+  $("sellingBox").classList.add("hide");
+
+  state.cash = parseFloat((state.cash + netProfit).toFixed(2));
+  bailoutIfNeeded();
+
+  const narrative = narrativeFor({weatherKey: weather.key, eventKey: event.key, rivalPrice, price, cupsSold, cupsMade});
+  const lesson = lessonFor({cupsMade, cupsSold, price, profit: netProfit, demand});
+
+  const record = {
+    day: state.day,
+    weather, event, rivalPrice,
+    cupsMade, price, marketing,
+    demand, cupsSold, waste,
+    revenue: parseFloat(revenue.toFixed(2)),
+    cost: parseFloat(cost.toFixed(2)),
+    netProfit: parseFloat(netProfit.toFixed(2)),
+    cashAfter: state.cash,
+    narrative,
+    lesson
+  };
+
+  state.history.push(record);
+
+  state.day += 1;
+  state.todays = null;
+
+  state.view = "result";
+  saveState();
+  show("result");
+  setHeader();
+  renderHistory();
+  renderResult(record);
+
+  if(state._bailoutNote){
+    $("lessonBox").textContent = "📌 " + record.lesson + "  —  " + state._bailoutNote;
+    delete state._bailoutNote;
+    saveState();
+  }
+
+  if(state.day > state.daysTotal){
+    const totalProfit = state.cash - 100;
+    const finalNote = totalProfit >= 0
+      ? `Finish strong. You grew $100 into ${money(state.cash)}. What would you reinvest in next?`
+      : `You finished at ${money(state.cash)}. What one change would you make to become profitable?`;
+    $("resultNarrative").textContent = finalNote;
+  }
+}
+
+function nextDay(){
+  if(state.day > state.daysTotal) return;
+  state.view = "day";
+  saveState();
+  show("day");
+  renderDay();
+  setHeader();
+}
+
+function playAgain(){
+  clearState();
+}
+
+// ----------- Event listeners -----------
+$("cups").addEventListener("input", syncInputs);
+$("price").addEventListener("input", syncInputs);
+$("mkt").addEventListener("input", syncInputs);
+
+$("btnStart").addEventListener("click", startGame);
+$("btnResume").addEventListener("click", resumeGame);
+$("btnClear").addEventListener("click", clearState);
+$("btnSell").addEventListener("click", sellDay);
+$("btnResetDay").addEventListener("click", resetDayInputs);
+$("btnNext").addEventListener("click", nextDay);
+$("btnPlayAgain").addEventListener("click", playAgain);
+
+$("btnCSV").addEventListener("click", downloadCSV);
+$("btnPrint").addEventListener("click", printReflection);
+
+// On load
+(function init(){
+  setHeader();
+  renderHistory();
+
+  const saved = loadState();
+  if(saved) state = saved;
+  if(!state.view) state.view = "start";
+
+  if(state.view === "result" && state.history.length > 0){
+    show("result");
+    setHeader();
+    renderHistory();
+    renderResult(state.history[state.history.length - 1]);
+  } else if(state.view === "day"){
+    show("day");
+    renderDay();
+  } else {
+    show("start");
+    renderStart();
+  }
+
+  setHeader();
+  maybeShowResume();
+})();
+</script>
+</body>
+</html>
