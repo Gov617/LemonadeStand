@@ -29,7 +29,20 @@
         radial-gradient(1100px 700px at 15% 0%, #1b2d65 0%, var(--bg) 60%),
         radial-gradient(900px 600px at 90% 10%, #162552 0%, transparent 50%);
     }
-    .wrap{max-width:1040px; margin:0 auto; padding:18px}
+
+    /* Teacher mode = different feel */
+    body[data-role="teacher"]{
+      background:
+        radial-gradient(1100px 700px at 15% 0%, #2a1b65 0%, #0b1220 60%),
+        radial-gradient(900px 600px at 90% 10%, #1b3b6a 0%, transparent 50%);
+    }
+    body[data-role="teacher"] .nav{
+      border-color: rgba(255,255,255,.20);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+    }
+
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+
     .nav{
       display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
       padding:14px 14px;
@@ -51,6 +64,7 @@
       display:grid; place-items:center;
       overflow:hidden;
       box-shadow: 0 10px 22px rgba(0,0,0,.25);
+      flex: 0 0 auto;
     }
     .brandMark img{
       width:100%;
@@ -73,6 +87,16 @@
       font-size:13px;
     }
     .chip b{color:var(--text); font-weight:950}
+    .roleBadge{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      font-size:12px;
+      color: rgba(233,238,252,.85);
+      font-weight:950;
+      letter-spacing: .08em;
+    }
     .navBtns{display:flex; gap:10px; flex-wrap:wrap}
     button{
       border:1px solid var(--line);
@@ -91,8 +115,8 @@
     button.ok{background: rgba(38,208,124,.12); border-color: rgba(38,208,124,.45)}
     button:disabled{opacity:.55; cursor:not-allowed}
 
-    .grid{display:grid; grid-template-columns: 1.52fr .88fr; gap:14px; margin-top:14px}
-    @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+    .grid{display:grid; grid-template-columns: 1.55fr .85fr; gap:14px; margin-top:14px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
 
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -122,7 +146,7 @@
 
     input[type="range"]{width:100%}
     .rangeRow{display:flex; gap:10px; align-items:center}
-    .rangeVal{min-width:110px;text-align:right;color:var(--text);font-weight:950;}
+    .rangeVal{min-width:120px;text-align:right;color:var(--text);font-weight:950;}
 
     .pillRow{display:flex; gap:10px; flex-wrap:wrap}
     .pill{
@@ -200,7 +224,7 @@
       padding:10px 12px; border-radius:16px;
       background: rgba(0,0,0,.16);
       border:1px solid rgba(255,255,255,.12);
-      min-width:160px;
+      min-width:165px;
     }
     .kpi .k{font-size:12px;color:var(--muted)}
     .kpi .v{font-size:18px;font-weight:950;margin-top:2px}
@@ -263,7 +287,7 @@
       margin-top:12px;
     }
     .heroLogo{
-      width:82px; height:82px;
+      width:86px; height:86px;
       border-radius:18px;
       border:1px solid rgba(255,255,255,.18);
       background: rgba(0,0,0,.16);
@@ -273,10 +297,62 @@
     }
     .heroLogo img{width:100%; height:100%; object-fit:contain; display:block; transform: scale(1.02);}
 
+    /* Splash */
+    #splash{
+      position:fixed; inset:0;
+      background: radial-gradient(900px 600px at 20% 0%, rgba(255,209,102,.18), transparent 55%),
+                  radial-gradient(900px 600px at 90% 10%, rgba(43,92,255,.18), transparent 55%),
+                  rgba(6,10,20,.92);
+      display:none;
+      place-items:center;
+      z-index:9999;
+      backdrop-filter: blur(10px);
+    }
+    .splashCard{
+      width:min(520px, 92vw);
+      padding:22px 20px 18px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.16);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow: 0 26px 70px rgba(0,0,0,.55);
+      text-align:center;
+      position:relative;
+    }
+    #splashLogo{
+      width:120px; height:120px;
+      object-fit:contain;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.12);
+      padding:10px;
+    }
+    .splashTitle{ font-weight:1000; font-size:22px; margin-top:12px; letter-spacing:-.02em; }
+    .splashSub{ color: rgba(233,238,252,.74); font-size:13px; margin-top:6px; }
+    .splashBar{
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      overflow:hidden;
+      margin:16px 0 4px;
+    }
+    .splashFill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(255,209,102,.95), rgba(43,92,255,.95));
+      transition: width 1.6s linear;
+    }
+
+    /* Teacher dashboard "panel" style */
+    body[data-role="teacher"] .teacherPanel{
+      border:1px solid rgba(255,255,255,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(0,0,0,.10));
+    }
+
     @media print{
       body{background:#fff; color:#000}
       .wrap{max-width:100%; padding:0}
-      .nav, #historyCard, #startView, #dayView { display:none !important; }
+      .nav, #historyCard, #startView, #dayView, #teacherView { display:none !important; }
       #resultView{display:block !important}
       .card{box-shadow:none; border:1px solid #ddd; background:#fff}
       .pill, .chip{background:#f3f3f3; border-color:#ddd; color:#111}
@@ -289,361 +365,428 @@
   </style>
 </head>
 <body>
-<div class="wrap">
-
-  <!-- NAV -->
-  <div class="nav">
-    <div class="brand">
-      <div class="brandMark">
-        <img id="navLogo" alt="Lemonade Class logo" />
-      </div>
-      <div class="title">
-        <b>Lemonade Class</b>
-        <span>Micro-business simulation • classroom-ready</span>
-      </div>
-    </div>
-
-    <div class="navRight">
-      <div class="chip">💵 Cash: <b id="cashPill">$0.00</b></div>
-      <div class="chip">📅 Day: <b id="dayPill">—</b></div>
-      <div class="chip">🎓 Explain: <b id="explainPill">On</b></div>
-
-      <div class="navBtns">
-        <button class="ghost" id="btnHome" title="Go to Home">Home</button>
-        <button class="ghost" id="btnToggleSettings" title="Open Settings">Settings</button>
-        <button class="danger" id="btnRestart" title="Restart this run">Restart</button>
-      </div>
+  <!-- Splash -->
+  <div id="splash">
+    <div class="splashCard">
+      <img id="splashLogo" alt="Lemonade Class" />
+      <div class="splashTitle">Lemonade Class</div>
+      <div class="splashSub">A classroom-ready business simulation</div>
+      <div class="splashBar"><div class="splashFill" id="splashFill"></div></div>
+      <div class="mini">Loading…</div>
     </div>
   </div>
 
-  <div class="grid">
+  <div class="wrap">
 
-    <!-- LEFT -->
-    <div class="card">
-
-      <!-- SETTINGS DRAWER -->
-      <div id="settingsDrawer" class="drawer hide">
-        <div class="drawerHead">
-          <b>Settings (Teacher + Student)</b>
-          <button class="ghost" id="btnCloseSettings">Close</button>
+    <!-- NAV -->
+    <div class="nav">
+      <div class="brand">
+        <div class="brandMark">
+          <img id="navLogo" alt="Lemonade Class logo" />
         </div>
-        <div class="drawerBody">
+        <div class="title">
+          <b>Lemonade Class</b>
+          <span>Micro-business simulation • classroom-ready</span>
+        </div>
+      </div>
+
+      <div class="navRight">
+        <div class="chip">💵 Cash: <b id="cashPill">$0.00</b></div>
+        <div class="chip">📅 Day: <b id="dayPill">—</b></div>
+        <div class="chip">🧠 Explain: <b id="explainPill">On</b></div>
+        <div class="roleBadge" id="roleBadge">STUDENT</div>
+
+        <div class="navBtns">
+          <button class="ghost" id="btnHome" title="Go to Home">Home</button>
+          <button class="ghost hide" id="btnTeacher" title="Teacher Dashboard">Teacher</button>
+          <button class="ghost" id="btnToggleSettings" title="Open Settings">Settings</button>
+          <button class="danger" id="btnRestart" title="Restart this run">Restart</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- LEFT -->
+      <div class="card">
+
+        <!-- SETTINGS DRAWER -->
+        <div id="settingsDrawer" class="drawer hide">
+          <div class="drawerHead">
+            <b id="settingsTitle">Settings</b>
+            <button class="ghost" id="btnCloseSettings">Close</button>
+          </div>
+          <div class="drawerBody">
+
+            <div class="two">
+              <div>
+                <label>Mode</label>
+                <select id="userRole">
+                  <option value="student" selected>Student Mode</option>
+                  <option value="teacher">Teacher Mode</option>
+                </select>
+                <div class="mini" style="margin-top:6px">Teacher Mode unlocks analytics + class controls.</div>
+              </div>
+              <div>
+                <label>Explain Mode</label>
+                <select id="explainMode">
+                  <option value="on" selected>On (recommended)</option>
+                  <option value="off">Off</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Student name</label>
+                <input id="playerName" type="text" placeholder="e.g., Marcus" maxlength="24" />
+              </div>
+              <div>
+                <label>Class code (optional)</label>
+                <input id="classCode" type="text" placeholder="e.g., 6B-Period2" maxlength="24" />
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Teacher name (optional)</label>
+                <input id="teacherName" type="text" placeholder="e.g., Ms. Rivera" maxlength="32" />
+              </div>
+              <div id="lockWrap">
+                <label>Lock Student Settings (Teacher)</label>
+                <select id="lockStudentSettings">
+                  <option value="no" selected>No</option>
+                  <option value="yes">Yes (hide Settings for students)</option>
+                </select>
+                <div class="mini" style="margin-top:6px">If enabled, only Teacher Mode can change settings.</div>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Game length</label>
+                <select id="gameLen">
+                  <option value="5">5 days</option>
+                  <option value="7" selected>7 days</option>
+                </select>
+              </div>
+              <div>
+                <label>Difficulty</label>
+                <select id="difficulty">
+                  <option value="guided">Guided (gentle)</option>
+                  <option value="standard" selected>Standard</option>
+                  <option value="competitive">Competitive (no bailout)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Starting cash</label>
+                <select id="startingCash">
+                  <option value="50">$50 (hard)</option>
+                  <option value="100" selected>$100 (normal)</option>
+                  <option value="150">$150 (easier)</option>
+                  <option value="200">$200 (very easy)</option>
+                </select>
+              </div>
+              <div>
+                <label>Ingredient cost (COGS per cup)</label>
+                <select id="cogsPerCup">
+                  <option value="0.35">$0.35 (low cost)</option>
+                  <option value="0.50" selected>$0.50 (default)</option>
+                  <option value="0.70">$0.70 (higher cost)</option>
+                  <option value="1.00">$1.00 (very high)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Scenario: Foot Traffic Level</label>
+                <select id="scenarioTraffic">
+                  <option value="low">Low foot traffic</option>
+                  <option value="med" selected>Medium foot traffic</option>
+                  <option value="high">High foot traffic</option>
+                </select>
+                <div class="mini" style="margin-top:6px">Changes how many customers might show up overall.</div>
+              </div>
+              <div>
+                <label>Scenario: Customer Mix</label>
+                <select id="scenarioMix">
+                  <option value="price">Price-sensitive shoppers</option>
+                  <option value="balanced" selected>Balanced shoppers</option>
+                  <option value="convenience">Convenience-focused shoppers</option>
+                </select>
+                <div class="mini" style="margin-top:6px">Changes how sensitive demand is to price.</div>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:12px">
+              <button class="primary" id="btnApplySettings">Apply Settings (restart run)</button>
+              <button class="ghost" id="btnSaveSettings">Save Settings (keep run)</button>
+            </div>
+
+            <div class="hint" style="margin-top:12px">
+              <b>Teacher note:</b> Waste cost is shown as a teaching callout, but it is already included in COGS (COGS = cost per cup × cups made).
+            </div>
+
+          </div>
+        </div>
+
+        <!-- START VIEW -->
+        <div id="startView">
+          <h2>Home</h2>
+          <div class="muted">
+            Build your lemonade stand for <b>5 or 7 days</b>. Learn the difference between <b>revenue</b> and <b>profit</b>.
+          </div>
+
+          <div class="homeHero">
+            <div class="heroLogo">
+              <img id="homeLogo" alt="Lemonade Class logo" />
+            </div>
+            <div>
+              <div style="font-weight:950; font-size:14px;">Welcome to Lemonade Class</div>
+              <div class="mini" style="margin-top:6px;">
+                Make decisions → see results → reflect → improve. Perfect for computer labs & tablets.
+              </div>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
           <div class="two">
             <div>
+              <label>Mode</label>
+              <select id="userRole2">
+                <option value="student" selected>Student Mode</option>
+                <option value="teacher">Teacher Mode</option>
+              </select>
+            </div>
+            <div>
+              <label>Quick start preset</label>
+              <select id="preset">
+                <option value="standard" selected>Standard classroom</option>
+                <option value="guided">Guided (easier)</option>
+                <option value="competitive">Competitive (harder)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two" style="margin-top:10px">
+            <div>
               <label>Student name</label>
-              <input id="playerName" type="text" placeholder="e.g., Marcus" maxlength="24" />
+              <input id="playerName2" type="text" placeholder="e.g., Marcus" maxlength="24" />
             </div>
             <div>
               <label>Class code (optional)</label>
-              <input id="classCode" type="text" placeholder="e.g., 6B-Period2" maxlength="24" />
+              <input id="classCode2" type="text" placeholder="e.g., 6B-Period2" maxlength="24" />
             </div>
           </div>
 
           <div class="two" style="margin-top:10px">
             <div>
               <label>Teacher name (optional)</label>
-              <input id="teacherName" type="text" placeholder="e.g., Ms. Rivera" maxlength="32" />
+              <input id="teacherName2" type="text" placeholder="e.g., Ms. Rivera" maxlength="32" />
             </div>
-            <div>
-              <label>Explain Mode</label>
-              <select id="explainMode">
-                <option value="on">On (recommended)</option>
-                <option value="off">Off</option>
-              </select>
+            <div></div>
+          </div>
+
+          <div class="tabs" style="margin-top:12px">
+            <div class="tab active" data-tab="learn" id="tabLearn">Learn</div>
+            <div class="tab" data-tab="play" id="tabPlay">Play</div>
+            <div class="tab" data-tab="teach" id="tabTeach">Teacher</div>
+          </div>
+
+          <div id="homeLearn" style="margin-top:12px">
+            <div class="callout">
+              <b>Fast lesson:</b> If you sell a cup for $2 and it costs $0.50 to make, you have <b>$1.50 gross profit</b> per cup.
+              But marketing + waste can reduce your final profit.
+            </div>
+            <div class="hint">
+              In business, you win by matching <b>price</b> + <b>inventory</b> to <b>demand</b>.
             </div>
           </div>
 
-          <div class="two" style="margin-top:10px">
-            <div>
-              <label>Game length</label>
-              <select id="gameLen">
-                <option value="5">5 days</option>
-                <option value="7" selected>7 days</option>
-              </select>
-            </div>
-            <div>
-              <label>Difficulty</label>
-              <select id="difficulty">
-                <option value="guided">Guided (gentle)</option>
-                <option value="standard" selected>Standard</option>
-                <option value="competitive">Competitive (no bailout)</option>
-              </select>
+          <div id="homePlay" class="hide" style="margin-top:12px">
+            <div class="muted">Hit Start and run the stand. You’ll get a print-ready reflection sheet at the end.</div>
+          </div>
+
+          <div id="homeTeach" class="hide" style="margin-top:12px">
+            <div class="muted">
+              Teacher Mode unlocks a Dashboard (KPIs + insights) and Class Controls (settings + lockout).
+              Students still get the clean “game” experience.
             </div>
           </div>
 
-          <div class="two" style="margin-top:10px">
-            <div>
-              <label>Starting cash</label>
-              <select id="startingCash">
-                <option value="50">$50 (hard)</option>
-                <option value="100" selected>$100 (normal)</option>
-                <option value="150">$150 (easier)</option>
-                <option value="200">$200 (very easy)</option>
-              </select>
-            </div>
-            <div>
-              <label>Ingredient cost (COGS per cup)</label>
-              <select id="cogsPerCup">
-                <option value="0.35">$0.35 (low cost)</option>
-                <option value="0.50" selected>$0.50 (default)</option>
-                <option value="0.70">$0.70 (higher cost)</option>
-                <option value="1.00">$1.00 (very high)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="two" style="margin-top:10px">
-            <div>
-              <label>Scenario: Foot Traffic Level</label>
-              <select id="scenarioTraffic">
-                <option value="low">Low foot traffic</option>
-                <option value="med" selected>Medium foot traffic</option>
-                <option value="high">High foot traffic</option>
-              </select>
-              <div class="mini" style="margin-top:6px">Changes how many customers might show up overall.</div>
-            </div>
-            <div>
-              <label>Scenario: Customer Mix</label>
-              <select id="scenarioMix">
-                <option value="price">Price-sensitive shoppers</option>
-                <option value="balanced" selected>Balanced shoppers</option>
-                <option value="convenience">Convenience-focused shoppers</option>
-              </select>
-              <div class="mini" style="margin-top:6px">Changes how sensitive demand is to price.</div>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:12px">
-            <button class="primary" id="btnApplySettings">Apply Settings (restart run)</button>
-            <button class="ghost" id="btnSaveSettings">Save Settings (keep run)</button>
-          </div>
-
-          <div class="hint" style="margin-top:12px">
-            <b>Tip:</b> Apply Settings restarts the run using your new settings. Save Settings keeps the current run.
+          <div class="row" style="margin-top:14px">
+            <button class="primary" id="btnStart">Start Game</button>
+            <button class="ghost hide" id="btnResume">Resume Saved Run</button>
+            <button class="danger hide" id="btnClear">Clear Save</button>
           </div>
         </div>
+
+        <!-- DAY VIEW -->
+        <div id="dayView" class="hide">
+          <h2 id="dayTitle">Day</h2>
+
+          <div class="pillRow">
+            <div class="pill">🌦️ Forecast: <b id="wxPill">—</b></div>
+            <div class="pill">🎪 Event: <b id="eventPill">—</b></div>
+            <div class="pill">🥤 Rival: <b id="rivalPill">—</b></div>
+            <div class="pill">👟 Traffic: <b id="trafficPill">—</b></div>
+            <div class="pill">🧠 Mix: <b id="mixPill">—</b></div>
+          </div>
+
+          <div class="sep"></div>
+
+          <label>Cups to make</label>
+          <div class="rangeRow">
+            <input id="cups" type="range" min="0" max="200" value="80" />
+            <div class="rangeVal" id="cupsVal">80</div>
+          </div>
+
+          <label>Price per cup</label>
+          <div class="rangeRow">
+            <input id="price" type="range" min="0.5" max="5" value="2.00" step="0.05" />
+            <div class="rangeVal" id="priceVal">$2.00</div>
+          </div>
+
+          <label>Marketing spend</label>
+          <div class="rangeRow">
+            <input id="mkt" type="range" min="0" max="20" value="0" step="1" />
+            <div class="rangeVal" id="mktVal">$0</div>
+          </div>
+
+          <div class="callout">
+            Up-front spend today: <b id="upfrontSpendVal">$0.00</b>
+            <span class="mini"> (COGS <span id="cogsTag">$0.50</span> × cups + marketing)</span>
+          </div>
+
+          <div id="explainTips" class="hint hide"></div>
+
+          <div class="row" style="margin-top:14px">
+            <button class="primary" id="btnSell">Start Selling</button>
+            <button class="ghost" id="btnResetDay">Reset</button>
+          </div>
+
+          <div id="sellingBox" class="selling hide">
+            <div style="min-width:260px">
+              <b>Selling…</b> <span class="muted" id="sellingMsg">Customers are arriving.</span>
+              <div class="mini">Costs were paid up-front. Now revenue comes in.</div>
+            </div>
+            <div class="meter">
+              <div class="kpi"><div class="k">Customers</div><div class="v" id="kCustomers">0</div></div>
+              <div class="kpi"><div class="k">Cups left</div><div class="v" id="kCupsLeft">—</div></div>
+              <div class="kpi"><div class="k">Revenue</div><div class="v" id="kRevenue">$0</div></div>
+            </div>
+          </div>
+
+          <div id="dayHint" class="hint hide"></div>
+        </div>
+
+        <!-- RESULT VIEW -->
+        <div id="resultView" class="hide">
+          <h2 id="resultTitle">Results</h2>
+          <div id="profitBig" style="font-size:38px;font-weight:1000;letter-spacing:-.02em;margin:6px 0 6px;">$0.00</div>
+          <div class="muted" id="resultNarrative">—</div>
+
+          <div class="sep"></div>
+          <div class="list" id="resultList"></div>
+
+          <div id="lessonBox" class="hint"></div>
+
+          <div class="row" style="margin-top:14px">
+            <button class="primary" id="btnNext">Next Day</button>
+            <button class="ghost hide" id="btnPlayAgain">Play Again</button>
+            <button class="ok" id="btnCSV">Download CSV</button>
+            <button class="ghost" id="btnPrint">Print Reflection</button>
+          </div>
+
+          <div id="summaryBox" class="sheet hide">
+            <h3>End-of-Run Summary</h3>
+            <div class="list" id="summaryList"></div>
+          </div>
+
+          <div id="reflectionSheet" class="sheet hide">
+            <h3>Reflection Sheet (Lemonade Class)</h3>
+            <div class="pillRow" style="margin-top:6px">
+              <div class="pill">👤 Student: <b id="refName">—</b></div>
+              <div class="pill">🏫 Class: <b id="refClass">—</b></div>
+              <div class="pill">👩🏽‍🏫 Teacher: <b id="refTeacher">—</b></div>
+              <div class="pill">📅 Days: <b id="refDays">—</b></div>
+              <div class="pill">💵 Final cash: <b id="refFinalCash">—</b></div>
+              <div class="pill">📈 Total profit: <b id="refTotalProfit">—</b></div>
+            </div>
+
+            <div class="q">
+              <b>1) What was your most profitable day, and why do you think it worked?</b>
+              <textarea id="q1" placeholder="Write 2–4 sentences..."></textarea>
+            </div>
+            <div class="q">
+              <b>2) Describe one mistake you made and what you learned.</b>
+              <textarea id="q2" placeholder="Write 2–4 sentences..."></textarea>
+            </div>
+            <div class="q">
+              <b>3) If you played again, what strategy would you try?</b>
+              <textarea id="q3" placeholder="Write 2–4 sentences..."></textarea>
+            </div>
+            <div class="q">
+              <b>4) Revenue vs Profit: In your own words, what’s the difference?</b>
+              <textarea id="q4" placeholder="Write 1–3 sentences..."></textarea>
+            </div>
+
+            <div class="callout">
+              <b>Definitions:</b>
+              Revenue = price × cups sold • Profit = revenue − (COGS + marketing) • Margin = profit ÷ revenue
+            </div>
+
+            <div class="mini" style="margin-top:10px">
+              Print this page (or Save as PDF). Answers are not uploaded anywhere in the MVP.
+            </div>
+          </div>
+        </div>
+
+        <!-- TEACHER VIEW -->
+        <div id="teacherView" class="hide">
+          <h2>Teacher Dashboard</h2>
+          <div class="muted">Analytics + class controls. Students still see a clean game experience.</div>
+
+          <div class="sep"></div>
+
+          <div class="card teacherPanel" style="padding:14px;">
+            <div style="font-weight:950;">Class KPIs</div>
+            <div class="list" id="teacherKPIs" style="margin-top:10px;"></div>
+          </div>
+
+          <div class="hint" id="teacherInsights" style="margin-top:12px"></div>
+
+          <div class="row" style="margin-top:14px">
+            <button class="ok" id="btnTeacherCSV">Download CSV</button>
+            <button class="ghost" id="btnTeacherPrint">Print Reflection</button>
+            <button class="ghost" id="btnBackToGame">Back to Game</button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- START VIEW -->
-      <div id="startView">
-        <h2>Home</h2>
+      <!-- RIGHT -->
+      <div class="card" id="historyCard">
+        <h2>Scoreboard</h2>
+        <div class="muted">This run is saved locally on this device.</div>
+        <div class="sep"></div>
+        <div class="list" id="history"></div>
+        <div class="sep"></div>
         <div class="muted">
-          Build your lemonade stand for <b>5 or 7 days</b>. Learn the difference between <b>revenue</b> and <b>profit</b>.
+          <b>Teaches:</b> profit vs revenue, cost & margin, inventory waste, price sensitivity, demand changes, and iteration.
         </div>
-
-        <div class="homeHero">
-          <div class="heroLogo">
-            <img id="homeLogo" alt="Lemonade Class logo" />
-          </div>
-          <div>
-            <div style="font-weight:950; font-size:14px;">Welcome to Lemonade Class</div>
-            <div class="mini" style="margin-top:6px;">
-              Make decisions → see results → reflect → improve. Perfect for computer labs & tablets.
-            </div>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-
-        <div class="two">
-          <div>
-            <label>Student name</label>
-            <input id="playerName2" type="text" placeholder="e.g., Marcus" maxlength="24" />
-          </div>
-          <div>
-            <label>Class code (optional)</label>
-            <input id="classCode2" type="text" placeholder="e.g., 6B-Period2" maxlength="24" />
-          </div>
-        </div>
-
-        <div class="two" style="margin-top:10px">
-          <div>
-            <label>Teacher name (optional)</label>
-            <input id="teacherName2" type="text" placeholder="e.g., Ms. Rivera" maxlength="32" />
-          </div>
-          <div>
-            <label>Quick start preset</label>
-            <select id="preset">
-              <option value="standard" selected>Standard classroom</option>
-              <option value="guided">Guided (easier)</option>
-              <option value="competitive">Competitive (harder)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="tabs" style="margin-top:12px">
-          <div class="tab active" data-tab="learn" id="tabLearn">Learn</div>
-          <div class="tab" data-tab="play" id="tabPlay">Play</div>
-          <div class="tab" data-tab="teach" id="tabTeach">Teacher</div>
-        </div>
-
-        <div id="homeLearn" style="margin-top:12px">
-          <div class="callout">
-            <b>Fast lesson:</b> If you sell a cup for $2 and it costs $0.50 to make, you have <b>$1.50 gross profit</b> per cup.
-            But marketing + waste can reduce your final profit.
-          </div>
-          <div class="hint">
-            In business, you win by matching <b>price</b> + <b>inventory</b> to <b>demand</b>.
-          </div>
-        </div>
-
-        <div id="homePlay" class="hide" style="margin-top:12px">
-          <div class="muted">Hit Start and run the stand. You’ll get a print-ready reflection sheet at the end.</div>
-        </div>
-
-        <div id="homeTeach" class="hide" style="margin-top:12px">
-          <div class="muted">
-            Open <b>Settings</b> to change scenario packs, ingredient costs, starting cash, and difficulty.
-            Students can export CSV + print reflection at the end.
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:14px">
-          <button class="primary" id="btnStart">Start Game</button>
-          <button class="ghost hide" id="btnResume">Resume Saved Run</button>
-          <button class="danger hide" id="btnClear">Clear Save</button>
-        </div>
-      </div>
-
-      <!-- DAY VIEW -->
-      <div id="dayView" class="hide">
-        <h2 id="dayTitle">Day</h2>
-
-        <div class="pillRow">
-          <div class="pill">🌦️ Forecast: <b id="wxPill">—</b></div>
-          <div class="pill">🎪 Event: <b id="eventPill">—</b></div>
-          <div class="pill">🥤 Rival: <b id="rivalPill">—</b></div>
-          <div class="pill">👟 Traffic: <b id="trafficPill">—</b></div>
-          <div class="pill">🧠 Mix: <b id="mixPill">—</b></div>
-        </div>
-
-        <div class="sep"></div>
-
-        <label>Cups to make</label>
-        <div class="rangeRow">
-          <input id="cups" type="range" min="0" max="200" value="80" />
-          <div class="rangeVal" id="cupsVal">80</div>
-        </div>
-
-        <label>Price per cup</label>
-        <div class="rangeRow">
-          <input id="price" type="range" min="0.5" max="5" value="2.00" step="0.05" />
-          <div class="rangeVal" id="priceVal">$2.00</div>
-        </div>
-
-        <label>Marketing spend</label>
-        <div class="rangeRow">
-          <input id="mkt" type="range" min="0" max="20" value="0" step="1" />
-          <div class="rangeVal" id="mktVal">$0</div>
-        </div>
-
-        <div class="callout">
-          Up-front spend today: <b id="upfrontSpendVal">$0.00</b>
-          <span class="mini"> (COGS <span id="cogsTag">$0.50</span> × cups + marketing)</span>
-        </div>
-
-        <div id="explainTips" class="hint hide"></div>
-
-        <div class="row" style="margin-top:14px">
-          <button class="primary" id="btnSell">Start Selling</button>
-          <button class="ghost" id="btnResetDay">Reset</button>
-        </div>
-
-        <div id="sellingBox" class="selling hide">
-          <div style="min-width:260px">
-            <b>Selling…</b> <span class="muted" id="sellingMsg">Customers are arriving.</span>
-            <div class="mini">Costs were paid up-front. Now revenue comes in.</div>
-          </div>
-          <div class="meter">
-            <div class="kpi"><div class="k">Customers</div><div class="v" id="kCustomers">0</div></div>
-            <div class="kpi"><div class="k">Cups left</div><div class="v" id="kCupsLeft">—</div></div>
-            <div class="kpi"><div class="k">Revenue</div><div class="v" id="kRevenue">$0</div></div>
-          </div>
-        </div>
-
-        <div id="dayHint" class="hint hide"></div>
-      </div>
-
-      <!-- RESULT VIEW -->
-      <div id="resultView" class="hide">
-        <h2 id="resultTitle">Results</h2>
-        <div id="profitBig" style="font-size:38px;font-weight:1000;letter-spacing:-.02em;margin:6px 0 6px;">$0.00</div>
-        <div class="muted" id="resultNarrative">—</div>
-
-        <div class="sep"></div>
-        <div class="list" id="resultList"></div>
-
-        <div id="lessonBox" class="hint"></div>
-
-        <div class="row" style="margin-top:14px">
-          <button class="primary" id="btnNext">Next Day</button>
-          <button class="ghost hide" id="btnPlayAgain">Play Again</button>
-          <button class="ok" id="btnCSV">Download CSV</button>
-          <button class="ghost" id="btnPrint">Print Reflection</button>
-        </div>
-
-        <div id="summaryBox" class="sheet hide">
-          <h3>End-of-Run Summary</h3>
-          <div class="list" id="summaryList"></div>
-        </div>
-
-        <div id="reflectionSheet" class="sheet hide">
-          <h3>Reflection Sheet (Lemonade Class)</h3>
-          <div class="pillRow" style="margin-top:6px">
-            <div class="pill">👤 Student: <b id="refName">—</b></div>
-            <div class="pill">🏫 Class: <b id="refClass">—</b></div>
-            <div class="pill">👩🏽‍🏫 Teacher: <b id="refTeacher">—</b></div>
-            <div class="pill">📅 Days: <b id="refDays">—</b></div>
-            <div class="pill">💵 Final cash: <b id="refFinalCash">—</b></div>
-            <div class="pill">📈 Total profit: <b id="refTotalProfit">—</b></div>
-          </div>
-
-          <div class="q">
-            <b>1) What was your most profitable day, and why do you think it worked?</b>
-            <textarea id="q1" placeholder="Write 2–4 sentences..."></textarea>
-          </div>
-          <div class="q">
-            <b>2) Describe one mistake you made and what you learned.</b>
-            <textarea id="q2" placeholder="Write 2–4 sentences..."></textarea>
-          </div>
-          <div class="q">
-            <b>3) If you played again, what strategy would you try?</b>
-            <textarea id="q3" placeholder="Write 2–4 sentences..."></textarea>
-          </div>
-          <div class="q">
-            <b>4) Revenue vs Profit: In your own words, what’s the difference?</b>
-            <textarea id="q4" placeholder="Write 1–3 sentences..."></textarea>
-          </div>
-
-          <div class="callout">
-            <b>Definitions:</b>
-            Revenue = price × cups sold • Profit = revenue − (COGS + marketing) • Margin = profit ÷ revenue
-          </div>
-
-          <div class="mini" style="margin-top:10px">
-            Print this page (or Save as PDF). Answers are not uploaded anywhere in the MVP.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="card" id="historyCard">
-      <h2>Scoreboard</h2>
-      <div class="muted">This run is saved locally on this device.</div>
-      <div class="sep"></div>
-      <div class="list" id="history"></div>
-      <div class="sep"></div>
-      <div class="muted">
-        <b>Teaches:</b> profit vs revenue, cost & margin, inventory waste, price sensitivity, demand changes, and iteration.
       </div>
     </div>
   </div>
-</div>
 
 <script>
-/** Lemonade Class — Branded single-file classroom MVP
- *  REQUIRED files in SAME folder as this index.html:
+/** Lemonade Class — single-file classroom MVP (Teacher/Student split)
+ *  REQUIRED in SAME directory:
  *   - logo.png (transparent)
  *   - logo-bg.jpg (optional fallback)
  */
@@ -654,13 +797,10 @@ const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
 const pct = (n) => `${(n*100).toFixed(0)}%`;
 const safeDiv = (a,b) => b===0 ? 0 : a/b;
 
-const STORE_KEY = "lemonade_class_branded_v1";
-
-// Logo paths (same directory as index.html)
+const STORE_KEY = "lemonade_class_teacher_student_v2";
 const LOGO_PRIMARY = "./logo.png";
 const LOGO_FALLBACK = "./logo-bg.jpg";
 
-// Apply logos with fallback (works for GitHub Pages repo subpaths too, because we use relative paths)
 function setLogo(imgEl){
   imgEl.src = LOGO_PRIMARY;
   imgEl.onerror = () => { imgEl.onerror = null; imgEl.src = LOGO_FALLBACK; };
@@ -712,9 +852,7 @@ function priceFactor(price, difficulty, elasticity){
     return clamp(f, 0.60, 1.40);
   }
 }
-
 function marketingFactor(mkt){ return 1 + 0.015 * clamp(mkt,0,20); }
-
 function competitorFactor(price, rivalPrice, difficulty){
   const d = price - rivalPrice;
   const harsh = (difficulty === "competitive") ? 1.1 : (difficulty === "guided" ? 0.9 : 1.0);
@@ -747,10 +885,30 @@ function narrativeFor({weatherKey, eventKey, price, rivalPrice, soldOut}){
   return `Day conditions: ${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}. Your price was ${money(price)}.`;
 }
 
+/* Math audit: guarantees everything is consistent */
+function mathAuditDay(record, cogsPerCup){
+  const revenue2 = +(record.cupsSold * record.price).toFixed(2);
+  const cost2    = +(record.cupsMade * cogsPerCup).toFixed(2);
+  const waste2   = Math.max(0, record.cupsMade - record.cupsSold);
+  const wasteCost2 = +(waste2 * cogsPerCup).toFixed(2);
+  const net2     = +(revenue2 - cost2 - record.marketing).toFixed(2);
+
+  const ok =
+    revenue2 === record.revenue &&
+    cost2 === record.cost &&
+    waste2 === record.waste &&
+    wasteCost2 === record.wasteCost &&
+    net2 === record.netProfit;
+
+  return { ok, expected: { revenue2, cost2, waste2, wasteCost2, net2 } };
+}
+
 function freshState(){
   return {
     view:"start",
     // settings
+    userRole:"student",
+    lockStudentSettings:false,
     playerName:"",
     classCode:"",
     teacherName:"",
@@ -781,12 +939,16 @@ function clearState(){
   render();
 }
 
-// Views
+function applyRoleTheme(){
+  document.body.dataset.role = state.userRole || "student";
+}
+
 function show(view){
   state.view = view;
   $("startView").classList.toggle("hide", view !== "start");
   $("dayView").classList.toggle("hide", view !== "day");
   $("resultView").classList.toggle("hide", view !== "result");
+  $("teacherView").classList.toggle("hide", view !== "teacher");
   saveState();
 }
 
@@ -794,6 +956,26 @@ function setHeader(){
   $("cashPill").textContent = money(state.cash);
   $("dayPill").textContent = (state.view === "start") ? "—" : `${Math.min(state.day, state.daysTotal)} / ${state.daysTotal}`;
   $("explainPill").textContent = (state.explainMode === "on") ? "On" : "Off";
+  $("roleBadge").textContent = (state.userRole==="teacher") ? "TEACHER" : "STUDENT";
+}
+
+function canStudentOpenSettings(){
+  if(state.userRole === "teacher") return true;
+  return !state.lockStudentSettings;
+}
+
+function enforceRoleUI(){
+  // Teacher button only in teacher mode
+  $("btnTeacher").classList.toggle("hide", state.userRole !== "teacher");
+
+  // Settings button hides if locked and student
+  $("btnToggleSettings").classList.toggle("hide", !canStudentOpenSettings());
+
+  // Settings title shifts for teacher
+  $("settingsTitle").textContent = (state.userRole==="teacher") ? "Class Controls" : "Settings";
+
+  // Lock control visible only in teacher mode
+  $("lockWrap").classList.toggle("hide", state.userRole !== "teacher");
 }
 
 function renderHistory(){
@@ -842,19 +1024,17 @@ function syncInputs(){
   if(state.explainMode === "on"){
     $("explainTips").classList.remove("hide");
     $("explainTips").textContent =
-      "Teaching tip: If your up-front spend is high and demand is low, your profit can go negative. Try adjusting cups or price.";
+      "Teaching tip: Your up-front spend happens before selling. Profit depends on demand, price, and waste.";
   } else {
     $("explainTips").classList.add("hide");
   }
 }
 
 function renderStart(){
-  // sync Home inputs
   $("playerName2").value = state.playerName || "";
   $("classCode2").value = state.classCode || "";
   $("teacherName2").value = state.teacherName || "";
 
-  // sync drawer inputs
   $("playerName").value = state.playerName || "";
   $("classCode").value = state.classCode || "";
   $("teacherName").value = state.teacherName || "";
@@ -865,6 +1045,10 @@ function renderStart(){
   $("cogsPerCup").value = String(state.cogsPerCup ?? 0.50);
   $("scenarioTraffic").value = state.scenarioTraffic || "med";
   $("scenarioMix").value = state.scenarioMix || "balanced";
+
+  $("userRole").value = state.userRole || "student";
+  $("userRole2").value = state.userRole || "student";
+  $("lockStudentSettings").value = state.lockStudentSettings ? "yes" : "no";
 
   maybeShowResume();
 }
@@ -905,10 +1089,13 @@ function computeTotals(){
 
   const gm = safeDiv((totalRevenue - totalCOGS), totalRevenue);
   const pm = safeDiv(totalProfit, totalRevenue);
+
   const best = state.history.reduce((a,b)=> b.netProfit>a.netProfit?b:a, state.history[0]);
   const worst = state.history.reduce((a,b)=> b.netProfit<a.netProfit?b:a, state.history[0]);
 
-  return { totalRevenue,totalCOGS,totalMkt,totalProfit,totalMade,totalSold,totalWaste,missed,gm,pm,best,worst };
+  const mathOK = state.history.every(h => h.mathOk !== false);
+
+  return { totalRevenue,totalCOGS,totalMkt,totalProfit,totalMade,totalSold,totalWaste,missed,gm,pm,best,worst,mathOK };
 }
 
 function fillSummary(){
@@ -918,6 +1105,7 @@ function fillSummary(){
   const box = $("summaryList");
   box.innerHTML = "";
   const rows = [
+    ["Math Verified", t.mathOK ? `<span class="good">✅ All days verified</span>` : `<span class="bad">❌ Needs review</span>`],
     ["Total Revenue", money(t.totalRevenue)],
     ["Total COGS", money(t.totalCOGS)],
     ["Total Marketing", money(t.totalMkt)],
@@ -974,6 +1162,7 @@ function renderResult(last){
   const list = $("resultList");
   list.innerHTML = "";
   const rows = [
+    ["Math check", last.mathOk ? `<span class="good">✅ Verified</span>` : `<span class="bad">❌ Check failed</span>`],
     ["Customers (demand)", String(last.demand)],
     ["Cups made", String(last.cupsMade)],
     ["Cups sold", String(last.cupsSold)],
@@ -1020,119 +1209,6 @@ function bailoutIfNeeded(){
   state._bailoutNote = `Emergency bailout: you received ${money(loan)} so you can finish the simulation.`;
 }
 
-function toCSV(){
-  const headers = [
-    "studentName","classCode","teacherName",
-    "daysTotal","difficulty","explainMode",
-    "startingCash","cogsPerCup",
-    "scenarioTraffic","scenarioMix",
-    "day","weather","event","rivalPrice",
-    "cupsMade","price","marketing",
-    "demand","cupsSold","missedSales","waste","wasteCost",
-    "revenue","cogsCost","netProfit","cashAfter"
-  ];
-  const esc = (v) => {
-    const s = String(v ?? "");
-    if(s.includes(",") || s.includes('"') || s.includes("\n")) return `"${s.replaceAll('"','""')}"`;
-    return s;
-  };
-
-  const lines = [headers.join(",")];
-  for(const h of state.history){
-    const row = [
-      state.playerName, state.classCode, state.teacherName,
-      state.daysTotal, state.difficulty, state.explainMode,
-      state.startingCash, state.cogsPerCup,
-      state.scenarioTraffic, state.scenarioMix,
-      h.day, h.weather.key, h.event.key, h.rivalPrice.toFixed(2),
-      h.cupsMade, h.price.toFixed(2), h.marketing,
-      h.demand, h.cupsSold, h.missedSales, h.waste, h.wasteCost.toFixed(2),
-      h.revenue.toFixed(2), h.cost.toFixed(2), h.netProfit.toFixed(2), h.cashAfter.toFixed(2),
-    ].map(esc);
-    lines.push(row.join(","));
-  }
-  const totalProfit = state.cash - state.startingCash;
-  lines.push("");
-  lines.push(`Final Cash,${state.cash.toFixed(2)}`);
-  lines.push(`Total Profit,${totalProfit.toFixed(2)}`);
-  return lines.join("\n");
-}
-function downloadCSV(){
-  const csv = toCSV();
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const safeName = (state.playerName || "student").replace(/[^a-z0-9_-]/gi,"_");
-  const safeClass = (state.classCode || "class").replace(/[^a-z0-9_-]/gi,"_");
-  a.href = url;
-  a.download = `lemonade_class_${safeClass}_${safeName}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-function printReflection(){
-  $("summaryBox").classList.remove("hide");
-  $("reflectionSheet").classList.remove("hide");
-  window.print();
-}
-
-// --- Actions ---
-function startGameFromHome(){
-  const name = $("playerName2").value.trim() || "Student";
-  state.playerName = name;
-  state.classCode = ($("classCode2").value || "").trim();
-  state.teacherName = ($("teacherName2").value || "").trim();
-
-  const preset = $("preset").value;
-  state.difficulty = preset;
-  state.daysTotal = 7;
-  state.explainMode = "on";
-  state.startingCash = preset === "guided" ? 150 : (preset === "competitive" ? 100 : 100);
-  state.cogsPerCup = 0.50;
-  state.scenarioTraffic = "med";
-  state.scenarioMix = "balanced";
-
-  // reset run
-  state.day = 1;
-  state.cash = state.startingCash;
-  state.history = [];
-  state.todays = null;
-
-  saveState();
-  show("day");
-  renderDay();
-  setHeader();
-  renderHistory();
-}
-
-function applySettings(restartRun){
-  state.playerName = ($("playerName").value || "").trim();
-  state.classCode = ($("classCode").value || "").trim();
-  state.teacherName = ($("teacherName").value || "").trim();
-  state.explainMode = $("explainMode").value;
-  state.daysTotal = parseInt($("gameLen").value, 10);
-  state.difficulty = $("difficulty").value;
-  state.startingCash = parseFloat($("startingCash").value);
-  state.cogsPerCup = parseFloat($("cogsPerCup").value);
-  state.scenarioTraffic = $("scenarioTraffic").value;
-  state.scenarioMix = $("scenarioMix").value;
-
-  if(restartRun){
-    state.day = 1;
-    state.cash = state.startingCash;
-    state.history = [];
-    state.todays = null;
-    show("day");
-    renderDay();
-  }
-
-  saveState();
-  setHeader();
-  renderHistory();
-  closeSettings();
-}
-
 function resetDayInputs(){
   $("cups").value = 80;
   $("price").value = 2.00;
@@ -1169,10 +1245,10 @@ async function sellDay(){
   const missedSales = Math.max(0, demand - cupsSold);
   const waste = Math.max(0, cupsMade - cupsSold);
 
-  const revenue = cupsSold * price;
-  const cost = cupsMade * cogsPerCup;
-  const wasteCost = waste * cogsPerCup;
-  const upfrontSpend = cost + marketing;
+  const revenue = +(cupsSold * price).toFixed(2);
+  const cost = +(cupsMade * cogsPerCup).toFixed(2);
+  const wasteCost = +(waste * cogsPerCup).toFixed(2);
+  const upfrontSpend = +(cost + marketing).toFixed(2);
 
   // Need cash up-front
   if(upfrontSpend > state.cash){
@@ -1183,7 +1259,7 @@ async function sellDay(){
   }
 
   // Pay up-front
-  state.cash = parseFloat((state.cash - upfrontSpend).toFixed(2));
+  state.cash = +(state.cash - upfrontSpend).toFixed(2);
   saveState();
   setHeader();
 
@@ -1196,7 +1272,7 @@ async function sellDay(){
   $("kCupsLeft").textContent = String(cupsMade);
   $("kRevenue").textContent = "$0";
 
-  const durationMs = 8500;
+  const durationMs = 8200;
   const steps = 28;
   const stepMs = Math.round(durationMs/steps);
 
@@ -1205,7 +1281,7 @@ async function sellDay(){
     const shownCustomers = Math.round(demand * t);
     const shownSold = Math.min(cupsMade, Math.round(cupsSold * t));
     const shownLeft = Math.max(0, cupsMade - shownSold);
-    const shownRevenue = shownSold * price;
+    const shownRevenue = +(shownSold * price).toFixed(2);
 
     $("kCustomers").textContent = String(shownCustomers);
     $("kCupsLeft").textContent = String(shownLeft);
@@ -1223,9 +1299,9 @@ async function sellDay(){
   $("sellingBox").classList.add("hide");
 
   // Add revenue after selling
-  state.cash = parseFloat((state.cash + revenue).toFixed(2));
+  state.cash = +(state.cash + revenue).toFixed(2);
 
-  const netProfit = revenue - upfrontSpend;
+  const netProfit = +(revenue - upfrontSpend).toFixed(2);
 
   bailoutIfNeeded();
 
@@ -1239,13 +1315,21 @@ async function sellDay(){
     cupsMade, price, marketing,
     demand, cupsSold, missedSales,
     waste, wasteCost,
-    revenue: parseFloat(revenue.toFixed(2)),
-    cost: parseFloat(cost.toFixed(2)),
-    netProfit: parseFloat(netProfit.toFixed(2)),
+    revenue,
+    cost,
+    netProfit,
     cashAfter: state.cash,
     narrative,
     lesson
   };
+
+  // --- Math audit (never let bad math slip through) ---
+  const audit = mathAuditDay(record, cogsPerCup);
+  record.mathOk = audit.ok;
+  record.mathExpected = audit.expected;
+  if(!audit.ok){
+    console.warn("MATH AUDIT FAILED", { record, expected: audit.expected, cogsPerCup });
+  }
 
   state.history.push(record);
 
@@ -1265,7 +1349,7 @@ async function sellDay(){
   }
 
   if(state.day > state.daysTotal){
-    const totalProfit = state.cash - state.startingCash;
+    const totalProfit = +(state.cash - state.startingCash).toFixed(2);
     $("resultNarrative").textContent = (totalProfit >= 0)
       ? `Finish strong. You grew ${money(state.startingCash)} into ${money(state.cash)}. What would you reinvest in next?`
       : `You finished at ${money(state.cash)}. What one change would make you profitable next time?`;
@@ -1281,6 +1365,8 @@ function nextDay(){
 
 function playAgain(){
   const keepSettings = {
+    userRole: state.userRole,
+    lockStudentSettings: state.lockStudentSettings,
     playerName: state.playerName,
     classCode: state.classCode,
     teacherName: state.teacherName,
@@ -1306,7 +1392,6 @@ function playAgain(){
 }
 
 function restartRun(){
-  // keep settings, wipe run
   state.day = 1;
   state.cash = state.startingCash;
   state.history = [];
@@ -1325,10 +1410,12 @@ function goHome(){
   renderHistory();
 }
 
-function openSettings(){ $("settingsDrawer").classList.remove("hide"); }
+function openSettings(){
+  if(!canStudentOpenSettings()) return;
+  $("settingsDrawer").classList.remove("hide");
+}
 function closeSettings(){ $("settingsDrawer").classList.add("hide"); }
 
-// Home tabs
 function setHomeTab(which){
   ["learn","play","teach"].forEach(t=>{
     $("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("active", t===which);
@@ -1336,18 +1423,203 @@ function setHomeTab(which){
   });
 }
 
-// Resume
 function resumeGame(){
   const loaded = loadState();
   if(loaded){ state = loaded; render(); }
 }
 
-// Render orchestrator
-function render(){
+function applySettings(restartRunFlag){
+  state.userRole = $("userRole").value;
+  state.explainMode = $("explainMode").value;
+
+  state.playerName = ($("playerName").value || "").trim();
+  state.classCode = ($("classCode").value || "").trim();
+  state.teacherName = ($("teacherName").value || "").trim();
+
+  state.lockStudentSettings = ($("lockStudentSettings").value === "yes");
+
+  state.daysTotal = parseInt($("gameLen").value, 10);
+  state.difficulty = $("difficulty").value;
+  state.startingCash = parseFloat($("startingCash").value);
+  state.cogsPerCup = parseFloat($("cogsPerCup").value);
+  state.scenarioTraffic = $("scenarioTraffic").value;
+  state.scenarioMix = $("scenarioMix").value;
+
+  if(restartRunFlag){
+    state.day = 1;
+    state.cash = state.startingCash;
+    state.history = [];
+    state.todays = null;
+    saveState();
+    show("day");
+    renderDay();
+  } else {
+    saveState();
+  }
+
+  closeSettings();
+  render();
+}
+
+function startGameFromHome(){
+  state.userRole = $("userRole2").value;
+
+  state.playerName = ($("playerName2").value || "").trim() || "Student";
+  state.classCode = ($("classCode2").value || "").trim();
+  state.teacherName = ($("teacherName2").value || "").trim();
+
+  const preset = $("preset").value;
+  state.difficulty = preset;
+  state.daysTotal = 7;
+  state.explainMode = "on";
+  state.startingCash = (preset === "guided") ? 150 : 100;
+  state.cogsPerCup = 0.50;
+  state.scenarioTraffic = "med";
+  state.scenarioMix = "balanced";
+
+  // If they started in Teacher Mode, default lock = yes
+  if(state.userRole === "teacher" && state.lockStudentSettings == null){
+    state.lockStudentSettings = true;
+  }
+
+  // reset run
+  state.day = 1;
+  state.cash = state.startingCash;
+  state.history = [];
+  state.todays = null;
+
+  saveState();
+  show("day");
+  renderDay();
+  render();
+}
+
+function toCSV(){
+  const headers = [
+    "userRole","lockStudentSettings",
+    "studentName","classCode","teacherName",
+    "daysTotal","difficulty","explainMode",
+    "startingCash","cogsPerCup",
+    "scenarioTraffic","scenarioMix",
+    "day","weather","event","rivalPrice",
+    "cupsMade","price","marketing",
+    "demand","cupsSold","missedSales","waste","wasteCost",
+    "revenue","cogsCost","netProfit","cashAfter","mathOk"
+  ];
+  const esc = (v) => {
+    const s = String(v ?? "");
+    if(s.includes(",") || s.includes('"') || s.includes("\n")) return `"${s.replaceAll('"','""')}"`;
+    return s;
+  };
+
+  const lines = [headers.join(",")];
+  for(const h of state.history){
+    const row = [
+      state.userRole, state.lockStudentSettings ? "yes" : "no",
+      state.playerName, state.classCode, state.teacherName,
+      state.daysTotal, state.difficulty, state.explainMode,
+      state.startingCash, state.cogsPerCup,
+      state.scenarioTraffic, state.scenarioMix,
+      h.day, h.weather.key, h.event.key, h.rivalPrice.toFixed(2),
+      h.cupsMade, h.price.toFixed(2), h.marketing,
+      h.demand, h.cupsSold, h.missedSales, h.waste, h.wasteCost.toFixed(2),
+      h.revenue.toFixed(2), h.cost.toFixed(2), h.netProfit.toFixed(2), h.cashAfter.toFixed(2),
+      h.mathOk ? "true" : "false"
+    ].map(esc);
+    lines.push(row.join(","));
+  }
+  const totalProfit = +(state.cash - state.startingCash).toFixed(2);
+  lines.push("");
+  lines.push(`Final Cash,${state.cash.toFixed(2)}`);
+  lines.push(`Total Profit,${totalProfit.toFixed(2)}`);
+  return lines.join("\n");
+}
+function downloadCSV(){
+  const csv = toCSV();
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const safeName = (state.playerName || "student").replace(/[^a-z0-9_-]/gi,"_");
+  const safeClass = (state.classCode || "class").replace(/[^a-z0-9_-]/gi,"_");
+  a.href = url;
+  a.download = `lemonade_class_${safeClass}_${safeName}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function printReflection(){
+  $("summaryBox").classList.remove("hide");
+  $("reflectionSheet").classList.remove("hide");
+  window.print();
+}
+
+/* Teacher dashboard rendering */
+function renderTeacherDashboard(){
+  const box = $("teacherKPIs");
+  const insights = $("teacherInsights");
+  box.innerHTML = "";
+
+  if(state.history.length === 0){
+    box.innerHTML = `<div class="li"><span>No data yet</span><b>Play at least 1 day</b></div>`;
+    insights.textContent = "Tip: Have students play Day 1, then pause and discuss why demand changed (weather/event/price).";
+    return;
+  }
+
+  const t = computeTotals();
+  const wasteRate = t.totalMade ? (t.totalWaste / t.totalMade) : 0;
+  const selloutDays = state.history.filter(h=>h.missedSales>0 && h.waste===0).length;
+  const wasteDays = state.history.filter(h=>h.waste>0).length;
+
+  const avgProfit = t.totalProfit / state.history.length;
+
+  const rows = [
+    ["Math Verified", t.mathOK ? `<span class="good">✅ All days verified</span>` : `<span class="bad">❌ Needs review</span>`],
+    ["Total Profit", `<span class="${t.totalProfit>=0?'good':'bad'}">${money(t.totalProfit)}</span>`],
+    ["Avg Profit / Day", `<span class="${avgProfit>=0?'good':'bad'}">${money(avgProfit)}</span>`],
+    ["Gross Margin", pct(t.gm)],
+    ["Profit Margin", pct(t.pm)],
+    ["Waste Rate", pct(wasteRate)],
+    ["Sell-out Days", `${selloutDays} / ${state.history.length}`],
+    ["Waste Days", `${wasteDays} / ${state.history.length}`],
+    ["Best Day", `Day ${t.best.day} (${money(t.best.netProfit)})`],
+    ["Worst Day", `Day ${t.worst.day} (${money(t.worst.netProfit)})`],
+  ];
+  rows.forEach(([k,v])=>{
+    const div = document.createElement("div");
+    div.className = "li";
+    div.innerHTML = `<span>${k}</span><b>${v}</b>`;
+    box.appendChild(div);
+  });
+
+  // Insight text (simple but “teacher-feel”)
+  const mainIssue = (wasteRate >= 0.20) ? "overproduction (waste)" : (selloutDays >= Math.ceil(state.history.length/2) ? "selling out (missed sales)" : "balance");
+  if(mainIssue === "overproduction (waste)"){
+    insights.textContent = "Insight: Students are overproducing. Coach them to reduce cups or raise price slightly and compare profit vs waste the next day.";
+  } else if(mainIssue === "selling out (missed sales)"){
+    insights.textContent = "Insight: Students are selling out often. Coach them to increase cups or raise price and measure how profit margin changes.";
+  } else {
+    insights.textContent = "Insight: Strong balance. Ask students to justify their decisions using revenue, COGS, and margin—not just profit.";
+  }
+}
+
+function openTeacher(){
+  if(state.userRole !== "teacher") return;
+  show("teacher");
+  renderTeacherDashboard();
   setHeader();
+}
+
+/* Init + render */
+function render(){
+  applyRoleTheme();
+  setHeader();
+  enforceRoleUI();
   renderHistory();
 
-  if(state.view === "result" && state.history.length){
+  if(state.view === "teacher"){
+    renderTeacherDashboard();
+  } else if(state.view === "result" && state.history.length){
     show("result");
     renderResult(state.history[state.history.length - 1]);
   } else if(state.view === "day"){
@@ -1357,12 +1629,15 @@ function render(){
     show("start");
     renderStart();
   }
+
+  applyRoleTheme();
   setHeader();
+  enforceRoleUI();
   renderHistory();
   maybeShowResume();
 }
 
-// --- Wire events ---
+/* Events */
 $("cups").addEventListener("input", syncInputs);
 $("price").addEventListener("input", syncInputs);
 $("mkt").addEventListener("input", syncInputs);
@@ -1380,27 +1655,47 @@ $("btnPlayAgain").addEventListener("click", playAgain);
 $("btnCSV").addEventListener("click", downloadCSV);
 $("btnPrint").addEventListener("click", printReflection);
 
-// Nav buttons
 $("btnHome").addEventListener("click", goHome);
 $("btnRestart").addEventListener("click", restartRun);
+
+$("btnTeacher").addEventListener("click", openTeacher);
+$("btnTeacherCSV").addEventListener("click", downloadCSV);
+$("btnTeacherPrint").addEventListener("click", printReflection);
+$("btnBackToGame").addEventListener("click", () => {
+  // go back to whatever makes sense
+  if(state.history.length) show("result"); else show("day");
+  render();
+});
+
 $("btnToggleSettings").addEventListener("click", () => {
-  $("settingsDrawer").classList.contains("hide") ? openSettings() : closeSettings();
+  if($("settingsDrawer").classList.contains("hide")) openSettings();
+  else closeSettings();
 });
 $("btnCloseSettings").addEventListener("click", closeSettings);
 
 $("btnApplySettings").addEventListener("click", () => applySettings(true));
 $("btnSaveSettings").addEventListener("click", () => applySettings(false));
 
-// Home tabs
 $("tabLearn").addEventListener("click", ()=>setHomeTab("learn"));
 $("tabPlay").addEventListener("click", ()=>setHomeTab("play"));
 $("tabTeach").addEventListener("click", ()=>setHomeTab("teach"));
 
-// On load
+/* On load */
 (function init(){
-  // Brand it
+  // logos
   setLogo($("navLogo"));
   setLogo($("homeLogo"));
+  setLogo($("splashLogo"));
+
+  // splash once per session
+  const splash = $("splash");
+  const splashFill = $("splashFill");
+  if(!sessionStorage.getItem("lc_splash_seen")){
+    sessionStorage.setItem("lc_splash_seen", "1");
+    splash.style.display = "grid";
+    requestAnimationFrame(()=> splashFill.style.width = "100%");
+    setTimeout(()=>{ splash.style.display = "none"; }, 1750);
+  }
 
   const saved = loadState();
   if(saved) state = saved;
