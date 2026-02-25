@@ -3,144 +3,227 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lemonade Class — MVP</title>
+  <title>Lemonade Class — Classroom MVP</title>
+  <meta name="description" content="Lemonade Class: a classroom-ready micro-business simulation that teaches revenue, profit, margin, and decision-making." />
   <style>
     :root{
-      --bg:#0b1220; --card:#0f1a33; --text:#e9eefc; --muted:#a9b7e6;
-      --line:rgba(255,255,255,.10); --good:#26d07c; --bad:#ff4d4d; --warn:#ffd166;
+      --bg:#0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(0,0,0,.14);
+      --line: rgba(255,255,255,.12);
+      --text:#e9eefc;
+      --muted:#a9b7e6;
+      --good:#26d07c;
+      --bad:#ff4d4d;
+      --warn:#ffd166;
       --btn:#2b5cff;
+      --shadow: 0 16px 46px rgba(0,0,0,.38);
+      --radius: 18px;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1200px 800px at 20% 0%, #162552 0%, var(--bg) 55%);
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
+      background:
+        radial-gradient(1100px 700px at 15% 0%, #1b2d65 0%, var(--bg) 60%),
+        radial-gradient(900px 600px at 90% 10%, #162552 0%, transparent 50%);
     }
-    a{color:inherit}
-    .wrap{max-width:1020px; margin:0 auto; padding:24px}
-    .top{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px;}
-    .brand{display:flex; gap:10px; align-items:center}
-    .logo{
-      width:38px;height:38px;border-radius:10px;
-      background: linear-gradient(135deg, #ffdd57 0%, #ffd166 35%, #2b5cff 100%);
-      box-shadow: 0 8px 22px rgba(43,92,255,.25);
+    .wrap{max-width:1040px; margin:0 auto; padding:18px}
+    .nav{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      padding:14px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 12px;
+      backdrop-filter: blur(8px);
+      z-index: 5;
     }
-    h1{font-size:18px; margin:0}
-    .sub{color:var(--muted); font-size:13px}
-    .grid{display:grid; grid-template-columns: 1.45fr .85fr; gap:14px}
+    .brand{display:flex; align-items:center; gap:12px}
+    .brandMark{
+      width:52px; height:52px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.18);
+      display:grid; place-items:center;
+      overflow:hidden;
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+    }
+    .brandMark img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      transform: scale(1.03);
+    }
+    .title{display:flex; flex-direction:column; line-height:1.1;}
+    .title b{font-size:16px; letter-spacing:-.01em}
+    .title span{font-size:12px; color:rgba(233,238,252,.70)}
+    .navRight{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .chip{
+      display:flex; gap:8px; align-items:center; white-space:nowrap;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.16);
+      color: var(--muted);
+      font-size:13px;
+    }
+    .chip b{color:var(--text); font-weight:950}
+    .navBtns{display:flex; gap:10px; flex-wrap:wrap}
+    button{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border-radius: 14px;
+      padding:10px 12px;
+      font-weight:900;
+      cursor:pointer;
+      transition: transform .05s ease;
+    }
+    button:active{transform: scale(.98)}
+    button.primary{background: var(--btn); border-color: rgba(43,92,255,.65)}
+    button.ghost{background: rgba(0,0,0,.14)}
+    button.danger{background: rgba(255,77,77,.14); border-color: rgba(255,77,77,.45)}
+    button.ok{background: rgba(38,208,124,.12); border-color: rgba(38,208,124,.45)}
+    button:disabled{opacity:.55; cursor:not-allowed}
+
+    .grid{display:grid; grid-template-columns: 1.52fr .88fr; gap:14px; margin-top:14px}
     @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
 
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border: 1px solid var(--line);
-      border-radius:18px;
+      border-radius: var(--radius);
       padding:16px;
-      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+      box-shadow: var(--shadow);
     }
     .card h2{margin:0 0 10px; font-size:16px}
+    .muted{color:var(--muted); font-size:13px; line-height:1.4}
+    .mini{color:rgba(233,238,252,.72); font-size:12px}
+    .sep{height:1px;background: rgba(255,255,255,.10); margin:14px 0}
     .row{display:flex; gap:10px; flex-wrap:wrap}
-    .pill{
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:13px;
-      color:var(--muted);
-      display:flex; gap:8px; align-items:center;
-      white-space:nowrap;
-    }
-    .pill b{color:var(--text); font-weight:800}
     label{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px}
+
     input[type="text"], select{
       width:100%;
       padding:12px 12px;
-      border-radius:12px;
+      border-radius:14px;
       border:1px solid var(--line);
-      background: rgba(0,0,0,.15);
+      background: rgba(0,0,0,.16);
       color:var(--text);
       outline:none;
     }
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width: 700px){ .two{grid-template-columns:1fr} }
+
     input[type="range"]{width:100%}
     .rangeRow{display:flex; gap:10px; align-items:center}
-    .rangeVal{min-width:102px;text-align:right;color:var(--text);font-weight:900;}
-    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
-    button{
-      border:0; border-radius:12px; padding:12px 14px;
-      background: rgba(255,255,255,.08);
-      color:var(--text);
-      cursor:pointer;
-      font-weight:800;
-      border:1px solid var(--line);
-      transition: transform .05s ease;
-    }
-    button.primary{background: var(--btn); border-color: rgba(43,92,255,.6)}
-    button.danger{background: rgba(255,77,77,.15); border-color: rgba(255,77,77,.45)}
-    button.ok{background: rgba(38,208,124,.12); border-color: rgba(38,208,124,.45)}
-    button:active{transform: scale(.98)}
-    button:disabled{opacity:.55; cursor:not-allowed}
-    .muted{color:var(--muted); font-size:13px; line-height:1.4}
-    .mini{font-size:12px;color:rgba(233,238,252,.70)}
-    .big{font-size:34px; font-weight:950; letter-spacing:-.02em; margin:4px 0 6px;}
-    .big.good{color:var(--good)}
-    .big.bad{color:var(--bad)}
-    .sep{height:1px;background:var(--line); margin:14px 0}
-    .list{display:grid; gap:8px; margin-top:8px}
-    .li{
-      display:flex; justify-content:space-between; gap:10px;
-      font-size:13px; color:var(--muted);
-      padding:10px 10px;
-      background: rgba(0,0,0,.12);
-      border:1px solid var(--line);
-      border-radius:12px;
-    }
-    .li b{color:var(--text)}
-    .li .good{color:var(--good); font-weight:950}
-    .li .bad{color:var(--bad); font-weight:950}
+    .rangeVal{min-width:110px;text-align:right;color:var(--text);font-weight:950;}
 
-    .hint{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,209,102,.35);
-      background: rgba(255,209,102,.10);
-      color: #ffe7a7;
+    .pillRow{display:flex; gap:10px; flex-wrap:wrap}
+    .pill{
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      padding:9px 11px;
+      border-radius:999px;
       font-size:13px;
-      line-height:1.35;
+      color: var(--muted);
+      display:flex; gap:8px; align-items:center;
+      white-space:nowrap;
     }
+    .pill b{color: var(--text); font-weight:950}
+
     .callout{
       margin-top:10px;
       padding:10px 12px;
-      border-radius:14px;
+      border-radius:16px;
       border:1px solid rgba(43,92,255,.35);
       background: rgba(43,92,255,.10);
       color: rgba(233,238,252,.95);
       font-size:13px;
       line-height:1.35;
     }
+    .hint{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,209,102,.35);
+      background: rgba(255,209,102,.10);
+      color: #ffe7a7;
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .tabs{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .tab{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.12);
+      color: rgba(233,238,252,.9);
+      font-weight:900;
+      cursor:pointer;
+      user-select:none;
+    }
+    .tab.active{
+      background: rgba(43,92,255,.16);
+      border-color: rgba(43,92,255,.45);
+    }
+
+    .list{display:grid; gap:8px; margin-top:8px}
+    .li{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size:13px; color:var(--muted);
+      padding:10px 10px;
+      background: rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+    }
+    .li b{color:var(--text)}
+    .good{color:var(--good); font-weight:950}
+    .bad{color:var(--bad); font-weight:950}
+
     .selling{
       display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
       padding:12px;
       background: rgba(255,255,255,.06);
       border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px;
+      border-radius:16px;
       margin-top:10px;
     }
     .meter{display:flex; gap:10px; flex-wrap:wrap}
     .kpi{
-      padding:10px 12px; border-radius:14px;
-      background: rgba(0,0,0,.15);
-      border:1px solid var(--line);
+      padding:10px 12px; border-radius:16px;
+      background: rgba(0,0,0,.16);
+      border:1px solid rgba(255,255,255,.12);
       min-width:160px;
     }
     .kpi .k{font-size:12px;color:var(--muted)}
     .kpi .v{font-size:18px;font-weight:950;margin-top:2px}
+
     .hide{display:none !important}
 
-    /* Reflection sheet */
+    /* Settings Drawer */
+    .drawer{
+      margin-top:12px;
+      padding:12px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.14);
+    }
+    .drawerHead{display:flex; justify-content:space-between; align-items:center; gap:10px}
+    .drawerHead b{font-size:14px}
+    .drawerBody{margin-top:10px}
+
+    /* Reflection & Summary */
     .sheet{
       margin-top:12px;
       padding:14px;
-      border-radius:16px;
+      border-radius:18px;
       border:1px solid rgba(255,255,255,.16);
       background: rgba(0,0,0,.12);
     }
@@ -148,7 +231,7 @@
     .q{
       display:grid; gap:8px;
       padding:10px;
-      border-radius:14px;
+      border-radius:16px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.05);
       margin-top:10px;
@@ -158,7 +241,7 @@
       width:100%;
       min-height:70px;
       resize:vertical;
-      border-radius:12px;
+      border-radius:14px;
       border:1px solid rgba(255,255,255,.16);
       background: rgba(0,0,0,.18);
       color:var(--text);
@@ -168,113 +251,129 @@
       font-size:13px;
     }
 
-    .defs{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
+    /* Home hero logo */
+    .homeHero{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      padding:14px;
+      border-radius:18px;
       border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      color: rgba(233,238,252,.9);
-      font-size:13px;
-      line-height:1.35;
+      background: rgba(0,0,0,.14);
+      margin-top:12px;
     }
-    .defs summary{cursor:pointer; font-weight:900}
-    .defs p{margin:8px 0 0; color: rgba(233,238,252,.82)}
-    footer{margin-top:18px; color:rgba(233,238,252,.55); font-size:12px}
+    .heroLogo{
+      width:82px; height:82px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.16);
+      display:grid; place-items:center;
+      overflow:hidden;
+      flex: 0 0 auto;
+    }
+    .heroLogo img{width:100%; height:100%; object-fit:contain; display:block; transform: scale(1.02);}
 
-    /* Print styles */
     @media print{
       body{background:#fff; color:#000}
       .wrap{max-width:100%; padding:0}
-      .top, #historyCard, #startView, #dayView { display:none !important; }
+      .nav, #historyCard, #startView, #dayView { display:none !important; }
       #resultView{display:block !important}
       .card{box-shadow:none; border:1px solid #ddd; background:#fff}
-      .pill{background:#f3f3f3; border-color:#ddd; color:#111}
+      .pill, .chip{background:#f3f3f3; border-color:#ddd; color:#111}
       .muted{color:#222}
       .hint{color:#111; background:#fff6d6; border-color:#e7cf7a}
       .callout{color:#111; background:#eaf0ff; border-color:#b6c6ff}
       button{display:none !important}
       textarea{border:1px solid #bbb; background:#fff; color:#000}
-      a{color:#000; text-decoration:none}
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="logo"></div>
-        <div>
-          <h1>Lemonade Class <span class="sub">— Classroom MVP</span></h1>
-          <div class="sub">A micro-business simulation (single-file, no login, no backend)</div>
-        </div>
+<div class="wrap">
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="brand">
+      <div class="brandMark">
+        <img id="navLogo" alt="Lemonade Class logo" />
       </div>
-      <div class="row">
-        <div class="pill">💵 Cash: <b id="cashPill">$0.00</b></div>
-        <div class="pill">📅 Day: <b id="dayPill">—</b></div>
-        <div class="pill">🎓 Explain: <b id="explainPill">On</b></div>
+      <div class="title">
+        <b>Lemonade Class</b>
+        <span>Micro-business simulation • classroom-ready</span>
       </div>
     </div>
 
-    <div class="grid">
-      <!-- LEFT -->
-      <div class="card">
-        <!-- START -->
-        <div id="startView">
-          <h2>Start</h2>
-          <div class="muted">
-            Run your stand for 5 or 7 days. Make decisions, watch sales happen, and learn what drives <b>profit</b>.
-          </div>
+    <div class="navRight">
+      <div class="chip">💵 Cash: <b id="cashPill">$0.00</b></div>
+      <div class="chip">📅 Day: <b id="dayPill">—</b></div>
+      <div class="chip">🎓 Explain: <b id="explainPill">On</b></div>
 
-          <div class="row" style="margin-top:12px">
-            <div style="flex:1">
+      <div class="navBtns">
+        <button class="ghost" id="btnHome" title="Go to Home">Home</button>
+        <button class="ghost" id="btnToggleSettings" title="Open Settings">Settings</button>
+        <button class="danger" id="btnRestart" title="Restart this run">Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT -->
+    <div class="card">
+
+      <!-- SETTINGS DRAWER -->
+      <div id="settingsDrawer" class="drawer hide">
+        <div class="drawerHead">
+          <b>Settings (Teacher + Student)</b>
+          <button class="ghost" id="btnCloseSettings">Close</button>
+        </div>
+        <div class="drawerBody">
+          <div class="two">
+            <div>
               <label>Student name</label>
               <input id="playerName" type="text" placeholder="e.g., Marcus" maxlength="24" />
             </div>
-            <div style="flex:1">
+            <div>
               <label>Class code (optional)</label>
               <input id="classCode" type="text" placeholder="e.g., 6B-Period2" maxlength="24" />
-              <div class="mini" style="margin-top:6px">This prints on the reflection sheet + saves into the CSV filename.</div>
             </div>
           </div>
 
-          <div class="row" style="margin-top:12px">
-            <div style="flex:1">
+          <div class="two" style="margin-top:10px">
+            <div>
               <label>Teacher name (optional)</label>
               <input id="teacherName" type="text" placeholder="e.g., Ms. Rivera" maxlength="32" />
             </div>
-            <div style="flex:1">
+            <div>
+              <label>Explain Mode</label>
+              <select id="explainMode">
+                <option value="on">On (recommended)</option>
+                <option value="off">Off</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two" style="margin-top:10px">
+            <div>
               <label>Game length</label>
               <select id="gameLen">
                 <option value="5">5 days</option>
                 <option value="7" selected>7 days</option>
               </select>
             </div>
-          </div>
-
-          <div class="row" style="margin-top:12px">
-            <div style="flex:1">
-              <label>Difficulty (teacher setting)</label>
+            <div>
+              <label>Difficulty</label>
               <select id="difficulty">
                 <option value="guided">Guided (gentle)</option>
-                <option value="standard" selected>Standard (recommended)</option>
+                <option value="standard" selected>Standard</option>
                 <option value="competitive">Competitive (no bailout)</option>
               </select>
-              <div class="mini" style="margin-top:6px">Standard keeps students finishing the simulation.</div>
-            </div>
-            <div style="flex:1">
-              <label>Explain Mode (teaching hints)</label>
-              <select id="explainMode">
-                <option value="on" selected>On</option>
-                <option value="off">Off</option>
-              </select>
-              <div class="mini" style="margin-top:6px">On = definitions + tips show up during play.</div>
             </div>
           </div>
 
-          <div class="row" style="margin-top:12px">
-            <div style="flex:1">
-              <label>Starting cash (teacher setting)</label>
+          <div class="two" style="margin-top:10px">
+            <div>
+              <label>Starting cash</label>
               <select id="startingCash">
                 <option value="50">$50 (hard)</option>
                 <option value="100" selected>$100 (normal)</option>
@@ -282,7 +381,7 @@
                 <option value="200">$200 (very easy)</option>
               </select>
             </div>
-            <div style="flex:1">
+            <div>
               <label>Ingredient cost (COGS per cup)</label>
               <select id="cogsPerCup">
                 <option value="0.35">$0.35 (low cost)</option>
@@ -290,190 +389,282 @@
                 <option value="0.70">$0.70 (higher cost)</option>
                 <option value="1.00">$1.00 (very high)</option>
               </select>
-              <div class="mini" style="margin-top:6px">COGS = “Cost of Goods Sold.” Bigger COGS makes margin tighter.</div>
             </div>
           </div>
 
-          <div class="btns">
-            <button class="primary" id="btnStart">Start Game</button>
-            <button id="btnResume" class="hide">Resume Saved Game</button>
-            <button class="danger hide" id="btnClear">Clear Save</button>
-          </div>
-
-          <div id="startTeaching" class="hint">
-            <b>Teacher-ready:</b> students can export a CSV + print a reflection sheet at the end (or Save as PDF).
-          </div>
-
-          <div id="startDefs" class="defs">
-            <details>
-              <summary>Glossary (click)</summary>
-              <p><b>Revenue</b> = money from sales (price × cups sold).<br/>
-                 <b>COGS</b> = your ingredient cost to make the product.<br/>
-                 <b>Profit</b> = revenue − (COGS + marketing).<br/>
-                 <b>Margin</b> = profit ÷ revenue (how much you keep per dollar sold).</p>
-            </details>
-          </div>
-        </div>
-
-        <!-- DAY -->
-        <div id="dayView" class="hide">
-          <h2 id="dayTitle">Day</h2>
-
-          <div class="row">
-            <div class="pill">🌦️ Forecast: <b id="wxPill">—</b></div>
-            <div class="pill">🎪 City event: <b id="eventPill">—</b></div>
-            <div class="pill">🥤 Rival price: <b id="rivalPill">—</b></div>
-          </div>
-
-          <div class="sep"></div>
-
-          <label>Cups to make</label>
-          <div class="rangeRow">
-            <input id="cups" type="range" min="0" max="200" value="80" />
-            <div class="rangeVal" id="cupsVal">80</div>
-          </div>
-
-          <label>Price per cup</label>
-          <div class="rangeRow">
-            <input id="price" type="range" min="0.5" max="5" value="2.00" step="0.05" />
-            <div class="rangeVal" id="priceVal">$2.00</div>
-          </div>
-
-          <label>Marketing spend</label>
-          <div class="rangeRow">
-            <input id="mkt" type="range" min="0" max="20" value="0" step="1" />
-            <div class="rangeVal" id="mktVal">$0</div>
-          </div>
-
-          <!-- NEW: up-front cost preview -->
-          <div class="callout" id="upfrontPreview">
-            Up-front spend today: <b id="upfrontSpendVal">$0.00</b>
-            <span class="mini"> (COGS <span id="cogsTag">$0.50</span> × cups + marketing)</span>
-          </div>
-
-          <div id="explainTips" class="hint hide"></div>
-
-          <div class="btns">
-            <button class="primary" id="btnSell">Start Selling</button>
-            <button id="btnResetDay">Reset Inputs</button>
-          </div>
-
-          <div id="sellingBox" class="selling hide">
-            <div style="min-width:260px">
-              <b>Selling…</b> <span class="muted" id="sellingMsg">Customers are arriving.</span>
-              <div class="mini">You already paid costs up-front. Now revenue comes in.</div>
+          <div class="two" style="margin-top:10px">
+            <div>
+              <label>Scenario: Foot Traffic Level</label>
+              <select id="scenarioTraffic">
+                <option value="low">Low foot traffic</option>
+                <option value="med" selected>Medium foot traffic</option>
+                <option value="high">High foot traffic</option>
+              </select>
+              <div class="mini" style="margin-top:6px">Changes how many customers might show up overall.</div>
             </div>
-            <div class="meter">
-              <div class="kpi"><div class="k">Customers</div><div class="v" id="kCustomers">0</div></div>
-              <div class="kpi"><div class="k">Cups left</div><div class="v" id="kCupsLeft">—</div></div>
-              <div class="kpi"><div class="k">Revenue</div><div class="v" id="kRevenue">$0</div></div>
+            <div>
+              <label>Scenario: Customer Mix</label>
+              <select id="scenarioMix">
+                <option value="price">Price-sensitive shoppers</option>
+                <option value="balanced" selected>Balanced shoppers</option>
+                <option value="convenience">Convenience-focused shoppers</option>
+              </select>
+              <div class="mini" style="margin-top:6px">Changes how sensitive demand is to price.</div>
             </div>
           </div>
 
-          <div id="dayHint" class="hint hide"></div>
-        </div>
-
-        <!-- RESULTS -->
-        <div id="resultView" class="hide">
-          <h2 id="resultTitle">Results</h2>
-          <div id="profitBig" class="big">$0.00</div>
-          <div class="muted" id="resultNarrative">—</div>
-
-          <div class="sep"></div>
-          <div class="list" id="resultList"></div>
-
-          <div id="lessonBox" class="hint"></div>
-
-          <div class="btns">
-            <button class="primary" id="btnNext">Next Day</button>
-            <button id="btnPlayAgain" class="hide">Play Again</button>
-            <button class="ok" id="btnCSV" title="Download a CSV of your run">Download CSV</button>
-            <button id="btnPrint" title="Print / Save as PDF reflection sheet">Print Reflection</button>
+          <div class="row" style="margin-top:12px">
+            <button class="primary" id="btnApplySettings">Apply Settings (restart run)</button>
+            <button class="ghost" id="btnSaveSettings">Save Settings (keep run)</button>
           </div>
 
-          <!-- End-of-run summary -->
-          <div id="summaryBox" class="sheet hide">
-            <h3>End-of-Run Summary</h3>
-            <div class="list" id="summaryList"></div>
-          </div>
-
-          <!-- Reflection Sheet -->
-          <div id="reflectionSheet" class="sheet hide">
-            <h3>Reflection Sheet (Lemonade Class)</h3>
-            <div class="row" style="margin-top:6px">
-              <div class="pill">👤 Student: <b id="refName">—</b></div>
-              <div class="pill">🏫 Class: <b id="refClass">—</b></div>
-              <div class="pill">👩🏽‍🏫 Teacher: <b id="refTeacher">—</b></div>
-              <div class="pill">📅 Days: <b id="refDays">—</b></div>
-              <div class="pill">💵 Final cash: <b id="refFinalCash">—</b></div>
-              <div class="pill">📈 Total profit: <b id="refTotalProfit">—</b></div>
-            </div>
-
-            <div class="q">
-              <b>1) What was your most profitable day, and why do you think it worked?</b>
-              <textarea id="q1" placeholder="Write 2–4 sentences..."></textarea>
-            </div>
-
-            <div class="q">
-              <b>2) Describe one mistake you made (price, production, marketing) and what you learned from it.</b>
-              <textarea id="q2" placeholder="Write 2–4 sentences..."></textarea>
-            </div>
-
-            <div class="q">
-              <b>3) If you played again, what strategy would you try?</b>
-              <textarea id="q3" placeholder="Write 2–4 sentences..."></textarea>
-            </div>
-
-            <div class="q">
-              <b>4) Revenue vs Profit: In your own words, what’s the difference?</b>
-              <textarea id="q4" placeholder="Write 1–3 sentences..."></textarea>
-            </div>
-
-            <div class="defs">
-              <details open>
-                <summary>Quick Definitions</summary>
-                <p><b>Revenue</b> = price × cups sold<br/>
-                   <b>COGS</b> = ingredient cost to make the cups you prepared<br/>
-                   <b>Gross Margin</b> = (Revenue − COGS) ÷ Revenue<br/>
-                   <b>Profit Margin</b> = Profit ÷ Revenue</p>
-              </details>
-            </div>
-
-            <div class="mini" style="margin-top:10px">
-              This reflection can be printed (or saved as PDF). In the MVP, answers are not sent anywhere.
-            </div>
+          <div class="hint" style="margin-top:12px">
+            <b>Tip:</b> Apply Settings restarts the run using your new settings. Save Settings keeps the current run.
           </div>
         </div>
       </div>
 
-      <!-- RIGHT -->
-      <div class="card" id="historyCard">
-        <h2>Scoreboard</h2>
-        <div class="muted">This run is saved locally on this device. (Future: teacher codes + class leaderboard)</div>
-        <div class="sep"></div>
-        <div class="list" id="history"></div>
-        <div class="sep"></div>
+      <!-- START VIEW -->
+      <div id="startView">
+        <h2>Home</h2>
         <div class="muted">
-          <b>What this teaches:</b> revenue vs profit, cost & margin, inventory waste, price sensitivity, demand shifts (weather/events), and strategic adjustment.
+          Build your lemonade stand for <b>5 or 7 days</b>. Learn the difference between <b>revenue</b> and <b>profit</b>.
         </div>
-        <footer>© Lemonade Class — single-file classroom prototype.</footer>
+
+        <div class="homeHero">
+          <div class="heroLogo">
+            <img id="homeLogo" alt="Lemonade Class logo" />
+          </div>
+          <div>
+            <div style="font-weight:950; font-size:14px;">Welcome to Lemonade Class</div>
+            <div class="mini" style="margin-top:6px;">
+              Make decisions → see results → reflect → improve. Perfect for computer labs & tablets.
+            </div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="two">
+          <div>
+            <label>Student name</label>
+            <input id="playerName2" type="text" placeholder="e.g., Marcus" maxlength="24" />
+          </div>
+          <div>
+            <label>Class code (optional)</label>
+            <input id="classCode2" type="text" placeholder="e.g., 6B-Period2" maxlength="24" />
+          </div>
+        </div>
+
+        <div class="two" style="margin-top:10px">
+          <div>
+            <label>Teacher name (optional)</label>
+            <input id="teacherName2" type="text" placeholder="e.g., Ms. Rivera" maxlength="32" />
+          </div>
+          <div>
+            <label>Quick start preset</label>
+            <select id="preset">
+              <option value="standard" selected>Standard classroom</option>
+              <option value="guided">Guided (easier)</option>
+              <option value="competitive">Competitive (harder)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="tabs" style="margin-top:12px">
+          <div class="tab active" data-tab="learn" id="tabLearn">Learn</div>
+          <div class="tab" data-tab="play" id="tabPlay">Play</div>
+          <div class="tab" data-tab="teach" id="tabTeach">Teacher</div>
+        </div>
+
+        <div id="homeLearn" style="margin-top:12px">
+          <div class="callout">
+            <b>Fast lesson:</b> If you sell a cup for $2 and it costs $0.50 to make, you have <b>$1.50 gross profit</b> per cup.
+            But marketing + waste can reduce your final profit.
+          </div>
+          <div class="hint">
+            In business, you win by matching <b>price</b> + <b>inventory</b> to <b>demand</b>.
+          </div>
+        </div>
+
+        <div id="homePlay" class="hide" style="margin-top:12px">
+          <div class="muted">Hit Start and run the stand. You’ll get a print-ready reflection sheet at the end.</div>
+        </div>
+
+        <div id="homeTeach" class="hide" style="margin-top:12px">
+          <div class="muted">
+            Open <b>Settings</b> to change scenario packs, ingredient costs, starting cash, and difficulty.
+            Students can export CSV + print reflection at the end.
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <button class="primary" id="btnStart">Start Game</button>
+          <button class="ghost hide" id="btnResume">Resume Saved Run</button>
+          <button class="danger hide" id="btnClear">Clear Save</button>
+        </div>
+      </div>
+
+      <!-- DAY VIEW -->
+      <div id="dayView" class="hide">
+        <h2 id="dayTitle">Day</h2>
+
+        <div class="pillRow">
+          <div class="pill">🌦️ Forecast: <b id="wxPill">—</b></div>
+          <div class="pill">🎪 Event: <b id="eventPill">—</b></div>
+          <div class="pill">🥤 Rival: <b id="rivalPill">—</b></div>
+          <div class="pill">👟 Traffic: <b id="trafficPill">—</b></div>
+          <div class="pill">🧠 Mix: <b id="mixPill">—</b></div>
+        </div>
+
+        <div class="sep"></div>
+
+        <label>Cups to make</label>
+        <div class="rangeRow">
+          <input id="cups" type="range" min="0" max="200" value="80" />
+          <div class="rangeVal" id="cupsVal">80</div>
+        </div>
+
+        <label>Price per cup</label>
+        <div class="rangeRow">
+          <input id="price" type="range" min="0.5" max="5" value="2.00" step="0.05" />
+          <div class="rangeVal" id="priceVal">$2.00</div>
+        </div>
+
+        <label>Marketing spend</label>
+        <div class="rangeRow">
+          <input id="mkt" type="range" min="0" max="20" value="0" step="1" />
+          <div class="rangeVal" id="mktVal">$0</div>
+        </div>
+
+        <div class="callout">
+          Up-front spend today: <b id="upfrontSpendVal">$0.00</b>
+          <span class="mini"> (COGS <span id="cogsTag">$0.50</span> × cups + marketing)</span>
+        </div>
+
+        <div id="explainTips" class="hint hide"></div>
+
+        <div class="row" style="margin-top:14px">
+          <button class="primary" id="btnSell">Start Selling</button>
+          <button class="ghost" id="btnResetDay">Reset</button>
+        </div>
+
+        <div id="sellingBox" class="selling hide">
+          <div style="min-width:260px">
+            <b>Selling…</b> <span class="muted" id="sellingMsg">Customers are arriving.</span>
+            <div class="mini">Costs were paid up-front. Now revenue comes in.</div>
+          </div>
+          <div class="meter">
+            <div class="kpi"><div class="k">Customers</div><div class="v" id="kCustomers">0</div></div>
+            <div class="kpi"><div class="k">Cups left</div><div class="v" id="kCupsLeft">—</div></div>
+            <div class="kpi"><div class="k">Revenue</div><div class="v" id="kRevenue">$0</div></div>
+          </div>
+        </div>
+
+        <div id="dayHint" class="hint hide"></div>
+      </div>
+
+      <!-- RESULT VIEW -->
+      <div id="resultView" class="hide">
+        <h2 id="resultTitle">Results</h2>
+        <div id="profitBig" style="font-size:38px;font-weight:1000;letter-spacing:-.02em;margin:6px 0 6px;">$0.00</div>
+        <div class="muted" id="resultNarrative">—</div>
+
+        <div class="sep"></div>
+        <div class="list" id="resultList"></div>
+
+        <div id="lessonBox" class="hint"></div>
+
+        <div class="row" style="margin-top:14px">
+          <button class="primary" id="btnNext">Next Day</button>
+          <button class="ghost hide" id="btnPlayAgain">Play Again</button>
+          <button class="ok" id="btnCSV">Download CSV</button>
+          <button class="ghost" id="btnPrint">Print Reflection</button>
+        </div>
+
+        <div id="summaryBox" class="sheet hide">
+          <h3>End-of-Run Summary</h3>
+          <div class="list" id="summaryList"></div>
+        </div>
+
+        <div id="reflectionSheet" class="sheet hide">
+          <h3>Reflection Sheet (Lemonade Class)</h3>
+          <div class="pillRow" style="margin-top:6px">
+            <div class="pill">👤 Student: <b id="refName">—</b></div>
+            <div class="pill">🏫 Class: <b id="refClass">—</b></div>
+            <div class="pill">👩🏽‍🏫 Teacher: <b id="refTeacher">—</b></div>
+            <div class="pill">📅 Days: <b id="refDays">—</b></div>
+            <div class="pill">💵 Final cash: <b id="refFinalCash">—</b></div>
+            <div class="pill">📈 Total profit: <b id="refTotalProfit">—</b></div>
+          </div>
+
+          <div class="q">
+            <b>1) What was your most profitable day, and why do you think it worked?</b>
+            <textarea id="q1" placeholder="Write 2–4 sentences..."></textarea>
+          </div>
+          <div class="q">
+            <b>2) Describe one mistake you made and what you learned.</b>
+            <textarea id="q2" placeholder="Write 2–4 sentences..."></textarea>
+          </div>
+          <div class="q">
+            <b>3) If you played again, what strategy would you try?</b>
+            <textarea id="q3" placeholder="Write 2–4 sentences..."></textarea>
+          </div>
+          <div class="q">
+            <b>4) Revenue vs Profit: In your own words, what’s the difference?</b>
+            <textarea id="q4" placeholder="Write 1–3 sentences..."></textarea>
+          </div>
+
+          <div class="callout">
+            <b>Definitions:</b>
+            Revenue = price × cups sold • Profit = revenue − (COGS + marketing) • Margin = profit ÷ revenue
+          </div>
+
+          <div class="mini" style="margin-top:10px">
+            Print this page (or Save as PDF). Answers are not uploaded anywhere in the MVP.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="card" id="historyCard">
+      <h2>Scoreboard</h2>
+      <div class="muted">This run is saved locally on this device.</div>
+      <div class="sep"></div>
+      <div class="list" id="history"></div>
+      <div class="sep"></div>
+      <div class="muted">
+        <b>Teaches:</b> profit vs revenue, cost & margin, inventory waste, price sensitivity, demand changes, and iteration.
       </div>
     </div>
   </div>
+</div>
 
 <script>
-/** Lemonade Class — Ultimate Classroom MVP (single-file)
- *  - Costs paid up-front
- *  - Up-front spend preview
- *  - Teacher settings: class code, teacher name, starting cash, COGS per cup, explain mode
- *  - CSV export + printable reflection sheet
+/** Lemonade Class — Branded single-file classroom MVP
+ *  REQUIRED files in SAME folder as this index.html:
+ *   - logo.png (transparent)
+ *   - logo-bg.jpg (optional fallback)
  */
 
 const $ = (id) => document.getElementById(id);
 const money = (n) => (n < 0 ? `-$${Math.abs(n).toFixed(2)}` : `$${n.toFixed(2)}`);
-const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const clamp = (n,a,b) => Math.max(a, Math.min(b,n));
+const pct = (n) => `${(n*100).toFixed(0)}%`;
+const safeDiv = (a,b) => b===0 ? 0 : a/b;
 
-const STORE_KEY = "lemonade_class_ultimate_v1";
+const STORE_KEY = "lemonade_class_branded_v1";
+
+// Logo paths (same directory as index.html)
+const LOGO_PRIMARY = "./logo.png";
+const LOGO_FALLBACK = "./logo-bg.jpg";
+
+// Apply logos with fallback (works for GitHub Pages repo subpaths too, because we use relative paths)
+function setLogo(imgEl){
+  imgEl.src = LOGO_PRIMARY;
+  imgEl.onerror = () => { imgEl.onerror = null; imgEl.src = LOGO_FALLBACK; };
+}
 
 const WEATHER = [
   { key:"Hot",   icon:"☀️", mult:1.35 },
@@ -488,32 +679,42 @@ const EVENTS = [
   { key:"Sports Game Nearby", icon:"🏀", mult:1.20, chance:0.16 },
 ];
 
+const TRAFFIC = {
+  low:  { label:"Low",  mult:0.85 },
+  med:  { label:"Medium", mult:1.00 },
+  high: { label:"High", mult:1.18 },
+};
+
+const MIX = {
+  price:      { label:"Price-sensitive", elasticity: 1.25 },
+  balanced:   { label:"Balanced", elasticity: 1.00 },
+  convenience:{ label:"Convenience-focused", elasticity: 0.80 },
+};
+
 function pickWeighted(items){
-  const r = Math.random();
-  let s = 0;
-  for(const it of items){
-    s += it.chance;
-    if(r <= s) return it;
-  }
+  const r = Math.random(); let s = 0;
+  for(const it of items){ s += it.chance; if(r <= s) return it; }
   return items[items.length-1];
 }
 function randBetween(a,b){ return a + Math.random()*(b-a); }
 
-function priceFactor(price, difficulty){
+function priceFactor(price, difficulty, elasticity){
   const sweet = 2.00;
   const delta = price - sweet;
   const harsh = (difficulty === "competitive") ? 1.15 : (difficulty === "guided" ? 0.85 : 1.0);
+  const e = elasticity ?? 1.0;
+
   if(delta > 0){
-    const f = 1 - (0.18 * harsh) * delta;
+    const f = 1 - (0.18 * harsh * e) * delta;
     return clamp(f, 0.20, 1.00);
   } else {
-    const f = 1 + (0.10 * (1/harsh)) * Math.abs(delta);
+    const f = 1 + (0.10 * (1/harsh) * (1/e)) * Math.abs(delta);
     return clamp(f, 0.60, 1.40);
   }
 }
-function marketingFactor(mkt){
-  return 1 + 0.015 * clamp(mkt, 0, 20);
-}
+
+function marketingFactor(mkt){ return 1 + 0.015 * clamp(mkt,0,20); }
+
 function competitorFactor(price, rivalPrice, difficulty){
   const d = price - rivalPrice;
   const harsh = (difficulty === "competitive") ? 1.1 : (difficulty === "guided" ? 0.9 : 1.0);
@@ -525,65 +726,54 @@ function competitorFactor(price, rivalPrice, difficulty){
     return clamp(f, 0.70, 1.25);
   }
 }
-function dailyDemand({weatherMult, eventMult, price, mkt, rivalPrice, difficulty}){
+
+function dailyDemand({weatherMult, eventMult, price, mkt, rivalPrice, difficulty, trafficMult, elasticity}){
   const base = 60;
-  const pf = priceFactor(price, difficulty);
+  const pf = priceFactor(price, difficulty, elasticity);
   const mf = marketingFactor(mkt);
   const cf = competitorFactor(price, rivalPrice, difficulty);
   const noise = randBetween(0.85, 1.15);
-  return Math.max(0, Math.round(base * weatherMult * eventMult * pf * mf * cf * noise));
+  return Math.max(0, Math.round(base * weatherMult * eventMult * trafficMult * pf * mf * cf * noise));
 }
 
-function lessonFor({cupsMade, cupsSold, price, profit, demand, missedSales, wasteCost}){
-  const waste = cupsMade - cupsSold;
-  if(cupsSold === 0 && cupsMade > 0) return "Demand collapsed. Either price was too high, or conditions were bad. Markets can say “no.”";
-  if(waste >= Math.max(10, Math.round(cupsMade*0.25))) return `You over-produced. Waste cost you ${money(wasteCost)}. Inventory decisions matter.`;
-  if(cupsSold === cupsMade && demand > cupsMade) return `You sold out and missed ~${missedSales} sales. Next time produce more or raise price.`;
-  if(profit < 0) return "You lost money today. That’s not failure — it’s feedback. Adjust and recover.";
-  if(price > 2.75) return "Higher prices increase margin, but demand can fall fast. Balance volume vs margin.";
-  if(price < 1.25) return "Low prices can boost demand, but profit per cup might be too low. Margin matters.";
-  return "Nice balance. The best strategy matches price + inventory to real demand.";
+function lessonFor({profit, wasteCost, missedSales}){
+  if(profit < 0) return "You lost money today. That’s feedback, not failure. Adjust price, cups, or marketing tomorrow.";
+  if(wasteCost >= 5) return `Your waste cost was ${money(wasteCost)}. Try making fewer cups or raising price slightly.`;
+  if(missedSales >= 10) return `You sold out and missed about ${missedSales} sales. Consider producing more or raising price.`;
+  return "Strong day. You balanced price + inventory with demand.";
+}
+function narrativeFor({weatherKey, eventKey, price, rivalPrice, soldOut}){
+  if(soldOut) return `You sold out on a ${weatherKey} day. Rival was ${money(rivalPrice)} — demand stayed high.`;
+  return `Day conditions: ${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}. Your price was ${money(price)}.`;
 }
 
-function narrativeFor({weatherKey, eventKey, rivalPrice, price, cupsSold, cupsMade}){
-  const waste = cupsMade - cupsSold;
-  if(cupsSold === cupsMade && cupsMade > 0) return `You sold out on a ${weatherKey} day. Rival was at ${money(rivalPrice)} — your pricing kept demand strong.`;
-  if(waste > 0) return `Demand was softer than expected (${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}). Leftovers became waste.`;
-  return `A steady day (${weatherKey}${eventKey!=="None" ? " + "+eventKey : ""}). Pricing at ${money(price)} kept sales moving.`;
-}
-
-function pct(n){ return `${(n*100).toFixed(0)}%`; }
-function safeDiv(a,b){ return b === 0 ? 0 : a/b; }
-
-// ----------- State -----------
 function freshState(){
   return {
-    playerName: "",
-    classCode: "",
-    teacherName: "",
-    daysTotal: 7,
-    difficulty: "standard",
-    explainMode: "on",
-    startingCash: 100,
-    cogsPerCup: 0.50,
-
-    day: 1,
-    cash: 100,
-    history: [],
-    todays: null,
-    view: "start"
+    view:"start",
+    // settings
+    playerName:"",
+    classCode:"",
+    teacherName:"",
+    explainMode:"on",
+    daysTotal:7,
+    difficulty:"standard",
+    startingCash:100,
+    cogsPerCup:0.50,
+    scenarioTraffic:"med",
+    scenarioMix:"balanced",
+    // run
+    day:1,
+    cash:100,
+    todays:null,
+    history:[]
   };
 }
-
 let state = loadState() ?? freshState();
 
 function saveState(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
 function loadState(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(!raw) return null;
-    return JSON.parse(raw);
-  }catch(e){ return null; }
+  try{ const raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
 }
 function clearState(){
   localStorage.removeItem(STORE_KEY);
@@ -591,18 +781,18 @@ function clearState(){
   render();
 }
 
-// ----------- UI wiring -----------
+// Views
 function show(view){
+  state.view = view;
   $("startView").classList.toggle("hide", view !== "start");
   $("dayView").classList.toggle("hide", view !== "day");
   $("resultView").classList.toggle("hide", view !== "result");
-  state.view = view;
   saveState();
 }
 
 function setHeader(){
   $("cashPill").textContent = money(state.cash);
-  $("dayPill").textContent = state.view === "start" ? "—" : `${Math.min(state.day, state.daysTotal)} / ${state.daysTotal}`;
+  $("dayPill").textContent = (state.view === "start") ? "—" : `${Math.min(state.day, state.daysTotal)} / ${state.daysTotal}`;
   $("explainPill").textContent = (state.explainMode === "on") ? "On" : "Off";
 }
 
@@ -613,12 +803,10 @@ function renderHistory(){
     box.innerHTML = `<div class="li"><span>No days yet</span><b>—</b></div>`;
     return;
   }
-  state.history.slice().reverse().forEach((h) => {
-    const label = `Day ${h.day} • ${h.weather.icon} ${h.weather.key}`;
-    const value = `<span class="${h.netProfit>=0?'good':'bad'}">${money(h.netProfit)}</span>`;
+  state.history.slice().reverse().forEach(h => {
     const div = document.createElement("div");
     div.className = "li";
-    div.innerHTML = `<span>${label}</span><b>${value}</b>`;
+    div.innerHTML = `<span>Day ${h.day} • ${h.weather.icon} ${h.weather.key}</span><b class="${h.netProfit>=0?'good':'bad'}">${money(h.netProfit)}</b>`;
     box.appendChild(div);
   });
 }
@@ -628,21 +816,6 @@ function maybeShowResume(){
   const showBtns = !!saved && state.view === "start" && (saved.history?.length ?? 0) > 0;
   $("btnResume").classList.toggle("hide", !showBtns);
   $("btnClear").classList.toggle("hide", !showBtns);
-}
-
-function renderStart(){
-  $("playerName").value = state.playerName || "";
-  $("classCode").value = state.classCode || "";
-  $("teacherName").value = state.teacherName || "";
-  $("gameLen").value = String(state.daysTotal || 7);
-  $("difficulty").value = state.difficulty || "standard";
-  $("explainMode").value = state.explainMode || "on";
-  $("startingCash").value = String(state.startingCash || 100);
-  $("cogsPerCup").value = String(state.cogsPerCup ?? 0.5);
-
-  // hide glossary if explain off
-  $("startDefs").classList.toggle("hide", (state.explainMode !== "on"));
-  maybeShowResume();
 }
 
 function newDayContext(){
@@ -658,34 +831,55 @@ function syncInputs(){
   $("priceVal").textContent = money(parseFloat($("price").value));
   $("mktVal").textContent = `$${parseInt($("mkt").value,10)}`;
 
-  // Up-front preview
   const cups = parseInt($("cups").value,10);
   const mkt = parseInt($("mkt").value,10);
   const cogs = Number(state.cogsPerCup ?? 0.50);
-  const cost = cups * cogs;
-  const upfront = cost + mkt;
+  const upfront = (cups * cogs) + mkt;
 
   $("cogsTag").textContent = money(cogs);
   $("upfrontSpendVal").textContent = money(upfront);
 
   if(state.explainMode === "on"){
-    const tip =
-      `Tip: Your up-front spend is what you pay before selling. If you spend too much and demand is low, you can lose money.`;
     $("explainTips").classList.remove("hide");
-    $("explainTips").textContent = tip;
+    $("explainTips").textContent =
+      "Teaching tip: If your up-front spend is high and demand is low, your profit can go negative. Try adjusting cups or price.";
   } else {
     $("explainTips").classList.add("hide");
   }
+}
+
+function renderStart(){
+  // sync Home inputs
+  $("playerName2").value = state.playerName || "";
+  $("classCode2").value = state.classCode || "";
+  $("teacherName2").value = state.teacherName || "";
+
+  // sync drawer inputs
+  $("playerName").value = state.playerName || "";
+  $("classCode").value = state.classCode || "";
+  $("teacherName").value = state.teacherName || "";
+  $("explainMode").value = state.explainMode || "on";
+  $("gameLen").value = String(state.daysTotal || 7);
+  $("difficulty").value = state.difficulty || "standard";
+  $("startingCash").value = String(state.startingCash || 100);
+  $("cogsPerCup").value = String(state.cogsPerCup ?? 0.50);
+  $("scenarioTraffic").value = state.scenarioTraffic || "med";
+  $("scenarioMix").value = state.scenarioMix || "balanced";
+
+  maybeShowResume();
 }
 
 function renderDay(){
   if(!state.todays) newDayContext();
   const { weather, event, rivalPrice } = state.todays;
 
-  $("dayTitle").textContent = `Day ${state.day} — Make your decisions`;
+  $("dayTitle").textContent = `Day ${state.day} — Decisions`;
   $("wxPill").textContent = `${weather.icon} ${weather.key}`;
   $("eventPill").textContent = `${event.icon} ${event.key}`;
   $("rivalPill").textContent = money(rivalPrice);
+
+  $("trafficPill").textContent = TRAFFIC[state.scenarioTraffic].label;
+  $("mixPill").textContent = MIX[state.scenarioMix].label;
 
   $("cups").value = 80;
   $("price").value = 2.00;
@@ -704,75 +898,64 @@ function computeTotals(){
   const totalCOGS = state.history.reduce((s,h)=>s+h.cost,0);
   const totalMkt = state.history.reduce((s,h)=>s+h.marketing,0);
   const totalProfit = state.history.reduce((s,h)=>s+h.netProfit,0);
-  const totalSold = state.history.reduce((s,h)=>s+h.cupsSold,0);
   const totalMade = state.history.reduce((s,h)=>s+h.cupsMade,0);
+  const totalSold = state.history.reduce((s,h)=>s+h.cupsSold,0);
   const totalWaste = state.history.reduce((s,h)=>s+h.waste,0);
-  const missedSales = state.history.reduce((s,h)=>s+h.missedSales,0);
+  const missed = state.history.reduce((s,h)=>s+h.missedSales,0);
 
-  const grossMargin = safeDiv((totalRevenue - totalCOGS), totalRevenue);
-  const profitMargin = safeDiv(totalProfit, totalRevenue);
+  const gm = safeDiv((totalRevenue - totalCOGS), totalRevenue);
+  const pm = safeDiv(totalProfit, totalRevenue);
+  const best = state.history.reduce((a,b)=> b.netProfit>a.netProfit?b:a, state.history[0]);
+  const worst = state.history.reduce((a,b)=> b.netProfit<a.netProfit?b:a, state.history[0]);
 
-  const best = state.history.reduce((a,b)=> (b.netProfit>a.netProfit?b:a), state.history[0] || null);
-  const worst = state.history.reduce((a,b)=> (b.netProfit<a.netProfit?b:a), state.history[0] || null);
-
-  return {
-    totalRevenue, totalCOGS, totalMkt, totalProfit,
-    totalSold, totalMade, totalWaste, missedSales,
-    grossMargin, profitMargin,
-    best, worst
-  };
+  return { totalRevenue,totalCOGS,totalMkt,totalProfit,totalMade,totalSold,totalWaste,missed,gm,pm,best,worst };
 }
 
 function fillSummary(){
-  const s = $("summaryList");
-  s.innerHTML = "";
-  if(state.history.length === 0) return;
-
   const t = computeTotals();
   const avgProfit = t.totalProfit / state.history.length;
 
+  const box = $("summaryList");
+  box.innerHTML = "";
   const rows = [
     ["Total Revenue", money(t.totalRevenue)],
     ["Total COGS", money(t.totalCOGS)],
     ["Total Marketing", money(t.totalMkt)],
     ["Total Profit", `<span class="${t.totalProfit>=0?'good':'bad'}">${money(t.totalProfit)}</span>`],
-    ["Gross Margin", pct(t.grossMargin)],
-    ["Profit Margin", pct(t.profitMargin)],
+    ["Gross Margin", pct(t.gm)],
+    ["Profit Margin", pct(t.pm)],
     ["Cups Made", String(t.totalMade)],
     ["Cups Sold", String(t.totalSold)],
     ["Cups Wasted", String(t.totalWaste)],
-    ["Missed Sales (sold out)", String(t.missedSales)],
+    ["Missed Sales", String(t.missed)],
     ["Avg Profit / Day", `<span class="${avgProfit>=0?'good':'bad'}">${money(avgProfit)}</span>`],
-    ["Best Day", t.best ? `Day ${t.best.day} (${money(t.best.netProfit)})` : "—"],
-    ["Worst Day", t.worst ? `Day ${t.worst.day} (${money(t.worst.netProfit)})` : "—"],
+    ["Best Day", `Day ${t.best.day} (${money(t.best.netProfit)})`],
+    ["Worst Day", `Day ${t.worst.day} (${money(t.worst.netProfit)})`],
   ];
-
-  for(const [k,v] of rows){
+  rows.forEach(([k,v])=>{
     const div = document.createElement("div");
     div.className = "li";
     div.innerHTML = `<span>${k}</span><b>${v}</b>`;
-    s.appendChild(div);
-  }
+    box.appendChild(div);
+  });
 }
 
-function fillReflectionSheet(){
+function fillReflection(){
   const finalCash = state.cash;
   const totalProfit = finalCash - state.startingCash;
 
   $("refName").textContent = state.playerName || "Student";
   $("refClass").textContent = state.classCode || "—";
   $("refTeacher").textContent = state.teacherName || "—";
-  $("refDays").textContent = `${state.daysTotal}`;
+  $("refDays").textContent = String(state.daysTotal);
   $("refFinalCash").textContent = money(finalCash);
   $("refTotalProfit").textContent = money(totalProfit);
 
-  if(state.history.length > 0){
-    const best = state.history.reduce((a,b)=> (b.netProfit>a.netProfit?b:a), state.history[0]);
-    const worst = state.history.reduce((a,b)=> (b.netProfit<a.netProfit?b:a), state.history[0]);
-    const q1Default = `My most profitable day was Day ${best.day} (${best.weather.key}). I think it worked because my price was ${money(best.price)} and I made ${best.cupsMade} cups.`;
-    const q2Default = `One mistake I made was on Day ${worst.day}. I ${worst.waste>0 ? "made too many cups and wasted inventory" : "didn't capture enough demand or priced wrong"}. Next time I would adjust price/production.`;
-    if(!$("q1").value) $("q1").value = q1Default;
-    if(!$("q2").value) $("q2").value = q2Default;
+  if(state.history.length){
+    const best = state.history.reduce((a,b)=> b.netProfit>a.netProfit?b:a, state.history[0]);
+    const worst = state.history.reduce((a,b)=> b.netProfit<a.netProfit?b:a, state.history[0]);
+    if(!$("q1").value) $("q1").value = `My most profitable day was Day ${best.day}. I think it worked because my price and cups matched demand.`;
+    if(!$("q2").value) $("q2").value = `One mistake I made was on Day ${worst.day}. Next time I will adjust cups/price/marketing based on demand.`;
   }
 }
 
@@ -781,33 +964,31 @@ function renderResult(last){
 
   const big = $("profitBig");
   big.textContent = money(last.netProfit);
-  big.className = "big " + (last.netProfit >= 0 ? "good" : "bad");
+  big.style.color = last.netProfit>=0 ? "var(--good)" : "var(--bad)";
 
   $("resultNarrative").textContent = last.narrative;
-
-  const list = $("resultList");
-  list.innerHTML = "";
 
   const grossMargin = safeDiv((last.revenue - last.cost), last.revenue);
   const profitMargin = safeDiv(last.netProfit, last.revenue);
 
+  const list = $("resultList");
+  list.innerHTML = "";
   const rows = [
     ["Customers (demand)", String(last.demand)],
     ["Cups made", String(last.cupsMade)],
     ["Cups sold", String(last.cupsSold)],
-    ["Missed sales (sold out)", String(last.missedSales)],
+    ["Missed sales", String(last.missedSales)],
     ["Cups wasted", String(last.waste)],
     ["Waste cost", money(last.wasteCost)],
     ["Revenue", money(last.revenue)],
-    ["COGS (ingredients)", money(last.cost)],
+    ["COGS", money(last.cost)],
     ["Marketing", money(last.marketing)],
     ["Net profit", `<span class="${last.netProfit>=0?'good':'bad'}">${money(last.netProfit)}</span>`],
     ["Gross margin", pct(grossMargin)],
     ["Profit margin", pct(profitMargin)],
     ["Cash balance", money(last.cashAfter)],
   ];
-
-  rows.forEach(([k,v]) => {
+  rows.forEach(([k,v])=>{
     const div = document.createElement("div");
     div.className = "li";
     div.innerHTML = `<span>${k}</span><b>${v}</b>`;
@@ -820,97 +1001,62 @@ function renderResult(last){
   $("btnNext").classList.toggle("hide", finished);
   $("btnPlayAgain").classList.toggle("hide", !finished);
 
-  $("reflectionSheet").classList.toggle("hide", !finished);
   $("summaryBox").classList.toggle("hide", !finished);
+  $("reflectionSheet").classList.toggle("hide", !finished);
 
   if(finished){
     fillSummary();
-    fillReflectionSheet();
+    fillReflection();
   }
 
-  $("btnCSV").disabled = (state.history.length === 0);
   $("btnPrint").disabled = !finished;
 }
 
 function bailoutIfNeeded(){
   if(state.cash >= 0) return;
   if(state.difficulty === "competitive") return;
-
   const loan = Math.abs(state.cash) + 25;
   state.cash += loan;
-  state._bailoutNote =
-    `Emergency bailout: you received ${money(loan)} so you can finish. In real life this could be savings or a small loan.`;
+  state._bailoutNote = `Emergency bailout: you received ${money(loan)} so you can finish the simulation.`;
 }
 
-function render(){
-  setHeader();
-  renderHistory();
-  if(state.view === "start"){ show("start"); renderStart(); }
-  else if(state.view === "day"){ show("day"); renderDay(); }
-  else if(state.view === "result"){ show("result"); }
-  setHeader();
-  renderHistory();
-}
-
-// ----------- CSV export -----------
 function toCSV(){
   const headers = [
     "studentName","classCode","teacherName",
     "daysTotal","difficulty","explainMode",
     "startingCash","cogsPerCup",
+    "scenarioTraffic","scenarioMix",
     "day","weather","event","rivalPrice",
     "cupsMade","price","marketing",
     "demand","cupsSold","missedSales","waste","wasteCost",
     "revenue","cogsCost","netProfit","cashAfter"
   ];
-
   const esc = (v) => {
     const s = String(v ?? "");
     if(s.includes(",") || s.includes('"') || s.includes("\n")) return `"${s.replaceAll('"','""')}"`;
     return s;
   };
 
-  const lines = [];
-  lines.push(headers.join(","));
-
+  const lines = [headers.join(",")];
   for(const h of state.history){
     const row = [
-      state.playerName,
-      state.classCode,
-      state.teacherName,
-      state.daysTotal,
-      state.difficulty,
-      state.explainMode,
-      state.startingCash,
-      state.cogsPerCup,
-      h.day,
-      h.weather.key,
-      h.event.key,
-      h.rivalPrice.toFixed(2),
-      h.cupsMade,
-      h.price.toFixed(2),
-      h.marketing,
-      h.demand,
-      h.cupsSold,
-      h.missedSales,
-      h.waste,
-      h.wasteCost.toFixed(2),
-      h.revenue.toFixed(2),
-      h.cost.toFixed(2),
-      h.netProfit.toFixed(2),
-      h.cashAfter.toFixed(2),
+      state.playerName, state.classCode, state.teacherName,
+      state.daysTotal, state.difficulty, state.explainMode,
+      state.startingCash, state.cogsPerCup,
+      state.scenarioTraffic, state.scenarioMix,
+      h.day, h.weather.key, h.event.key, h.rivalPrice.toFixed(2),
+      h.cupsMade, h.price.toFixed(2), h.marketing,
+      h.demand, h.cupsSold, h.missedSales, h.waste, h.wasteCost.toFixed(2),
+      h.revenue.toFixed(2), h.cost.toFixed(2), h.netProfit.toFixed(2), h.cashAfter.toFixed(2),
     ].map(esc);
     lines.push(row.join(","));
   }
-
   const totalProfit = state.cash - state.startingCash;
   lines.push("");
   lines.push(`Final Cash,${state.cash.toFixed(2)}`);
   lines.push(`Total Profit,${totalProfit.toFixed(2)}`);
-
   return lines.join("\n");
 }
-
 function downloadCSV(){
   const csv = toCSV();
   const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
@@ -925,42 +1071,68 @@ function downloadCSV(){
   a.remove();
   URL.revokeObjectURL(url);
 }
-
 function printReflection(){
-  $("reflectionSheet").classList.remove("hide");
   $("summaryBox").classList.remove("hide");
+  $("reflectionSheet").classList.remove("hide");
   window.print();
 }
 
-// ----------- Game actions -----------
-async function startGame(){
-  const name = $("playerName").value.trim() || "Student";
-  state = freshState();
-
+// --- Actions ---
+function startGameFromHome(){
+  const name = $("playerName2").value.trim() || "Student";
   state.playerName = name;
-  state.classCode = ($("classCode").value || "").trim();
-  state.teacherName = ($("teacherName").value || "").trim();
+  state.classCode = ($("classCode2").value || "").trim();
+  state.teacherName = ($("teacherName2").value || "").trim();
 
-  state.daysTotal = parseInt($("gameLen").value, 10);
-  state.difficulty = $("difficulty").value;
-  state.explainMode = $("explainMode").value;
-  state.startingCash = parseFloat($("startingCash").value);
-  state.cogsPerCup = parseFloat($("cogsPerCup").value);
+  const preset = $("preset").value;
+  state.difficulty = preset;
+  state.daysTotal = 7;
+  state.explainMode = "on";
+  state.startingCash = preset === "guided" ? 150 : (preset === "competitive" ? 100 : 100);
+  state.cogsPerCup = 0.50;
+  state.scenarioTraffic = "med";
+  state.scenarioMix = "balanced";
 
+  // reset run
   state.day = 1;
   state.cash = state.startingCash;
   state.history = [];
   state.todays = null;
-  state.view = "day";
 
   saveState();
-  render();
+  show("day");
+  renderDay();
+  setHeader();
+  renderHistory();
 }
 
-function resumeGame(){
-  const loaded = loadState();
-  if(loaded){ state = loaded; render(); }
+function applySettings(restartRun){
+  state.playerName = ($("playerName").value || "").trim();
+  state.classCode = ($("classCode").value || "").trim();
+  state.teacherName = ($("teacherName").value || "").trim();
+  state.explainMode = $("explainMode").value;
+  state.daysTotal = parseInt($("gameLen").value, 10);
+  state.difficulty = $("difficulty").value;
+  state.startingCash = parseFloat($("startingCash").value);
+  state.cogsPerCup = parseFloat($("cogsPerCup").value);
+  state.scenarioTraffic = $("scenarioTraffic").value;
+  state.scenarioMix = $("scenarioMix").value;
+
+  if(restartRun){
+    state.day = 1;
+    state.cash = state.startingCash;
+    state.history = [];
+    state.todays = null;
+    show("day");
+    renderDay();
+  }
+
+  saveState();
+  setHeader();
+  renderHistory();
+  closeSettings();
 }
+
 function resetDayInputs(){
   $("cups").value = 80;
   $("price").value = 2.00;
@@ -976,7 +1148,11 @@ async function sellDay(){
   const marketing = parseInt($("mkt").value, 10);
   const cogsPerCup = Number(state.cogsPerCup ?? 0.50);
 
+  if(!state.todays) newDayContext();
   const { weather, event, rivalPrice } = state.todays;
+
+  const trafficMult = TRAFFIC[state.scenarioTraffic].mult;
+  const elasticity = MIX[state.scenarioMix].elasticity;
 
   const demand = dailyDemand({
     weatherMult: weather.mult,
@@ -984,7 +1160,9 @@ async function sellDay(){
     price,
     mkt: marketing,
     rivalPrice,
-    difficulty: state.difficulty
+    difficulty: state.difficulty,
+    trafficMult,
+    elasticity
   });
 
   const cupsSold = Math.min(cupsMade, demand);
@@ -1018,8 +1196,8 @@ async function sellDay(){
   $("kCupsLeft").textContent = String(cupsMade);
   $("kRevenue").textContent = "$0";
 
-  const durationMs = 9000;
-  const steps = 30;
+  const durationMs = 8500;
+  const steps = 28;
   const stepMs = Math.round(durationMs/steps);
 
   for(let i=1;i<=steps;i++){
@@ -1034,8 +1212,8 @@ async function sellDay(){
     $("kRevenue").textContent = money(shownRevenue);
 
     if(shownLeft === 0 && cupsMade > 0){
-      $("sellingMsg").textContent = "Sold out! Missed customers you could have served.";
-      await sleep(700);
+      $("sellingMsg").textContent = "Sold out! You had more customers than cups.";
+      await sleep(650);
       break;
     }
     await sleep(stepMs);
@@ -1051,8 +1229,9 @@ async function sellDay(){
 
   bailoutIfNeeded();
 
-  const narrative = narrativeFor({weatherKey: weather.key, eventKey: event.key, rivalPrice, price, cupsSold, cupsMade});
-  const lesson = lessonFor({cupsMade, cupsSold, price, profit: netProfit, demand, missedSales, wasteCost});
+  const soldOut = (cupsSold === cupsMade && demand > cupsMade && cupsMade > 0);
+  const narrative = narrativeFor({weatherKey: weather.key, eventKey: event.key, price, rivalPrice, soldOut});
+  const lesson = lessonFor({profit: netProfit, wasteCost, missedSales});
 
   const record = {
     day: state.day,
@@ -1073,11 +1252,10 @@ async function sellDay(){
   state.day += 1;
   state.todays = null;
 
-  state.view = "result";
   saveState();
+  renderHistory();
   show("result");
   setHeader();
-  renderHistory();
   renderResult(record);
 
   if(state._bailoutNote){
@@ -1088,56 +1266,89 @@ async function sellDay(){
 
   if(state.day > state.daysTotal){
     const totalProfit = state.cash - state.startingCash;
-    const finalNote = totalProfit >= 0
+    $("resultNarrative").textContent = (totalProfit >= 0)
       ? `Finish strong. You grew ${money(state.startingCash)} into ${money(state.cash)}. What would you reinvest in next?`
-      : `You finished at ${money(state.cash)}. What one change would you make to become profitable?`;
-    $("resultNarrative").textContent = finalNote;
+      : `You finished at ${money(state.cash)}. What one change would make you profitable next time?`;
   }
 }
 
 function nextDay(){
   if(state.day > state.daysTotal) return;
-  state.view = "day";
-  saveState();
   show("day");
   renderDay();
   setHeader();
 }
 
 function playAgain(){
-  clearState();
+  const keepSettings = {
+    playerName: state.playerName,
+    classCode: state.classCode,
+    teacherName: state.teacherName,
+    explainMode: state.explainMode,
+    daysTotal: state.daysTotal,
+    difficulty: state.difficulty,
+    startingCash: state.startingCash,
+    cogsPerCup: state.cogsPerCup,
+    scenarioTraffic: state.scenarioTraffic,
+    scenarioMix: state.scenarioMix,
+  };
+  state = freshState();
+  Object.assign(state, keepSettings);
+  state.day = 1;
+  state.cash = state.startingCash;
+  state.history = [];
+  state.todays = null;
+  saveState();
+  show("start");
+  renderStart();
+  setHeader();
+  renderHistory();
 }
 
-// ----------- Event listeners -----------
-$("cups").addEventListener("input", syncInputs);
-$("price").addEventListener("input", syncInputs);
-$("mkt").addEventListener("input", syncInputs);
+function restartRun(){
+  // keep settings, wipe run
+  state.day = 1;
+  state.cash = state.startingCash;
+  state.history = [];
+  state.todays = null;
+  saveState();
+  show("start");
+  renderStart();
+  setHeader();
+  renderHistory();
+}
 
-$("btnStart").addEventListener("click", startGame);
-$("btnResume").addEventListener("click", resumeGame);
-$("btnClear").addEventListener("click", clearState);
-$("btnSell").addEventListener("click", sellDay);
-$("btnResetDay").addEventListener("click", resetDayInputs);
-$("btnNext").addEventListener("click", nextDay);
-$("btnPlayAgain").addEventListener("click", playAgain);
+function goHome(){
+  show("start");
+  renderStart();
+  setHeader();
+  renderHistory();
+}
 
-$("btnCSV").addEventListener("click", downloadCSV);
-$("btnPrint").addEventListener("click", printReflection);
+function openSettings(){ $("settingsDrawer").classList.remove("hide"); }
+function closeSettings(){ $("settingsDrawer").classList.add("hide"); }
 
-// On load
-(function init(){
-  const saved = loadState();
-  if(saved) state = saved;
-  if(!state.view) state.view = "start";
+// Home tabs
+function setHomeTab(which){
+  ["learn","play","teach"].forEach(t=>{
+    $("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("active", t===which);
+    $("home"+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle("hide", t!==which);
+  });
+}
 
-  // sync header explain pill
+// Resume
+function resumeGame(){
+  const loaded = loadState();
+  if(loaded){ state = loaded; render(); }
+}
+
+// Render orchestrator
+function render(){
   setHeader();
   renderHistory();
 
-  if(state.view === "result" && state.history.length > 0){
+  if(state.view === "result" && state.history.length){
     show("result");
-    setHeader();
-    renderHistory();
     renderResult(state.history[state.history.length - 1]);
   } else if(state.view === "day"){
     show("day");
@@ -1146,9 +1357,57 @@ $("btnPrint").addEventListener("click", printReflection);
     show("start");
     renderStart();
   }
-
   setHeader();
+  renderHistory();
   maybeShowResume();
+}
+
+// --- Wire events ---
+$("cups").addEventListener("input", syncInputs);
+$("price").addEventListener("input", syncInputs);
+$("mkt").addEventListener("input", syncInputs);
+
+$("btnStart").addEventListener("click", startGameFromHome);
+$("btnResume").addEventListener("click", resumeGame);
+$("btnClear").addEventListener("click", clearState);
+
+$("btnSell").addEventListener("click", sellDay);
+$("btnResetDay").addEventListener("click", resetDayInputs);
+
+$("btnNext").addEventListener("click", nextDay);
+$("btnPlayAgain").addEventListener("click", playAgain);
+
+$("btnCSV").addEventListener("click", downloadCSV);
+$("btnPrint").addEventListener("click", printReflection);
+
+// Nav buttons
+$("btnHome").addEventListener("click", goHome);
+$("btnRestart").addEventListener("click", restartRun);
+$("btnToggleSettings").addEventListener("click", () => {
+  $("settingsDrawer").classList.contains("hide") ? openSettings() : closeSettings();
+});
+$("btnCloseSettings").addEventListener("click", closeSettings);
+
+$("btnApplySettings").addEventListener("click", () => applySettings(true));
+$("btnSaveSettings").addEventListener("click", () => applySettings(false));
+
+// Home tabs
+$("tabLearn").addEventListener("click", ()=>setHomeTab("learn"));
+$("tabPlay").addEventListener("click", ()=>setHomeTab("play"));
+$("tabTeach").addEventListener("click", ()=>setHomeTab("teach"));
+
+// On load
+(function init(){
+  // Brand it
+  setLogo($("navLogo"));
+  setLogo($("homeLogo"));
+
+  const saved = loadState();
+  if(saved) state = saved;
+
+  if(!state.view) state.view = "start";
+  setHomeTab("learn");
+  render();
 })();
 </script>
 </body>
