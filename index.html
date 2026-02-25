@@ -779,10 +779,35 @@ async function sellDay(){
   const price = parseFloat($("price").value);
   const marketing = parseInt($("mkt").value, 10);
 
-  if(marketing > state.cash){
-    $("dayHint").classList.remove("hide");
-    $("dayHint").textContent = `You only have ${money(state.cash)}. Lower marketing or play cheaper.`;
-    return;
+  // --- compute costs up front
+const cogsPerCup = 0.50;
+const cost = cupsMade * cogsPerCup;
+const upfrontSpend = cost + marketing;
+
+// Must have enough cash to make product + market it
+if (upfrontSpend > state.cash) {
+  $("dayHint").classList.remove("hide");
+  $("dayHint").textContent =
+    `You need ${money(upfrontSpend)} to make ${cupsMade} cups + marketing, but you only have ${money(state.cash)}. Lower cups or marketing.`;
+  return;
+}
+
+// Pay costs up front (feels real)
+state.cash = parseFloat((state.cash - upfrontSpend).toFixed(2));
+saveState();
+setHeader(); // update cash pill immediately
+
+// --- selling phase continues as normal...
+// (keep your demand/cupsSold/revenue logic)
+
+// After selling ends, add revenue back
+state.cash = parseFloat((state.cash + revenue).toFixed(2));
+
+// Net profit is still correct:
+const netProfit = revenue - upfrontSpend;
+
+// Bailout logic still applies after revenue lands
+bailoutIfNeeded();
   }
 
   const { weather, event, rivalPrice } = state.todays;
