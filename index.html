@@ -1,235 +1,1595 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lemonade Class | Teacher Information</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lemonade Class — Market Mode</title>
+  <meta name="description" content="Lemonade Class — Tycoon + stock-market style lemonade stand simulation." />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#0f1a2e;
+      --card:#111f38;
+      --card2:#0e1a31;
+      --text:#e8eefc;
+      --muted:#a8b4d6;
+      --line:#1c2a4d;
+      --good:#28d17c;
+      --bad:#ff4d6d;
+      --warn:#ffcc66;
+      --accent:#7aa6ff;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --radius2: 22px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family:var(--sans); background: radial-gradient(1200px 700px at 20% 10%, rgba(122,166,255,.20), transparent 55%),
+      radial-gradient(900px 600px at 80% 0%, rgba(40,209,124,.14), transparent 60%),
+      radial-gradient(900px 700px at 70% 90%, rgba(255,204,102,.08), transparent 60%),
+      var(--bg);
+      color:var(--text);
+    }
+    a{ color:inherit; }
+    .wrap{ max-width:1180px; margin:0 auto; padding:18px 16px 28px; }
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      background: linear-gradient(180deg, rgba(17,31,56,.88), rgba(15,26,46,.88));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius2);
+      padding:14px 14px;
+      box-shadow: var(--shadow);
+      position:sticky; top:10px; z-index:10;
+      backdrop-filter: blur(10px);
+    }
+    .top-left{ display:flex; align-items:center; gap:10px; min-width: 260px;}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      font-family: var(--mono);
+      padding:8px 10px; border-radius:999px;
+      background: rgba(122,166,255,.12);
+      border:1px solid rgba(122,166,255,.30);
+      color: var(--text);
+      white-space:nowrap;
+    }
+    .badge .dot{ width:8px; height:8px; border-radius:99px; background: var(--good); box-shadow: 0 0 0 3px rgba(40,209,124,.12);}
+    .badge.neutral .dot{ background: #ffd166; box-shadow: 0 0 0 3px rgba(255,209,102,.12);}
+    .badge.bear .dot{ background: var(--bad); box-shadow: 0 0 0 3px rgba(255,77,109,.12);}
+    .weather{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      font-family: var(--mono);
+      white-space:nowrap;
+    }
+    .top-mid{
+      display:flex; align-items:stretch; gap:10px; flex:1;
+      justify-content:center;
+      min-width: 240px;
+    }
+    .cashBox{
+      background: linear-gradient(180deg, rgba(17,31,56,.90), rgba(12,21,40,.85));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius2);
+      padding:10px 14px;
+      min-width: 250px;
+      display:flex; flex-direction:column; justify-content:center;
+    }
+    .cashLabel{ color:var(--muted); font-size:12px; letter-spacing:.12em; text-transform:uppercase;}
+    .cashRow{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+    .cashVal{
+      font-size:30px; font-weight:800; letter-spacing:.01em;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .pulseGood{ animation: pulseGood .35s ease; }
+    .pulseBad{ animation: pulseBad .35s ease; }
+    @keyframes pulseGood{ 0%{ transform: scale(1); filter: drop-shadow(0 0 0 rgba(40,209,124,0)); } 60%{ transform: scale(1.03); filter: drop-shadow(0 0 18px rgba(40,209,124,.35)); } 100%{ transform: scale(1); } }
+    @keyframes pulseBad{ 0%{ transform: scale(1); filter: drop-shadow(0 0 0 rgba(255,77,109,0)); } 60%{ transform: scale(1.03); filter: drop-shadow(0 0 18px rgba(255,77,109,.30)); } 100%{ transform: scale(1); } }
+    .netVal{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      white-space:nowrap;
+    }
+    .netVal strong{ color: var(--text); }
+    .top-right{ display:flex; align-items:center; gap:10px; min-width: 260px; justify-content:flex-end;}
+    .miniBtn{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px; border-radius:12px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .miniBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.16);}
+    .grid{
+      display:grid; grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+      margin-top:14px;
+    }
+    @media (max-width: 960px){
+      .grid{ grid-template-columns: 1fr; }
+      .topbar{ flex-wrap:wrap; }
+      .top-mid{ order: 3; width: 100%; justify-content:stretch; }
+      .cashBox{ width:100%; min-width:unset;}
+      .top-left, .top-right{ min-width:unset; }
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(15,26,46,.92), rgba(10,18,32,.90));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelHeader{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02);
+    }
+    .panelHeader h2{
+      margin:0; font-size:14px; letter-spacing:.12em; text-transform:uppercase; color: var(--muted);
+      font-family: var(--mono);
+    }
+    .panelBody{ padding:14px; }
+    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 520px){
+      .row2{ grid-template-columns: 1fr; }
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(17,31,56,.72), rgba(12,21,40,.70));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      padding:12px;
+    }
+    .cardTitle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      font-family: var(--mono);
+      color: var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:12px;
+      margin-bottom:10px;
+    }
+    .sub{ color: var(--muted); font-size:12px; }
+    .meter{
+      height:12px; width:100%;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .meter > div{
+      height:100%;
+      width:50%;
+      background: linear-gradient(90deg, rgba(122,166,255,.95), rgba(40,209,124,.95));
+      border-radius:999px;
+      transition: width .25s ease;
+      filter: saturate(1.1);
+    }
+    .meterMeta{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-top:10px;
+      font-family: var(--mono);
+      font-size:12px;
+      color: var(--muted);
+    }
+    .sparkWrap{ display:flex; gap:12px; align-items:center; }
+    canvas{ display:block; width:100%; height:84px; }
+    .ticker{
+      height:240px; overflow:hidden;
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.14);
+      position:relative;
+    }
+    .tickerList{
+      position:absolute; inset:0;
+      padding:10px;
+      overflow:hidden;
+      font-family: var(--mono);
+      font-size:12px;
+      line-height:1.45;
+      color: var(--text);
+    }
+    .tickItem{ opacity:.92; margin-bottom:8px; }
+    .tickItem .t{ color: var(--muted); }
+    .tickItem.good strong{ color: var(--good); }
+    .tickItem.bad strong{ color: var(--bad); }
+    .tickItem.warn strong{ color: var(--warn); }
+    .controls{
+      display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    }
+    @media (max-width: 760px){
+      .controls{ grid-template-columns: 1fr; }
+    }
+    .stepper{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .priceVal{
+      font-size:26px; font-weight:800; letter-spacing:.01em;
+      font-family: var(--mono);
+    }
+    .btnRow{ display:flex; gap:10px; flex-wrap:wrap; }
+    .btn{
+      padding:12px 14px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      font-family: var(--mono);
+      font-size: 12px;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.18); }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(122,166,255,.22), rgba(122,166,255,.10));
+      border-color: rgba(122,166,255,.40);
+    }
+    .btn.good{
+      background: linear-gradient(180deg, rgba(40,209,124,.18), rgba(40,209,124,.08));
+      border-color: rgba(40,209,124,.40);
+    }
+    .btn.danger{
+      background: linear-gradient(180deg, rgba(255,77,109,.18), rgba(255,77,109,.08));
+      border-color: rgba(255,77,109,.45);
+    }
+    .invGrid{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+    @media (max-width: 520px){
+      .invGrid{ grid-template-columns: 1fr; }
+    }
+    .invItem{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      padding:10px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      font-family: var(--mono);
+    }
+    .invItem .k{ color: var(--muted); font-size:12px; }
+    .invItem .v{ font-size:16px; font-weight:700; }
+    .progressWrap{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius2);
+      padding:12px;
+    }
+    .progressTop{
+      display:flex; align-items:center; justify-content:space-between;
+      font-family: var(--mono);
+      font-size:12px;
+      color: var(--muted);
+      margin-bottom:10px;
+    }
+    .progressBar{
+      height:14px; width:100%;
+      border-radius:999px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .progressBar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(122,166,255,.95), rgba(40,209,124,.95));
+      border-radius:999px;
+      transition: width .30s ease;
+    }
+    .fade{
+      opacity:.75;
+    }
 
-<style>
-:root{
-  --brand:#1b2d65;
-  --accent:#2b5cff;
-  --bg:#f4f7ff;
-  --card:#ffffff;
-  --text:#1c2430;
-  --muted:#5c6678;
-  --radius:18px;
-  --shadow:0 20px 45px rgba(20,30,60,.08);
-}
-
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.container{
-  max-width:1000px;
-  margin:auto;
-  padding:30px 20px 60px;
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:25px;
-}
-
-.logo img{
-  width:65px;
-  border-radius:14px;
-  background:white;
-  padding:6px;
-}
-
-.logo h1{
-  margin:0;
-  color:var(--brand);
-  font-size:24px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:30px;
-  margin-bottom:25px;
-}
-
-h2{
-  margin-top:0;
-  color:var(--brand);
-}
-
-p{
-  color:var(--muted);
-  line-height:1.5;
-}
-
-ul{
-  margin-left:18px;
-  color:var(--muted);
-}
-
-button{
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  background:linear-gradient(135deg,var(--accent),var(--brand));
-  color:white;
-  font-weight:bold;
-  font-size:15px;
-  cursor:pointer;
-}
-
-input, select, textarea{
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #dfe5f3;
-  font-size:14px;
-}
-
-form{
-  display:grid;
-  gap:14px;
-  max-width:600px;
-}
-
-.success{
-  display:none;
-  padding:18px;
-  border-radius:14px;
-  background:#e9f1ff;
-  color:var(--brand);
-  font-weight:600;
-  margin-top:15px;
-}
-
-.launch-btn{
-  display:inline-block;
-  margin-top:15px;
-  padding:12px 24px;
-  background:linear-gradient(135deg,var(--accent),var(--brand));
-  color:white;
-  border-radius:12px;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-.footer{
-  margin-top:40px;
-  text-align:center;
-  font-size:13px;
-  color:var(--muted);
-}
-</style>
+    /* Modal */
+    .modalOverlay{
+      position:fixed; inset:0; display:none; place-items:center;
+      background: rgba(0,0,0,.55);
+      z-index: 99;
+      padding: 18px;
+    }
+    .modal{
+      width:min(640px, 100%);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(17,31,56,.98), rgba(10,18,32,.96));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 30px 90px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      font-family: var(--mono);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,.02);
+    }
+    .modalBody{ padding:16px; }
+    .modalTitle{
+      margin:0 0 8px 0;
+      font-size:18px;
+      letter-spacing:.01em;
+      color: var(--text);
+      font-family: var(--sans);
+      text-transform:none;
+    }
+    .modalText{ margin:0 0 14px 0; color: var(--muted); line-height:1.5; }
+    .modalFoot{ padding:14px 16px; border-top:1px solid rgba(255,255,255,.08); display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;}
+    .pill{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      margin-right: 8px;
+    }
+    .kpiGrid{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 520px){ .kpiGrid{ grid-template-columns: 1fr; } }
+    .kpi{
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      padding:12px;
+      font-family: var(--mono);
+    }
+    .kpi .lab{ color: var(--muted); font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+    .kpi .val{ font-size:18px; margin-top:6px; font-weight:800; }
+    .printNote{
+      margin-top: 14px;
+      border-radius: 16px;
+      border:1px dashed rgba(255,255,255,.20);
+      padding: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.5;
+    }
+    textarea{
+      width:100%;
+      min-height: 92px;
+      border-radius: 14px;
+      padding: 10px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      font-family: var(--sans);
+      resize: vertical;
+      outline: none;
+    }
+    .tiny{ font-size:11px; color: var(--muted); font-family: var(--mono); }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
 
-<div class="container">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="top-left">
+        <div class="badge" id="sentimentBadge" title="Market sentiment">
+          <span class="dot" id="sentimentDot"></span>
+          <span id="sentimentText">Bullish Market</span>
+        </div>
+        <div class="weather" id="weatherPill" title="Weather & temperature">
+          <span id="weatherIcon">☀</span>
+          <span id="weatherText">Sunny</span>
+          <span class="fade" id="tempText">85°</span>
+        </div>
+      </div>
 
-<div class="logo">
-  <img src="logo-white.jpg" alt="Lemonade Class Logo">
-  <h1>Lemonade Class</h1>
-</div>
+      <div class="top-mid">
+        <div class="cashBox">
+          <div class="cashLabel">Cash</div>
+          <div class="cashRow">
+            <div class="cashVal" id="cashVal">$0.00</div>
+            <div class="netVal">
+              <span class="fade">Net Today:</span>
+              <strong id="netToday">+$0.00</strong>
+              <span class="fade" id="dayText">· Day 1/5</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<div class="card">
-<h2>What is Lemonade Class?</h2>
-<p>
-Lemonade Class is a classroom-ready micro-business simulation designed for Grades 6–7.
-Students run a lemonade stand across multiple “days,” making real decisions about pricing, production, and marketing.
-</p>
+      <div class="top-right">
+        <button class="miniBtn" id="btnSave" title="Save to browser">
+          💾 SAVE
+        </button>
+        <button class="miniBtn" id="btnExport" title="Download CSV of results">
+          ⬇️ EXPORT CSV
+        </button>
+        <button class="miniBtn" id="btnReset" title="Reset run">
+          ♻️ RESET
+        </button>
+      </div>
+    </div>
 
-<ul>
-<li>Revenue vs. Profit</li>
-<li>Fixed vs. Variable Costs</li>
-<li>Pricing & Demand</li>
-<li>Inventory & Waste</li>
-<li>Data-Driven Decision Making</li>
-</ul>
+    <div class="grid">
 
-<a href="game.html" class="launch-btn">Launch the Simulation</a>
-</div>
+      <!-- LEFT: MARKET + TICKER -->
+      <div class="panel">
+        <div class="panelHeader">
+          <h2>Live Market</h2>
+          <div class="tiny" id="marketClock">Market Open · 9:00 AM</div>
+        </div>
+        <div class="panelBody">
 
-<div class="card">
-<h2>Founder Note</h2>
-<p>
-Hi — I’m Marcus, creator of Lemonade Class and the <strong>son of a special education teacher</strong>.
-I built this tool to be engaging, accessible, and practical for real classrooms.
-</p>
+          <div class="row2">
 
-<p>
-This isn’t just vocabulary practice — students see how decisions impact real numbers,
-then adjust strategy based on results.
-</p>
-</div>
+            <div class="card">
+              <div class="cardTitle">
+                <span>🍋 Lemon Market Index</span>
+                <span class="sub" id="volatilityText">Volatility: Medium</span>
+              </div>
+              <div class="sparkWrap">
+                <div style="flex:1;">
+                  <canvas id="spark"></canvas>
+                  <div class="meterMeta">
+                    <span>Index: <strong id="indexVal">100.0</strong></span>
+                    <span class="fade">Last 60s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-<div class="card">
-<h2>Join the Pilot Program</h2>
+            <div class="card">
+              <div class="cardTitle">
+                <span>📊 Demand</span>
+                <span class="sub" id="demandLabel">Neutral</span>
+              </div>
+              <div class="meter"><div id="demandFill"></div></div>
+              <div class="meterMeta">
+                <span>Demand: <strong id="demandPct">50%</strong></span>
+                <span>Foot Traffic: <strong id="trafficVal">Normal</strong></span>
+              </div>
+            </div>
 
-<p>
-We’re inviting a limited group of teachers to pilot Lemonade Class
-and help shape the next version of the platform.
-</p>
+          </div>
 
-<form id="pilotForm" action="https://formspree.io/f/xwvnawjn" method="POST">
+          <div style="margin-top:12px;" class="card">
+            <div class="cardTitle">
+              <span>📜 Live Ticker</span>
+              <span class="sub" id="tickerHint">Watch signals. React.</span>
+            </div>
+            <div class="ticker">
+              <div class="tickerList" id="tickerList"></div>
+            </div>
+          </div>
 
-<input type="text" name="teacher_name" placeholder="Full Name" required>
-<input type="email" name="email" placeholder="School Email Address" required>
-<input type="text" name="school_name" placeholder="School Name">
-<input type="text" name="district" placeholder="District (Optional)">
+          <div class="progressWrap">
+            <div class="progressTop">
+              <span id="hoursText">Market Hours · 9AM → 5PM</span>
+              <span id="timeLeftText">Time Left: 8h</span>
+            </div>
+            <div class="progressBar"><div id="timeFill"></div></div>
+            <div class="tiny" style="margin-top:10px;">
+              Tip: High volatility means bigger swings — more upside, more risk.
+            </div>
+          </div>
 
-<select name="grade_level">
-<option value="">Grade Level</option>
-<option>6</option>
-<option>7</option>
-<option>Both</option>
-</select>
+        </div>
+      </div>
 
-<textarea name="notes" rows="4" placeholder="Anything you'd like us to know?"></textarea>
+      <!-- RIGHT: CONTROLS -->
+      <div class="panel">
+        <div class="panelHeader">
+          <h2>Operations</h2>
+          <div class="tiny" id="phaseText">Setup Phase</div>
+        </div>
 
-<button type="submit">Join Pilot Program</button>
+        <div class="panelBody">
 
-</form>
+          <div class="controls">
 
-<div class="success" id="successMessage">
-Thank you! You’re officially on the pilot list.
-We’ll send classroom materials and next steps shortly.
-</div>
+            <div class="card">
+              <div class="cardTitle">
+                <span>💲 Price per Cup</span>
+                <span class="sub" id="marketAvg">Market Avg: $1.00</span>
+              </div>
+              <div class="stepper">
+                <button class="btn" id="priceDown">[-]</button>
+                <div class="priceVal" id="priceVal">$1.00</div>
+                <button class="btn" id="priceUp">[+]</button>
+              </div>
+              <div class="tiny" style="margin-top:10px;">
+                Higher price can raise profit per sale, but demand may drop.
+              </div>
+            </div>
 
-</div>
+            <div class="card">
+              <div class="cardTitle">
+                <span>🧾 Compliance</span>
+                <span class="sub" id="permitStatus">Permit: Active</span>
+              </div>
+              <div class="btnRow">
+                <button class="btn primary" id="buyPermit">Renew Permit ($8)</button>
+                <button class="btn" id="buySign">Buy Sign ($5)</button>
+              </div>
+              <div class="tiny" style="margin-top:10px;">
+                Permits reduce inspection risk. Signs boost foot traffic.
+              </div>
+            </div>
 
-<div class="footer">
-© Lemonade Class | Classroom Financial Literacy Simulation
-</div>
+          </div>
 
-</div>
+          <div class="card" style="margin-top:12px;">
+            <div class="cardTitle">
+              <span>📦 Inventory</span>
+              <span class="sub" id="invHint">Keep enough stock to ride spikes.</span>
+            </div>
+            <div class="invGrid">
+              <div class="invItem"><div><div class="k">🍋 Lemons</div></div><div class="v" id="lemonsVal">0</div></div>
+              <div class="invItem"><div><div class="k">🥤 Cups</div></div><div class="v" id="cupsVal">0</div></div>
+              <div class="invItem"><div><div class="k">🍚 Sugar</div></div><div class="v" id="sugarVal">0</div></div>
+            </div>
+            <div class="btnRow" style="margin-top:10px;">
+              <button class="btn" id="buyLemons">Buy Lemons +10 ($6)</button>
+              <button class="btn" id="buyCups">Buy Cups +10 ($4)</button>
+              <button class="btn" id="buySugar">Buy Sugar +10 ($3)</button>
+            </div>
+          </div>
 
-<script>
-const form = document.getElementById('pilotForm');
-const success = document.getElementById('successMessage');
+          <div class="card" style="margin-top:12px;">
+            <div class="cardTitle">
+              <span>▶️ Trading Day</span>
+              <span class="sub" id="runHint">Run the day, watch the tape.</span>
+            </div>
+            <div class="btnRow">
+              <button class="btn good" id="startDay">Start Market Day</button>
+              <button class="btn danger" id="closeDay" disabled>Market Close</button>
+            </div>
+            <div class="tiny" style="margin-top:10px;">
+              During the day, inventory purchases are disabled — focus on pricing and reacting to events.
+            </div>
+          </div>
 
-form.addEventListener('submit', async function(event) {
-  event.preventDefault();
-  const data = new FormData(form);
+          <div class="card" style="margin-top:12px;">
+            <div class="cardTitle">
+              <span>⭐ Reputation</span>
+              <span class="sub" id="repText">Level 1</span>
+            </div>
+            <div class="meter"><div id="repFill" style="width:12%; background: linear-gradient(90deg, rgba(255,204,102,.95), rgba(122,166,255,.95));"></div></div>
+            <div class="meterMeta">
+              <span>Reputation: <strong id="repVal">12</strong>/100</span>
+              <span>Sentiment Impact: <strong id="repImpact">Low</strong></span>
+            </div>
+          </div>
 
-  const response = await fetch(form.action, {
-    method: form.method,
-    body: data,
-    headers: { 'Accept': 'application/json' }
-  });
+        </div>
+      </div>
 
-  if (response.ok) {
-    form.reset();
-    success.style.display = "block";
-  } else {
-    alert("There was a problem submitting the form.");
-  }
-});
-</script>
+    </div>
+  </div>
 
+  <!-- EVENT MODAL -->
+  <div class="modalOverlay" id="eventOverlay">
+    <div class="modal">
+      <div class="modalHead">
+        <span>⚠ Market Event</span>
+        <button class="btn" id="eventX">Close</button>
+      </div>
+      <div class="modalBody">
+        <h3 class="modalTitle" id="eventTitle">Event Title</h3>
+        <p class="modalText" id="eventBody">Event details…</p>
+        <div>
+          <span class="pill" id="eventEffect1">Demand +0%</span>
+          <span class="pill" id="eventEffect2">Risk +0</span>
+        </div>
+      </div>
+      <div class="modalFoot">
+        <button class="btn" id="eventHold">Hold Position</button>
+        <button class="btn primary" id="eventAdjust">Adjust Price</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOSE MODAL -->
+  <div class="modalOverlay" id="closeOverlay">
+    <div class="modal">
+      <div class="modalHead">
+        <span>📑 Earnings Report</span>
+        <button class="btn" id="closeX">Close</button>
+      </div>
+      <div class="modalBody">
+        <h3 class="modalTitle" id="closeTitle">Market Closed — Day 1</h3>
+        <p class="modalText" id="closeBody">Here’s how you did today.</p>
+
+        <div class="kpiGrid">
+          <div class="kpi"><div class="lab">Revenue</div><div class="val" id="kRevenue">$0.00</div></div>
+          <div class="kpi"><div class="lab">Expenses</div><div class="val" id="kExpenses">$0.00</div></div>
+          <div class="kpi"><div class="lab">Net Profit</div><div class="val" id="kNet">$0.00</div></div>
+          <div class="kpi"><div class="lab">Demand Trend</div><div class="val" id="kTrend">Flat</div></div>
+        </div>
+
+        <div class="printNote">
+          <div class="tiny" style="margin-bottom:8px;">Reflection (teacher-friendly)</div>
+          <label class="tiny">What decision worked today?</label>
+          <textarea id="reflect1" placeholder="Example: I lowered price during a spike and captured more sales."></textarea>
+          <div style="height:8px;"></div>
+          <label class="tiny">What will you change tomorrow?</label>
+          <textarea id="reflect2" placeholder="Example: I’ll buy more inventory before high volatility days."></textarea>
+          <div class="tiny" style="margin-top:10px;">
+            You can print this screen from your browser (Share → Print or Ctrl/Cmd+P).
+          </div>
+        </div>
+      </div>
+      <div class="modalFoot">
+        <button class="btn" id="printBtn">Print</button>
+        <button class="btn primary" id="nextDayBtn">Next Day</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*****************************************************************
+     * Lemonade Class — Market Mode (single-file MVP UI + basic sim)
+     * - Tycoon UI + stock-market feel (ticker, moving index, sentiment)
+     * - LocalStorage Save/Resume
+     * - CSV export (summary per day)
+     *
+     * IMPORTANT:
+     * If you already have game logic, keep the UI and replace the
+     * "simulation engine" parts (look for TODO: HOOK HERE).
+     *****************************************************************/
+
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+    const money = (n) => (n < 0 ? "-$" + Math.abs(n).toFixed(2) : "$" + n.toFixed(2));
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+    const now = () => new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+
+    // ---------- State ----------
+    const STORAGE_KEY = "lemonadeclass_marketmode_v1";
+    const DEFAULT_RUN_DAYS = 5;
+
+    const state = {
+      runDays: DEFAULT_RUN_DAYS,
+      day: 1,
+      phase: "setup", // setup | live | closed
+      // money
+      cash: 25.00,
+      revenueToday: 0,
+      expensesToday: 0,
+      // operations
+      price: 1.00,
+      marketAvg: 1.00,
+      lemons: 20,
+      cups: 20,
+      sugar: 20,
+      permitDaysLeft: 2, // expires if hits 0
+      hasSign: false,
+      // demand + market
+      demand: 0.50,        // 0..1
+      traffic: "Normal",
+      volatility: "Medium", // Low Medium High
+      sentiment: "bull",    // bull neutral bear
+      reputation: 12,       // 0..100
+      // time simulation
+      marketMinutesTotal: 8 * 60, // 9AM-5PM
+      marketMinutes: 0,
+      // index data
+      index: 100.0,
+      indexSeries: [],
+      // log for CSV summary
+      dayLogs: [], // each: {day,revenue,expenses,net,avgDemand,events}
+      // running internals
+      _timers: { marketTick:null, customerTick:null, sparkTick:null, eventTick:null },
+      _avgDemandAccumulator: { sum:0, count:0 },
+      _eventsToday: 0
+    };
+
+    // ---------- UI Refs ----------
+    const el = {
+      sentimentBadge: $("sentimentBadge"),
+      sentimentDot: $("sentimentDot"),
+      sentimentText: $("sentimentText"),
+      weatherIcon: $("weatherIcon"),
+      weatherText: $("weatherText"),
+      tempText: $("tempText"),
+      cashVal: $("cashVal"),
+      netToday: $("netToday"),
+      dayText: $("dayText"),
+      volatilityText: $("volatilityText"),
+      marketAvg: $("marketAvg"),
+      priceVal: $("priceVal"),
+      demandFill: $("demandFill"),
+      demandPct: $("demandPct"),
+      demandLabel: $("demandLabel"),
+      trafficVal: $("trafficVal"),
+      timeFill: $("timeFill"),
+      timeLeftText: $("timeLeftText"),
+      marketClock: $("marketClock"),
+      phaseText: $("phaseText"),
+      permitStatus: $("permitStatus"),
+      repFill: $("repFill"),
+      repVal: $("repVal"),
+      repText: $("repText"),
+      repImpact: $("repImpact"),
+      lemonsVal: $("lemonsVal"),
+      cupsVal: $("cupsVal"),
+      sugarVal: $("sugarVal"),
+      indexVal: $("indexVal"),
+      tickerList: $("tickerList"),
+      hoursText: $("hoursText"),
+      runHint: $("runHint"),
+
+      // buttons
+      btnSave: $("btnSave"),
+      btnExport: $("btnExport"),
+      btnReset: $("btnReset"),
+      priceDown: $("priceDown"),
+      priceUp: $("priceUp"),
+      buyLemons: $("buyLemons"),
+      buyCups: $("buyCups"),
+      buySugar: $("buySugar"),
+      buyPermit: $("buyPermit"),
+      buySign: $("buySign"),
+      startDay: $("startDay"),
+      closeDay: $("closeDay"),
+
+      // modals
+      eventOverlay: $("eventOverlay"),
+      eventTitle: $("eventTitle"),
+      eventBody: $("eventBody"),
+      eventEffect1: $("eventEffect1"),
+      eventEffect2: $("eventEffect2"),
+      eventX: $("eventX"),
+      eventHold: $("eventHold"),
+      eventAdjust: $("eventAdjust"),
+
+      closeOverlay: $("closeOverlay"),
+      closeTitle: $("closeTitle"),
+      closeBody: $("closeBody"),
+      kRevenue: $("kRevenue"),
+      kExpenses: $("kExpenses"),
+      kNet: $("kNet"),
+      kTrend: $("kTrend"),
+      reflect1: $("reflect1"),
+      reflect2: $("reflect2"),
+      printBtn: $("printBtn"),
+      nextDayBtn: $("nextDayBtn"),
+      closeX: $("closeX")
+    };
+
+    // ---------- Sparkline ----------
+    const spark = $("spark");
+    const ctx = spark.getContext("2d");
+    function resizeCanvas(){
+      const dpr = window.devicePixelRatio || 1;
+      const rect = spark.getBoundingClientRect();
+      spark.width = Math.floor(rect.width * dpr);
+      spark.height = Math.floor(rect.height * dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    window.addEventListener("resize", () => { resizeCanvas(); drawSpark(); });
+
+    function drawSpark(){
+      const w = spark.getBoundingClientRect().width;
+      const h = spark.getBoundingClientRect().height;
+      ctx.clearRect(0,0,w,h);
+
+      // grid line
+      ctx.globalAlpha = 0.25;
+      ctx.strokeStyle = "rgba(255,255,255,.18)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, h-20);
+      ctx.lineTo(w, h-20);
+      ctx.stroke();
+
+      const series = state.indexSeries;
+      if(series.length < 2) return;
+
+      const min = Math.min(...series);
+      const max = Math.max(...series);
+      const pad = 8;
+      const range = (max - min) || 1;
+
+      // line
+      ctx.globalAlpha = 0.9;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(122,166,255,.95)";
+      ctx.beginPath();
+      series.forEach((v,i)=>{
+        const x = pad + (i/(series.length-1))*(w - pad*2);
+        const y = pad + (1 - (v-min)/range)*(h - pad*2);
+        if(i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+
+      // last dot
+      const last = series[series.length-1];
+      const lx = pad + ((series.length-1)/(series.length-1))*(w - pad*2);
+      const ly = pad + (1 - (last-min)/range)*(h - pad*2);
+      ctx.fillStyle = "rgba(40,209,124,.95)";
+      ctx.beginPath(); ctx.arc(lx, ly, 3.5, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // ---------- Ticker ----------
+    const tickerBuffer = [];
+    function pushTicker(type, msg){
+      // type: good bad warn info
+      const stamp = now();
+      const item = {type, msg, stamp};
+      tickerBuffer.unshift(item);
+      while(tickerBuffer.length > 30) tickerBuffer.pop();
+      renderTicker();
+    }
+    function renderTicker(){
+      el.tickerList.innerHTML = tickerBuffer.map(t=>{
+        const cls = t.type ? `tickItem ${t.type}` : "tickItem";
+        const icon = t.type === "good" ? "🟢" : t.type === "bad" ? "🔴" : t.type === "warn" ? "🟡" : "⚪";
+        const strongWrap = (text) => `<strong>${text}</strong>`;
+        // make money/keywords pop slightly
+        let msg = t.msg
+          .replace(/\+\$\d+(\.\d{2})?/g, m => strongWrap(m))
+          .replace(/\-\$\d+(\.\d{2})?/g, m => strongWrap(m))
+          .replace(/Demand/gi, m => `<strong>${m}</strong>`);
+        return `<div class="${cls}"><span class="t">${t.stamp}</span> ${icon} ${msg}</div>`;
+      }).join("");
+    }
+
+    // ---------- Market / Demand Logic (simple but lively) ----------
+    const WEATHER_POOL = [
+      {icon:"☀", name:"Sunny", temp:[78,92], demand:+0.08, vol:"Low"},
+      {icon:"🌤", name:"Warm", temp:[72,86], demand:+0.04, vol:"Medium"},
+      {icon:"☁", name:"Cloudy", temp:[60,78], demand:-0.04, vol:"Medium"},
+      {icon:"🌧", name:"Rainy", temp:[55,70], demand:-0.10, vol:"High"},
+      {icon:"🔥", name:"Heat Wave", temp:[90,102], demand:+0.14, vol:"High"},
+    ];
+    let weather = WEATHER_POOL[0];
+
+    function setWeather(w){
+      weather = w;
+      const temp = randInt(w.temp[0], w.temp[1]);
+      el.weatherIcon.textContent = w.icon;
+      el.weatherText.textContent = w.name;
+      el.tempText.textContent = temp + "°";
+      state.volatility = w.vol;
+      el.volatilityText.textContent = "Volatility: " + state.volatility;
+      pushTicker("info", `Weather shift: ${w.name} (${temp}°).`);
+    }
+
+    function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+    function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+    function computeDemand(){
+      // base from weather + reputation + sign + permit status + price vs market
+      const priceDelta = (state.price - state.marketAvg); // + means expensive
+      const priceImpact = clamp(-0.35 * priceDelta, -0.25, 0.25); // expensive lowers demand
+      const repImpact = (state.reputation/100) * 0.12;
+      const signImpact = state.hasSign ? 0.06 : 0.0;
+      const permitImpact = state.permitDaysLeft <= 0 ? -0.10 : 0.0;
+
+      // volatility noise
+      const volNoise = state.volatility === "Low" ? 0.02 : state.volatility === "Medium" ? 0.04 : 0.08;
+      const noise = (Math.random()*2-1) * volNoise;
+
+      // combine
+      let d = 0.50 + weather.demand + priceImpact + repImpact + signImpact + permitImpact + noise;
+      d = clamp(d, 0.05, 0.95);
+
+      state.demand = d;
+
+      // labels
+      const label = d >= 0.70 ? "Hot" : d >= 0.55 ? "Strong" : d >= 0.45 ? "Neutral" : d >= 0.30 ? "Soft" : "Cold";
+      el.demandLabel.textContent = label;
+
+      // traffic
+      state.traffic = d >= 0.68 ? "Busy" : d >= 0.52 ? "Normal" : d >= 0.35 ? "Quiet" : "Dead";
+      el.trafficVal.textContent = state.traffic;
+
+      // sentiment
+      const s = d >= 0.62 ? "bull" : d <= 0.38 ? "bear" : "neutral";
+      state.sentiment = s;
+      renderSentiment();
+
+      // accumulate for summary
+      state._avgDemandAccumulator.sum += d;
+      state._avgDemandAccumulator.count += 1;
+
+      // UI
+      el.demandFill.style.width = Math.round(d*100) + "%";
+      el.demandPct.textContent = Math.round(d*100) + "%";
+    }
+
+    function renderSentiment(){
+      const badge = el.sentimentBadge;
+      badge.classList.remove("neutral","bear");
+      if(state.sentiment === "bull"){
+        el.sentimentText.textContent = "Bullish Market";
+        el.sentimentDot.style.background = "var(--good)";
+      } else if(state.sentiment === "bear"){
+        badge.classList.add("bear");
+        el.sentimentText.textContent = "Bearish Market";
+        el.sentimentDot.style.background = "var(--bad)";
+      } else {
+        badge.classList.add("neutral");
+        el.sentimentText.textContent = "Neutral Market";
+        el.sentimentDot.style.background = "#ffd166";
+      }
+    }
+
+    // Index follows demand (stock-ish vibe)
+    function tickIndex(){
+      // drift based on sentiment + volatility
+      const drift = (state.demand - 0.5) * 0.25;
+      const vol = state.volatility === "Low" ? 0.18 : state.volatility === "Medium" ? 0.32 : 0.55;
+      const shock = (Math.random()*2-1) * vol;
+      state.index = clamp(state.index + drift + shock, 80, 140);
+      state.indexSeries.push(state.index);
+      if(state.indexSeries.length > 60) state.indexSeries.shift();
+      el.indexVal.textContent = state.index.toFixed(1);
+      drawSpark();
+    }
+
+    // ---------- Customer + Sales ----------
+    function canSell(){
+      return state.lemons > 0 && state.cups > 0 && state.sugar > 0;
+    }
+
+    function sellOnce(){
+      if(!canSell()){
+        pushTicker("warn", "Out of stock — customer walked away.");
+        // reputation penalty if repeatedly OOS
+        state.reputation = clamp(state.reputation - 1, 0, 100);
+        renderReputation();
+        return;
+      }
+
+      // chance to walk away based on demand & price
+      const walkChance = clamp(0.35 - (state.demand*0.30), 0.05, 0.35);
+      if(Math.random() < walkChance){
+        pushTicker("info", "Customer walked away.");
+        state.reputation = clamp(state.reputation - 0.3, 0, 100);
+        renderReputation();
+        return;
+      }
+
+      // sale size (sometimes 2 cups)
+      const multi = Math.random() < clamp(state.demand - 0.45, 0.05, 0.35) ? 2 : 1;
+
+      // consume inventory
+      state.lemons -= multi;
+      state.cups -= multi;
+      state.sugar -= multi;
+
+      const sale = state.price * multi;
+      state.cash += sale;
+      state.revenueToday += sale;
+
+      // reputation grows on good demand + fair pricing
+      const fairPrice = Math.abs(state.price - state.marketAvg) <= 0.25;
+      const repGain = fairPrice ? 0.8 : 0.35;
+      state.reputation = clamp(state.reputation + repGain, 0, 100);
+
+      pushTicker("good", `+${money(sale)}  ${multi} cup${multi>1?"s":""} sold`);
+      renderAll(true, false);
+    }
+
+    function customerLoop(){
+      // pace is the vibe: higher demand = faster sales
+      // convert demand to interval ms
+      const base = 5200;             // slow
+      const fast = 1500;             // busy
+      const t = Math.round(base - (base-fast)*state.demand);
+      // jitter for life
+      const jitter = randInt(-250, 250);
+      return clamp(t + jitter, 1000, 6500);
+    }
+
+    function scheduleNextCustomer(){
+      if(state.phase !== "live") return;
+      clearTimeout(state._timers.customerTick);
+      state._timers.customerTick = setTimeout(()=>{
+        // update demand before customer (makes UI feel alive)
+        computeDemand();
+        sellOnce();
+        scheduleNextCustomer();
+      }, customerLoop());
+    }
+
+    // ---------- Events ----------
+    const EVENTS = [
+      {
+        title: "Heat spike hits downtown",
+        body: "Foot traffic surges. Customers are thirsty.",
+        effect: (s)=>{ s.demand = clamp(s.demand + 0.12, 0.05, 0.95); s.reputation = clamp(s.reputation + 1, 0, 100); },
+        tags: ["Demand +12%", "Reputation +1"]
+      },
+      {
+        title: "Competitor undercuts your price",
+        body: "A rival stand drops to $0.75. Customers compare value.",
+        effect: (s)=>{ s.marketAvg = clamp(s.marketAvg - 0.10, 0.6, 1.6); s.demand = clamp(s.demand - 0.06, 0.05, 0.95); },
+        tags: ["Market Avg ↓", "Demand -6%"]
+      },
+      {
+        title: "Lemons spoil in the heat",
+        body: "Inventory loss due to poor storage.",
+        effect: (s)=>{ const lost = Math.min(s.lemons, randInt(3,8)); s.lemons -= lost; s.reputation = clamp(s.reputation - 1, 0, 100); pushTicker("warn", `🍋 Lemons spoiled: -${lost}`); },
+        tags: ["Lemons -3..-8", "Reputation -1"]
+      },
+      {
+        title: "Health inspector passes by",
+        body: "If your permit is expired, you risk a fine.",
+        effect: (s)=> {
+          if(s.permitDaysLeft <= 0){
+            const fine = 10;
+            s.cash -= fine; s.expensesToday += fine;
+            s.reputation = clamp(s.reputation - 2, 0, 100);
+            pushTicker("bad", `Permit expired — fine ${money(fine)}.`);
+          } else {
+            s.reputation = clamp(s.reputation + 1.5, 0, 100);
+            pushTicker("good", "Inspection: all good ✅");
+          }
+        },
+        tags: ["Fine if expired", "Reputation ±"]
+      },
+      {
+        title: "Local influencer mentions you",
+        body: "A quick post sends new customers your way.",
+        effect: (s)=>{ s.reputation = clamp(s.reputation + 4, 0, 100); s.demand = clamp(s.demand + 0.08, 0.05, 0.95); },
+        tags: ["Reputation +4", "Demand +8%"]
+      },
+    ];
+
+    function maybeEvent(){
+      if(state.phase !== "live") return;
+      const vol = state.volatility === "Low" ? 0.18 : state.volatility === "Medium" ? 0.28 : 0.40;
+      if(Math.random() < vol){
+        const ev = choice(EVENTS);
+        state._eventsToday += 1;
+        openEvent(ev);
+      }
+    }
+
+    function openEvent(ev){
+      // apply effect immediately (world reacts)
+      ev.effect(state);
+      computeDemand();
+      renderAll(false, false);
+
+      el.eventTitle.textContent = ev.title;
+      el.eventBody.textContent = ev.body;
+      el.eventEffect1.textContent = ev.tags?.[0] || "Market moves";
+      el.eventEffect2.textContent = ev.tags?.[1] || "React fast";
+      el.eventOverlay.style.display = "grid";
+
+      pushTicker("warn", `EVENT: ${ev.title}`);
+    }
+
+    function closeEvent(){
+      el.eventOverlay.style.display = "none";
+    }
+
+    // ---------- Reputation ----------
+    function renderReputation(){
+      el.repVal.textContent = Math.round(state.reputation);
+      el.repFill.style.width = Math.round(state.reputation) + "%";
+      el.repText.textContent = "Level " + (state.reputation >= 80 ? "5" : state.reputation >= 60 ? "4" : state.reputation >= 40 ? "3" : state.reputation >= 20 ? "2" : "1");
+      el.repImpact.textContent = state.reputation >= 60 ? "High" : state.reputation >= 30 ? "Medium" : "Low";
+    }
+
+    // ---------- Purchases ----------
+    function spend(amount, note){
+      if(state.cash < amount){
+        pushTicker("bad", `Not enough cash for ${note}.`);
+        return false;
+      }
+      state.cash -= amount;
+      state.expensesToday += amount;
+      pushTicker("bad", `-${money(amount)}  ${note}`);
+      renderAll(false, false);
+      return true;
+    }
+
+    // ---------- Time / Day ----------
+    function renderTime(){
+      const pct = (state.marketMinutes / state.marketMinutesTotal) * 100;
+      el.timeFill.style.width = clamp(pct,0,100) + "%";
+
+      const minsLeft = Math.max(0, state.marketMinutesTotal - state.marketMinutes);
+      const hrs = Math.floor(minsLeft/60);
+      const mins = minsLeft % 60;
+      el.timeLeftText.textContent = `Time Left: ${hrs}h ${mins}m`;
+
+      // market clock label
+      const startHour = 9;
+      const total = state.marketMinutesTotal;
+      const mins = state.marketMinutes;
+      const hour = startHour + Math.floor(mins/60);
+      const minute = mins % 60;
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const h12 = ((hour + 11) % 12) + 1;
+      el.marketClock.textContent = (state.phase === "live" ? "Market Live · " : "Market Open · ") + `${h12}:${String(minute).padStart(2,"0")} ${ampm}`;
+
+      // add urgency glow near close
+      if(pct >= 80){
+        el.timeFill.style.background = "linear-gradient(90deg, rgba(255,204,102,.95), rgba(255,77,109,.90))";
+      } else {
+        el.timeFill.style.background = "linear-gradient(90deg, rgba(122,166,255,.95), rgba(40,209,124,.95))";
+      }
+    }
+
+    function startMarketDay(){
+      if(state.phase !== "setup") return;
+
+      state.phase = "live";
+      state.marketMinutes = 0;
+      state.revenueToday = 0;
+      state.expensesToday = 0;
+      state._avgDemandAccumulator = {sum:0, count:0};
+      state._eventsToday = 0;
+
+      // weather rotates daily
+      setWeather(choice(WEATHER_POOL));
+
+      // permit ticks down per day (at day start)
+      state.permitDaysLeft -= 1;
+      if(state.permitDaysLeft <= 0){
+        el.permitStatus.textContent = "Permit: Expired";
+        pushTicker("warn", "Permit expired — inspection risk increased.");
+      } else {
+        el.permitStatus.textContent = "Permit: Active (" + state.permitDaysLeft + "d)";
+      }
+
+      // disable purchases during live
+      setOpsEnabled(false);
+
+      // begin loops
+      computeDemand();
+      tickIndex();
+
+      // market time ticks each second = 10 minutes (for vibe)
+      clearInterval(state._timers.marketTick);
+      state._timers.marketTick = setInterval(()=>{
+        state.marketMinutes += 10;
+        renderTime();
+
+        // periodic market average shift (market moves without you)
+        if(state.marketMinutes % 60 === 0){
+          const drift = (Math.random()*2-1) * (state.volatility === "High" ? 0.12 : state.volatility === "Medium" ? 0.08 : 0.05);
+          state.marketAvg = clamp(state.marketAvg + drift, 0.60, 1.60);
+          el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+          el.marketAvg && (el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2));
+          $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+          pushTicker("info", `Market Avg moved to $${state.marketAvg.toFixed(2)}.`);
+        }
+
+        // random event chance
+        maybeEvent();
+
+        // end of day
+        if(state.marketMinutes >= state.marketMinutesTotal){
+          closeMarketDay();
+        }
+      }, 1000);
+
+      // sparkline ticks
+      clearInterval(state._timers.sparkTick);
+      state._timers.sparkTick = setInterval(()=>{
+        computeDemand();
+        tickIndex();
+      }, 1200);
+
+      // start customers
+      scheduleNextCustomer();
+
+      el.phaseText.textContent = "Live Trading";
+      $("phaseText").textContent = "Live Trading";
+      $("startDay").disabled = true;
+      $("closeDay").disabled = false;
+
+      pushTicker("info", `Market opened — Day ${state.day}/${state.runDays}.`);
+      renderAll(false, false);
+    }
+
+    function closeMarketDay(){
+      if(state.phase !== "live") return;
+
+      // stop loops
+      state.phase = "closed";
+      clearInterval(state._timers.marketTick);
+      clearInterval(state._timers.sparkTick);
+      clearTimeout(state._timers.customerTick);
+
+      // summary
+      const avgDemand = state._avgDemandAccumulator.count ? (state._avgDemandAccumulator.sum / state._avgDemandAccumulator.count) : state.demand;
+      const net = state.revenueToday - state.expensesToday;
+      const trend = avgDemand >= 0.62 ? "Upward" : avgDemand <= 0.38 ? "Downward" : "Flat";
+
+      state.dayLogs.push({
+        day: state.day,
+        revenue: +state.revenueToday.toFixed(2),
+        expenses: +state.expensesToday.toFixed(2),
+        net: +net.toFixed(2),
+        avgDemand: +avgDemand.toFixed(3),
+        events: state._eventsToday,
+        cashEnd: +state.cash.toFixed(2),
+        priceEnd: +state.price.toFixed(2),
+        repEnd: Math.round(state.reputation),
+        weather: weather.name,
+        volatility: state.volatility
+      });
+
+      // close modal
+      el.closeTitle.textContent = `Market Closed — Day ${state.day}/${state.runDays}`;
+      el.closeBody.textContent = `You navigated today’s market conditions. Review your results and plan tomorrow.`;
+      el.kRevenue.textContent = money(state.revenueToday);
+      el.kExpenses.textContent = money(state.expensesToday);
+      el.kNet.textContent = (net>=0? "+" : "") + money(net);
+      el.kTrend.textContent = trend;
+
+      el.closeOverlay.style.display = "grid";
+      el.phaseText.textContent = "Closed";
+      $("phaseText").textContent = "Closed";
+
+      $("closeDay").disabled = true;
+
+      pushTicker(net>=0 ? "good" : "bad", `Market closed. Net: ${(net>=0?"+":"")}${money(net)}.`);
+      renderAll(false, false);
+    }
+
+    function nextDay(){
+      el.closeOverlay.style.display = "none";
+      el.reflect1.value = "";
+      el.reflect2.value = "";
+
+      if(state.day >= state.runDays){
+        // run over — restart
+        pushTicker("info", "Run complete. Reset to play again.");
+        state.phase = "setup";
+        setOpsEnabled(true);
+        $("startDay").disabled = false;
+        $("closeDay").disabled = true;
+        el.phaseText.textContent = "Setup Phase";
+        $("phaseText").textContent = "Setup Phase";
+        renderAll(false, false);
+        return;
+      }
+
+      state.day += 1;
+      state.phase = "setup";
+      setOpsEnabled(true);
+      $("startDay").disabled = false;
+      $("closeDay").disabled = true;
+      el.phaseText.textContent = "Setup Phase";
+      $("phaseText").textContent = "Setup Phase";
+
+      // small carryover effect: if very low stock, warn
+      if(state.lemons < 5 || state.cups < 5 || state.sugar < 5){
+        pushTicker("warn", "Low inventory — consider buying before market opens.");
+      }
+
+      // gentle market avg mean reversion
+      state.marketAvg = clamp( (state.marketAvg*0.6 + 1.0*0.4), 0.60, 1.60);
+      $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+
+      renderAll(false, false);
+      pushTicker("info", `Setup for Day ${state.day}/${state.runDays}.`);
+    }
+
+    function setOpsEnabled(enabled){
+      // purchases
+      el.buyLemons.disabled = !enabled;
+      el.buyCups.disabled = !enabled;
+      el.buySugar.disabled = !enabled;
+      el.buyPermit.disabled = !enabled;
+      el.buySign.disabled = !enabled;
+    }
+
+    // ---------- Render ----------
+    function renderAll(pulseCash=false, pulseBad=false){
+      // day label
+      el.dayText.textContent = `· Day ${state.day}/${state.runDays}`;
+
+      // cash + net
+      el.cashVal.textContent = money(state.cash);
+      const net = state.revenueToday - state.expensesToday;
+      el.netToday.textContent = (net>=0?"+":"") + money(net);
+
+      if(pulseCash){
+        el.cashVal.classList.remove("pulseGood","pulseBad");
+        el.cashVal.classList.add("pulseGood");
+        setTimeout(()=> el.cashVal.classList.remove("pulseGood"), 360);
+      } else if(pulseBad){
+        el.cashVal.classList.remove("pulseGood","pulseBad");
+        el.cashVal.classList.add("pulseBad");
+        setTimeout(()=> el.cashVal.classList.remove("pulseBad"), 360);
+      }
+
+      // price + market avg
+      el.priceVal.textContent = "$" + state.price.toFixed(2);
+      $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+
+      // inventory
+      el.lemonsVal.textContent = state.lemons;
+      el.cupsVal.textContent = state.cups;
+      el.sugarVal.textContent = state.sugar;
+
+      // permit
+      if(state.permitDaysLeft <= 0) el.permitStatus.textContent = "Permit: Expired";
+      else el.permitStatus.textContent = `Permit: Active (${state.permitDaysLeft}d)`;
+
+      // reputation
+      renderReputation();
+
+      // demand + time
+      computeDemand();
+      renderTime();
+
+      // index
+      el.indexVal.textContent = state.index.toFixed(1);
+
+      // phase text
+      el.phaseText.textContent = state.phase === "setup" ? "Setup Phase" : state.phase === "live" ? "Live Trading" : "Closed";
+
+      // hint updates
+      if(state.phase === "live"){
+        el.runHint.textContent = "React to events and price signals.";
+      } else {
+        el.runHint.textContent = "Buy supplies, set price, then open the market.";
+      }
+    }
+
+    // ---------- Save / Load / Export ----------
+    function save(){
+      const safe = JSON.parse(JSON.stringify(state));
+      // remove timers
+      safe._timers = { marketTick:null, customerTick:null, sparkTick:null, eventTick:null };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
+      pushTicker("good", "Saved run to browser.");
+    }
+
+    function load(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return false;
+      try{
+        const saved = JSON.parse(raw);
+        Object.assign(state, saved);
+        // reset runtime internals
+        state._timers = { marketTick:null, customerTick:null, sparkTick:null, eventTick:null };
+        state._avgDemandAccumulator = state._avgDemandAccumulator || {sum:0, count:0};
+        state.indexSeries = state.indexSeries || [];
+        pushTicker("good", "Loaded saved run.");
+        return true;
+      }catch(e){
+        console.warn(e);
+        return false;
+      }
+    }
+
+    function reset(){
+      // stop all timers
+      clearInterval(state._timers.marketTick);
+      clearInterval(state._timers.sparkTick);
+      clearTimeout(state._timers.customerTick);
+
+      // hard reset
+      const keepTicker = tickerBuffer.slice(0,3);
+      Object.assign(state, {
+        runDays: DEFAULT_RUN_DAYS,
+        day: 1,
+        phase: "setup",
+        cash: 25.00,
+        revenueToday: 0,
+        expensesToday: 0,
+        price: 1.00,
+        marketAvg: 1.00,
+        lemons: 20,
+        cups: 20,
+        sugar: 20,
+        permitDaysLeft: 2,
+        hasSign: false,
+        demand: 0.50,
+        traffic: "Normal",
+        volatility: "Medium",
+        sentiment: "bull",
+        reputation: 12,
+        marketMinutesTotal: 8*60,
+        marketMinutes: 0,
+        index: 100.0,
+        indexSeries: [],
+        dayLogs: [],
+        _timers: { marketTick:null, customerTick:null, sparkTick:null, eventTick:null },
+        _avgDemandAccumulator: {sum:0, count:0},
+        _eventsToday: 0
+      });
+
+      tickerBuffer.length = 0;
+      keepTicker.forEach(x=>tickerBuffer.push(x));
+      pushTicker("info", "Reset complete.");
+      setOpsEnabled(true);
+      $("startDay").disabled = false;
+      $("closeDay").disabled = true;
+      closeEvent();
+      el.closeOverlay.style.display = "none";
+      setWeather(choice(WEATHER_POOL));
+      renderAll(false,false);
+      save();
+    }
+
+    function exportCSV(){
+      const rows = [];
+      rows.push([
+        "day","weather","volatility","revenue","expenses","net","avgDemand","events","cashEnd","priceEnd","repEnd"
+      ].join(","));
+      for(const d of state.dayLogs){
+        rows.push([
+          d.day,
+          `"${d.weather}"`,
+          d.volatility,
+          d.revenue.toFixed(2),
+          d.expenses.toFixed(2),
+          d.net.toFixed(2),
+          d.avgDemand.toFixed(3),
+          d.events,
+          d.cashEnd.toFixed(2),
+          d.priceEnd.toFixed(2),
+          d.repEnd
+        ].join(","));
+      }
+      const csv = rows.join("\n");
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "lemonadeclass_marketmode_results.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      pushTicker("good", "Exported CSV.");
+    }
+
+    // ---------- Button Wiring ----------
+    el.priceDown.addEventListener("click", ()=>{
+      state.price = clamp(state.price - 0.05, 0.50, 3.00);
+      pushTicker("info", `Price set to $${state.price.toFixed(2)}.`);
+      renderAll(false,false);
+    });
+    el.priceUp.addEventListener("click", ()=>{
+      state.price = clamp(state.price + 0.05, 0.50, 3.00);
+      pushTicker("info", `Price set to $${state.price.toFixed(2)}.`);
+      renderAll(false,false);
+    });
+
+    el.buyLemons.addEventListener("click", ()=>{
+      if(state.phase !== "setup") return;
+      if(spend(6, "Buy Lemons +10")){
+        state.lemons += 10;
+        renderAll(false,true);
+      }
+    });
+    el.buyCups.addEventListener("click", ()=>{
+      if(state.phase !== "setup") return;
+      if(spend(4, "Buy Cups +10")){
+        state.cups += 10;
+        renderAll(false,true);
+      }
+    });
+    el.buySugar.addEventListener("click", ()=>{
+      if(state.phase !== "setup") return;
+      if(spend(3, "Buy Sugar +10")){
+        state.sugar += 10;
+        renderAll(false,true);
+      }
+    });
+
+    el.buyPermit.addEventListener("click", ()=>{
+      if(state.phase !== "setup") return;
+      if(spend(8, "Permit renewal")){
+        state.permitDaysLeft = 3;
+        pushTicker("good", "Permit renewed. Risk reduced.");
+        renderAll(false,true);
+      }
+    });
+
+    el.buySign.addEventListener("click", ()=>{
+      if(state.phase !== "setup") return;
+      if(state.hasSign){
+        pushTicker("info", "You already have a sign.");
+        return;
+      }
+      if(spend(5, "Buy Sign")){
+        state.hasSign = true;
+        pushTicker("good", "Sign installed. Foot traffic boosted.");
+        renderAll(false,true);
+      }
+    });
+
+    el.startDay.addEventListener("click", startMarketDay);
+    el.closeDay.addEventListener("click", closeMarketDay);
+
+    el.btnSave.addEventListener("click", save);
+    el.btnExport.addEventListener("click", exportCSV);
+    el.btnReset.addEventListener("click", ()=>{
+      localStorage.removeItem(STORAGE_KEY);
+      reset();
+    });
+
+    // Event modal actions
+    el.eventX.addEventListener("click", closeEvent);
+    el.eventHold.addEventListener("click", ()=>{
+      pushTicker("info", "Held position.");
+      closeEvent();
+    });
+    el.eventAdjust.addEventListener("click", ()=>{
+      // quick nudge suggestion: if bearish, lower; if bullish, raise slightly
+      if(state.sentiment === "bear"){
+        state.price = clamp(state.price - 0.10, 0.50, 3.00);
+        pushTicker("good", `Adjusted price down to $${state.price.toFixed(2)}.`);
+      } else if(state.sentiment === "bull"){
+        state.price = clamp(state.price + 0.05, 0.50, 3.00);
+        pushTicker("good", `Adjusted price up to $${state.price.toFixed(2)}.`);
+      } else {
+        state.price = clamp(state.price - 0.05, 0.50, 3.00);
+        pushTicker("good", `Adjusted price to $${state.price.toFixed(2)}.`);
+      }
+      closeEvent();
+      renderAll(false,false);
+    });
+
+    // Close modal actions
+    el.closeX.addEventListener("click", ()=>{ el.closeOverlay.style.display = "none"; });
+    el.nextDayBtn.addEventListener("click", ()=>{
+      // store reflections (optional)
+      // TODO: HOOK HERE if you want to persist reflections per day
+      save();
+      nextDay();
+      save();
+    });
+    el.printBtn.addEventListener("click", ()=> window.print());
+
+    // ---------- Boot ----------
+    function boot(){
+      resizeCanvas();
+      // seed ticker
+      pushTicker("info", "Welcome to Market Mode.");
+      pushTicker("info", "Set price, stock up, then open the market.");
+
+      // load save if exists
+      const loaded = load();
+      setWeather(choice(WEATHER_POOL));
+
+      // if loaded in live state, force back to setup (safer) OR you can resume live:
+      if(loaded && state.phase === "live"){
+        // safer choice: return to setup so you don't resume timers weirdly
+        state.phase = "setup";
+        pushTicker("warn", "Resuming in Setup Phase for safety (saved mid-day).");
+      }
+
+      setOpsEnabled(state.phase === "setup");
+      $("startDay").disabled = (state.phase !== "setup");
+      $("closeDay").disabled = true;
+
+      // ensure UI values
+      $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+      renderAll(false,false);
+      tickIndex();
+      save();
+    }
+
+    boot();
+  </script>
 </body>
 </html>
