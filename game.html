@@ -10,10 +10,8 @@
       --bg:#0b1220;
       --panel:#0f1a2e;
       --card:#111f38;
-      --card2:#0e1a31;
       --text:#e8eefc;
       --muted:#a8b4d6;
-      --line:#1c2a4d;
       --good:#28d17c;
       --bad:#ff4d6d;
       --warn:#ffcc66;
@@ -26,23 +24,25 @@
     }
     *{ box-sizing:border-box; }
     body{
-      margin:0; font-family:var(--sans); background: radial-gradient(1200px 700px at 20% 10%, rgba(122,166,255,.20), transparent 55%),
-      radial-gradient(900px 600px at 80% 0%, rgba(40,209,124,.14), transparent 60%),
-      radial-gradient(900px 700px at 70% 90%, rgba(255,204,102,.08), transparent 60%),
-      var(--bg);
+      margin:0; font-family:var(--sans);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(122,166,255,.20), transparent 55%),
+        radial-gradient(900px 600px at 80% 0%, rgba(40,209,124,.14), transparent 60%),
+        radial-gradient(900px 700px at 70% 90%, rgba(255,204,102,.08), transparent 60%),
+        var(--bg);
       color:var(--text);
     }
-    a{ color:inherit; }
     .wrap{ max-width:1180px; margin:0 auto; padding:18px 16px 28px; }
     .topbar{
       display:flex; gap:12px; align-items:center; justify-content:space-between;
       background: linear-gradient(180deg, rgba(17,31,56,.88), rgba(15,26,46,.88));
       border:1px solid rgba(255,255,255,.08);
       border-radius: var(--radius2);
-      padding:14px 14px;
+      padding:14px;
       box-shadow: var(--shadow);
       position:sticky; top:10px; z-index:10;
       backdrop-filter: blur(10px);
+      flex-wrap:wrap;
     }
     .top-left{ display:flex; align-items:center; gap:10px; min-width: 260px;}
     .badge{
@@ -51,11 +51,10 @@
       padding:8px 10px; border-radius:999px;
       background: rgba(122,166,255,.12);
       border:1px solid rgba(122,166,255,.30);
-      color: var(--text);
       white-space:nowrap;
     }
     .badge .dot{ width:8px; height:8px; border-radius:99px; background: var(--good); box-shadow: 0 0 0 3px rgba(40,209,124,.12);}
-    .badge.neutral .dot{ background: #ffd166; box-shadow: 0 0 0 3px rgba(255,209,102,.12);}
+    .badge.neutral .dot{ background:#ffd166; box-shadow: 0 0 0 3px rgba(255,209,102,.12);}
     .badge.bear .dot{ background: var(--bad); box-shadow: 0 0 0 3px rgba(255,77,109,.12);}
     .weather{
       display:inline-flex; gap:8px; align-items:center;
@@ -65,35 +64,22 @@
       font-family: var(--mono);
       white-space:nowrap;
     }
-    .top-mid{
-      display:flex; align-items:stretch; gap:10px; flex:1;
-      justify-content:center;
-      min-width: 240px;
-    }
+    .top-mid{ display:flex; flex:1; justify-content:center; min-width: 240px; }
     .cashBox{
       background: linear-gradient(180deg, rgba(17,31,56,.90), rgba(12,21,40,.85));
       border:1px solid rgba(255,255,255,.08);
       border-radius: var(--radius2);
       padding:10px 14px;
       min-width: 250px;
-      display:flex; flex-direction:column; justify-content:center;
     }
     .cashLabel{ color:var(--muted); font-size:12px; letter-spacing:.12em; text-transform:uppercase;}
     .cashRow{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
-    .cashVal{
-      font-size:30px; font-weight:800; letter-spacing:.01em;
-      transition: transform .18s ease, filter .18s ease;
-    }
+    .cashVal{ font-size:30px; font-weight:800; }
     .pulseGood{ animation: pulseGood .35s ease; }
     .pulseBad{ animation: pulseBad .35s ease; }
-    @keyframes pulseGood{ 0%{ transform: scale(1); filter: drop-shadow(0 0 0 rgba(40,209,124,0)); } 60%{ transform: scale(1.03); filter: drop-shadow(0 0 18px rgba(40,209,124,.35)); } 100%{ transform: scale(1); } }
-    @keyframes pulseBad{ 0%{ transform: scale(1); filter: drop-shadow(0 0 0 rgba(255,77,109,0)); } 60%{ transform: scale(1.03); filter: drop-shadow(0 0 18px rgba(255,77,109,.30)); } 100%{ transform: scale(1); } }
-    .netVal{
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--muted);
-      white-space:nowrap;
-    }
+    @keyframes pulseGood{ 0%{ transform: scale(1);} 60%{ transform: scale(1.03);} 100%{ transform: scale(1);} }
+    @keyframes pulseBad{ 0%{ transform: scale(1);} 60%{ transform: scale(1.03);} 100%{ transform: scale(1);} }
+    .netVal{ font-family: var(--mono); font-size:12px; color: var(--muted); white-space:nowrap;}
     .netVal strong{ color: var(--text); }
     .top-right{ display:flex; align-items:center; gap:10px; min-width: 260px; justify-content:flex-end;}
     .miniBtn{
@@ -109,18 +95,10 @@
       font-size: 12px;
     }
     .miniBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.16);}
-    .grid{
-      display:grid; grid-template-columns: 1.05fr .95fr;
-      gap:14px;
-      margin-top:14px;
-    }
-    @media (max-width: 960px){
-      .grid{ grid-template-columns: 1fr; }
-      .topbar{ flex-wrap:wrap; }
-      .top-mid{ order: 3; width: 100%; justify-content:stretch; }
-      .cashBox{ width:100%; min-width:unset;}
-      .top-left, .top-right{ min-width:unset; }
-    }
+
+    .grid{ display:grid; grid-template-columns: 1.05fr .95fr; gap:14px; margin-top:14px; }
+    @media (max-width: 960px){ .grid{ grid-template-columns:1fr; } .top-mid{ width:100%; } .cashBox{ min-width:unset; width:100%; } }
+
     .panel{
       background: linear-gradient(180deg, rgba(15,26,46,.92), rgba(10,18,32,.90));
       border:1px solid rgba(255,255,255,.08);
@@ -140,9 +118,8 @@
     }
     .panelBody{ padding:14px; }
     .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    @media (max-width: 520px){
-      .row2{ grid-template-columns: 1fr; }
-    }
+    @media (max-width: 520px){ .row2{ grid-template-columns:1fr; } }
+
     .card{
       background: linear-gradient(180deg, rgba(17,31,56,.72), rgba(12,21,40,.70));
       border:1px solid rgba(255,255,255,.08);
@@ -150,8 +127,7 @@
       padding:12px;
     }
     .cardTitle{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       font-family: var(--mono);
       color: var(--muted);
       text-transform:uppercase;
@@ -168,12 +144,10 @@
       border:1px solid rgba(255,255,255,.08);
     }
     .meter > div{
-      height:100%;
-      width:50%;
+      height:100%; width:50%;
       background: linear-gradient(90deg, rgba(122,166,255,.95), rgba(40,209,124,.95));
       border-radius:999px;
       transition: width .25s ease;
-      filter: saturate(1.1);
     }
     .meterMeta{
       display:flex; align-items:center; justify-content:space-between;
@@ -182,8 +156,8 @@
       font-size:12px;
       color: var(--muted);
     }
-    .sparkWrap{ display:flex; gap:12px; align-items:center; }
     canvas{ display:block; width:100%; height:84px; }
+
     .ticker{
       height:240px; overflow:hidden;
       border-radius: var(--radius);
@@ -205,60 +179,41 @@
     .tickItem.good strong{ color: var(--good); }
     .tickItem.bad strong{ color: var(--bad); }
     .tickItem.warn strong{ color: var(--warn); }
-    .controls{
-      display:grid; grid-template-columns: 1fr 1fr; gap:12px;
-    }
-    @media (max-width: 760px){
-      .controls{ grid-template-columns: 1fr; }
-    }
-    .stepper{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .priceVal{
-      font-size:26px; font-weight:800; letter-spacing:.01em;
-      font-family: var(--mono);
-    }
+
+    .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 760px){ .controls{ grid-template-columns:1fr; } }
+    .stepper{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .priceVal{ font-size:26px; font-weight:800; letter-spacing:.01em; font-family: var(--mono); }
     .btnRow{ display:flex; gap:10px; flex-wrap:wrap; }
     .btn{
-      padding:12px 14px;
-      border-radius: 14px;
+      padding:12px 14px; border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.04);
       color: var(--text);
       cursor:pointer;
       transition: transform .12s ease, background .12s ease, border-color .12s ease;
       font-family: var(--mono);
-      font-size: 12px;
+      font-size:12px;
       user-select:none;
     }
     .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.18); }
-    .btn.primary{
-      background: linear-gradient(180deg, rgba(122,166,255,.22), rgba(122,166,255,.10));
-      border-color: rgba(122,166,255,.40);
-    }
-    .btn.good{
-      background: linear-gradient(180deg, rgba(40,209,124,.18), rgba(40,209,124,.08));
-      border-color: rgba(40,209,124,.40);
-    }
-    .btn.danger{
-      background: linear-gradient(180deg, rgba(255,77,109,.18), rgba(255,77,109,.08));
-      border-color: rgba(255,77,109,.45);
-    }
+    .btn.primary{ background: linear-gradient(180deg, rgba(122,166,255,.22), rgba(122,166,255,.10)); border-color: rgba(122,166,255,.40); }
+    .btn.good{ background: linear-gradient(180deg, rgba(40,209,124,.18), rgba(40,209,124,.08)); border-color: rgba(40,209,124,.40); }
+    .btn.danger{ background: linear-gradient(180deg, rgba(255,77,109,.18), rgba(255,77,109,.08)); border-color: rgba(255,77,109,.45); }
+
     .invGrid{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
-    @media (max-width: 520px){
-      .invGrid{ grid-template-columns: 1fr; }
-    }
+    @media (max-width: 520px){ .invGrid{ grid-template-columns:1fr; } }
     .invItem{
       border-radius: var(--radius);
       border:1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.03);
       padding:10px;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       font-family: var(--mono);
     }
     .invItem .k{ color: var(--muted); font-size:12px; }
     .invItem .v{ font-size:16px; font-weight:700; }
+
     .progressWrap{
       margin-top:12px;
       border:1px solid rgba(255,255,255,.08);
@@ -287,9 +242,8 @@
       border-radius:999px;
       transition: width .30s ease;
     }
-    .fade{
-      opacity:.75;
-    }
+    .tiny{ font-size:11px; color: var(--muted); font-family: var(--mono); }
+    .fade{ opacity:.75; }
 
     /* Modal */
     .modalOverlay{
@@ -309,8 +263,7 @@
     .modalHead{
       padding:14px 16px;
       border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
       font-family: var(--mono);
       letter-spacing:.08em;
       text-transform:uppercase;
@@ -338,11 +291,9 @@
       font-family: var(--mono);
       font-size: 12px;
       margin-right: 8px;
+      margin-bottom: 6px;
     }
-    .kpiGrid{
-      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
-      margin-top: 10px;
-    }
+    .kpiGrid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; }
     @media (max-width: 520px){ .kpiGrid{ grid-template-columns: 1fr; } }
     .kpi{
       border-radius: 16px;
@@ -374,7 +325,6 @@
       resize: vertical;
       outline: none;
     }
-    .tiny{ font-size:11px; color: var(--muted); font-family: var(--mono); }
   </style>
 </head>
 <body>
@@ -409,21 +359,15 @@
       </div>
 
       <div class="top-right">
-        <button class="miniBtn" id="btnSave" title="Save to browser">
-          💾 SAVE
-        </button>
-        <button class="miniBtn" id="btnExport" title="Download CSV of results">
-          ⬇️ EXPORT CSV
-        </button>
-        <button class="miniBtn" id="btnReset" title="Reset run">
-          ♻️ RESET
-        </button>
+        <button class="miniBtn" id="btnSave" title="Save to browser">💾 SAVE</button>
+        <button class="miniBtn" id="btnExport" title="Download CSV of results">⬇️ EXPORT CSV</button>
+        <button class="miniBtn" id="btnReset" title="Reset run">♻️ RESET</button>
       </div>
     </div>
 
     <div class="grid">
 
-      <!-- LEFT: MARKET + TICKER -->
+      <!-- LEFT -->
       <div class="panel">
         <div class="panelHeader">
           <h2>Live Market</h2>
@@ -438,14 +382,10 @@
                 <span>🍋 Lemon Market Index</span>
                 <span class="sub" id="volatilityText">Volatility: Medium</span>
               </div>
-              <div class="sparkWrap">
-                <div style="flex:1;">
-                  <canvas id="spark"></canvas>
-                  <div class="meterMeta">
-                    <span>Index: <strong id="indexVal">100.0</strong></span>
-                    <span class="fade">Last 60s</span>
-                  </div>
-                </div>
+              <canvas id="spark"></canvas>
+              <div class="meterMeta">
+                <span>Index: <strong id="indexVal">100.0</strong></span>
+                <span class="fade">Last 60s</span>
               </div>
             </div>
 
@@ -467,6 +407,24 @@
 
           </div>
 
+          <!-- NEW: FORECAST CARD -->
+          <div class="card" style="margin-top:12px;">
+            <div class="cardTitle">
+              <span>🔮 Tomorrow Forecast</span>
+              <span class="sub" id="forecastAccuracy">Accuracy: Medium</span>
+            </div>
+
+            <div class="btnRow" style="align-items:center;">
+              <span class="pill" id="fcWeather">—</span>
+              <span class="pill" id="fcVol">—</span>
+              <span class="pill" id="fcHint">—</span>
+            </div>
+
+            <div class="tiny" id="fcNote" style="margin-top:8px;">
+              Forecast only shows during Setup. You still have to plan.
+            </div>
+          </div>
+
           <div style="margin-top:12px;" class="card">
             <div class="cardTitle">
               <span>📜 Live Ticker</span>
@@ -484,14 +442,14 @@
             </div>
             <div class="progressBar"><div id="timeFill"></div></div>
             <div class="tiny" style="margin-top:10px;">
-              Tip: High volatility means bigger swings — more upside, more risk.
+              Tip: Volatility changes risk. Forecast helps you plan inventory.
             </div>
           </div>
 
         </div>
       </div>
 
-      <!-- RIGHT: CONTROLS -->
+      <!-- RIGHT -->
       <div class="panel">
         <div class="panelHeader">
           <h2>Operations</h2>
@@ -531,7 +489,6 @@
               </div>
             </div>
 
-            <!-- NEW: Marketing (diminishing returns) -->
             <div class="card">
               <div class="cardTitle">
                 <span>📣 Marketing</span>
@@ -670,18 +627,17 @@
     function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
     function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-    // ---------- State ----------
-    const STORAGE_KEY = "lemonadeclass_marketmode_v11";
+    // ---------- State / Config ----------
+    const STORAGE_KEY = "lemonadeclass_marketmode_forecast_v1";
     const DEFAULT_RUN_DAYS = 5;
 
-    // Gameplay knobs (teacher-friendly defaults)
     const GAME = {
-      dailyStallFee: 6.00,             // fixed cost per day
-      expiredPermitSurcharge: 3.00,     // extra daily cost if permit expired
-      baseCustomers: 220,              // typical day market size (before modifiers)
+      dailyStallFee: 6.00,
+      expiredPermitSurcharge: 3.00,
+      baseCustomers: 220,
       customerCapMin: 90,
       customerCapMax: 420,
-      lemonSpoilageHot: [0.10, 0.22],  // fraction of lemons spoiled on hot days
+      lemonSpoilageHot: [0.10, 0.22],
       lemonSpoilageNormal:[0.04, 0.12],
       sugarSpoilage: [0.00, 0.06],
       repSelloutPenalty: 2.5,
@@ -689,14 +645,14 @@
       repFairPriceGain: 0.25,
       repOverpricePenalty: 0.40,
       repUnderpricePenalty: 0.10,
-      priceElasticity: 1.45,           // higher = harsher demand drop when overpriced
-      marketingCurve: 6.0              // higher = slower diminishing returns
+      priceElasticity: 1.45,
+      marketingCurve: 6.0
     };
 
     const state = {
       runDays: DEFAULT_RUN_DAYS,
       day: 1,
-      phase: "setup", // setup | live | closed
+      phase: "setup",
 
       cash: 25.00,
       revenueToday: 0,
@@ -712,40 +668,35 @@
       permitDaysLeft: 2,
       hasSign: false,
 
-      // demand + market
-      demand: 0.50,        // 0..1
+      demand: 0.50,
       traffic: "Normal",
       volatility: "Medium",
       sentiment: "bull",
-      reputation: 12,       // 0..100
+      reputation: 12,
 
-      // NEW: finite market
       customersTotal: 0,
       customersRemaining: 0,
       cupsSoldToday: 0,
       soldOutFlag: false,
 
-      // NEW: marketing spend
       marketingSpendToday: 0,
 
-      // time simulation
       marketMinutesTotal: 8 * 60,
       marketMinutes: 0,
 
-      // index data
       index: 100.0,
       indexSeries: [],
 
-      // log
       dayLogs: [],
 
-      // runtime
+      // NEW: Forecast object
+      forecast: null, // {weatherName, icon, vol, hint, accuracyLabel, willBeWrong}
       _timers: { marketTick:null, customerTick:null, sparkTick:null },
       _avgDemandAccumulator: { sum:0, count:0 },
       _eventsToday: 0
     };
 
-    // ---------- UI Refs ----------
+    // ---------- UI ----------
     const el = {
       sentimentBadge: $("sentimentBadge"),
       sentimentDot: $("sentimentDot"),
@@ -757,7 +708,6 @@
       netToday: $("netToday"),
       dayText: $("dayText"),
       volatilityText: $("volatilityText"),
-      marketAvg: $("marketAvg"),
       priceVal: $("priceVal"),
       demandFill: $("demandFill"),
       demandPct: $("demandPct"),
@@ -778,17 +728,9 @@
       sugarVal: $("sugarVal"),
       indexVal: $("indexVal"),
       tickerList: $("tickerList"),
-      hoursText: $("hoursText"),
       runHint: $("runHint"),
 
-      // marketing
-      mktStatus: $("mktStatus"),
-      mkt0: $("mkt0"),
-      mkt3: $("mkt3"),
-      mkt7: $("mkt7"),
-      mkt12: $("mkt12"),
-
-      // buttons
+      marketAvg: $("marketAvg"),
       btnSave: $("btnSave"),
       btnExport: $("btnExport"),
       btnReset: $("btnReset"),
@@ -801,6 +743,19 @@
       buySign: $("buySign"),
       startDay: $("startDay"),
       closeDay: $("closeDay"),
+
+      mktStatus: $("mktStatus"),
+      mkt0: $("mkt0"),
+      mkt3: $("mkt3"),
+      mkt7: $("mkt7"),
+      mkt12: $("mkt12"),
+
+      // forecast elements
+      fcWeather: $("fcWeather"),
+      fcVol: $("fcVol"),
+      fcHint: $("fcHint"),
+      fcNote: $("fcNote"),
+      forecastAccuracy: $("forecastAccuracy"),
 
       // modals
       eventOverlay: $("eventOverlay"),
@@ -883,8 +838,7 @@
     const tickerBuffer = [];
     function pushTicker(type, msg){
       const stamp = now();
-      const item = {type, msg, stamp};
-      tickerBuffer.unshift(item);
+      tickerBuffer.unshift({type, msg, stamp});
       while(tickerBuffer.length > 30) tickerBuffer.pop();
       renderTicker();
     }
@@ -892,16 +846,14 @@
       el.tickerList.innerHTML = tickerBuffer.map(t=>{
         const cls = t.type ? `tickItem ${t.type}` : "tickItem";
         const icon = t.type === "good" ? "🟢" : t.type === "bad" ? "🔴" : t.type === "warn" ? "🟡" : "⚪";
-        const strongWrap = (text) => `<strong>${text}</strong>`;
         let msg = t.msg
-          .replace(/\+\$\d+(\.\d{2})?/g, m => strongWrap(m))
-          .replace(/\-\$\d+(\.\d{2})?/g, m => strongWrap(m))
-          .replace(/Demand/gi, m => `<strong>${m}</strong>`);
+          .replace(/\+\$\d+(\.\d{2})?/g, m => `<strong>${m}</strong>`)
+          .replace(/\-\$\d+(\.\d{2})?/g, m => `<strong>${m}</strong>`);
         return `<div class="${cls}"><span class="t">${t.stamp}</span> ${icon} ${msg}</div>`;
       }).join("");
     }
 
-    // ---------- Weather ----------
+    // ---------- Weather Pool ----------
     const WEATHER_POOL = [
       {icon:"☀", name:"Sunny", temp:[78,92], base:+0.06, vol:"Low", hot:false},
       {icon:"🌤", name:"Warm", temp:[72,86], base:+0.03, vol:"Medium", hot:false},
@@ -922,51 +874,121 @@
       pushTicker("info", `Weather shift: ${w.name} (${temp}°).`);
     }
 
-    // ---------- Demand Engine (no longer runs inside renderAll) ----------
+    // ---------- Forecast Engine ----------
+    function forecastAccuracyLabel(){
+      // Make forecast more accurate as reputation rises (teachers love this)
+      // Low rep: often wrong. High rep: mostly right.
+      const rep = state.reputation;
+      if(rep >= 70) return "High";
+      if(rep >= 35) return "Medium";
+      return "Low";
+    }
+
+    function chanceForecastWrong(accLabel){
+      // High accuracy still not perfect; low accuracy misses often
+      if(accLabel === "High") return 0.18;
+      if(accLabel === "Medium") return 0.33;
+      return 0.55;
+    }
+
+    function demandHintFromWeatherName(name){
+      if(name === "Heat Wave") return "High demand likely";
+      if(name === "Sunny") return "Good demand likely";
+      if(name === "Warm") return "Moderate demand";
+      if(name === "Cloudy") return "Lower demand risk";
+      if(name === "Rainy") return "Low demand likely";
+      return "Mixed signals";
+    }
+
+    function generateForecast(){
+      const acc = forecastAccuracyLabel();
+      const willBeWrong = Math.random() < chanceForecastWrong(acc);
+
+      // "Predicted" weather for tomorrow
+      const predicted = choice(WEATHER_POOL);
+
+      // If forecast is wrong, the actual weather will be something else on start day
+      // We store a flag & predicted info; actual is chosen at startMarketDay()
+      state.forecast = {
+        accuracyLabel: acc,
+        willBeWrong,
+        predictedWeatherName: predicted.name,
+        predictedIcon: predicted.icon,
+        predictedVol: predicted.vol,
+        predictedHint: demandHintFromWeatherName(predicted.name)
+      };
+
+      renderForecast();
+    }
+
+    function renderForecast(){
+      if(!state.forecast){
+        el.fcWeather.textContent = "—";
+        el.fcVol.textContent = "—";
+        el.fcHint.textContent = "—";
+        el.forecastAccuracy.textContent = "Accuracy: —";
+        el.fcNote.textContent = "Forecast only shows during Setup.";
+        return;
+      }
+      el.forecastAccuracy.textContent = "Accuracy: " + state.forecast.accuracyLabel;
+      el.fcWeather.textContent = `${state.forecast.predictedIcon} ${state.forecast.predictedWeatherName}`;
+      el.fcVol.textContent = `Volatility: ${state.forecast.predictedVol}`;
+      el.fcHint.textContent = state.forecast.predictedHint;
+
+      if(state.phase !== "setup"){
+        el.fcNote.textContent = "Forecast is hidden during Live Trading.";
+      } else {
+        el.fcNote.textContent = "Plan inventory + price using forecast (but it can be wrong).";
+      }
+    }
+
+    // ---------- Demand Engine ----------
     function marketingFactor(){
-      // diminishing returns: 0 -> 1.00, 3 -> ~1.10, 7 -> ~1.18, 12 -> ~1.25 (ish)
       const x = state.marketingSpendToday;
       return 1 + 0.30 * (1 - Math.exp(-x / GAME.marketingCurve));
     }
-
     function priceFactor(){
-      // ratio above market gets punished hard; below market helps but capped
       const r = state.price / Math.max(0.01, state.marketAvg);
-      // exp curve: if r=1 -> 1.0, r=1.3 -> drop, r=0.8 -> boost
       let f = Math.exp(-GAME.priceElasticity * (r - 1));
-      f = clamp(f, 0.20, 1.55);
-      return f;
+      return clamp(f, 0.20, 1.55);
     }
-
     function repFactor(){
-      // 0..100 -> multiplier 0.70 .. 1.30
       return 0.70 + (state.reputation/100) * 0.60;
+    }
+    function renderSentiment(){
+      const badge = el.sentimentBadge;
+      badge.classList.remove("neutral","bear");
+      if(state.sentiment === "bull"){
+        el.sentimentText.textContent = "Bullish Market";
+        el.sentimentDot.style.background = "var(--good)";
+      } else if(state.sentiment === "bear"){
+        badge.classList.add("bear");
+        el.sentimentText.textContent = "Bearish Market";
+        el.sentimentDot.style.background = "var(--bad)";
+      } else {
+        badge.classList.add("neutral");
+        el.sentimentText.textContent = "Neutral Market";
+        el.sentimentDot.style.background = "#ffd166";
+      }
     }
 
     function computeDemandSnapshot(){
       const sign = state.hasSign ? 1.08 : 1.00;
       const permit = (state.permitDaysLeft <= 0) ? 0.90 : 1.00;
 
-      // baseline around 0.50 plus weather bias
       let base = 0.50 + weather.base;
-
-      // convert multipliers into additive-ish effect using log space
       const mult = priceFactor() * marketingFactor() * repFactor() * sign * permit;
 
-      // mild volatility noise
       const volNoise = state.volatility === "Low" ? 0.02 : state.volatility === "Medium" ? 0.04 : 0.08;
       const noise = (Math.random()*2-1) * volNoise;
 
-      // map multiplier into demand shift
-      // mult=1 -> +0, mult>1 -> +, mult<1 -> -
-      const multShift = (Math.log(mult) / Math.log(1.8)) * 0.22; // smooth & bounded
+      const multShift = (Math.log(mult) / Math.log(1.8)) * 0.22;
 
       let d = base + multShift + noise;
       d = clamp(d, 0.06, 0.94);
 
       state.demand = d;
 
-      // label + traffic
       const label = d >= 0.72 ? "Hot" : d >= 0.58 ? "Strong" : d >= 0.44 ? "Neutral" : d >= 0.30 ? "Soft" : "Cold";
       el.demandLabel.textContent = label;
 
@@ -985,39 +1007,17 @@
     }
 
     function computeCustomerCap(){
-      // finite customers per day
-      const base = GAME.baseCustomers;
-
-      const demandLift = 0.75 + state.demand * 0.85;       // ~0.80..1.55
-      const repLift = 0.85 + (state.reputation/100)*0.35;   // ~0.85..1.20
+      const demandLift = 0.75 + state.demand * 0.85;
+      const repLift = 0.85 + (state.reputation/100)*0.35;
       const signLift = state.hasSign ? 1.08 : 1.00;
       const permitLift = (state.permitDaysLeft<=0) ? 0.92 : 1.00;
-
       const volLift = state.volatility === "High" ? 1.05 : state.volatility === "Low" ? 0.97 : 1.00;
 
-      let total = Math.round(base * demandLift * repLift * signLift * permitLift * volLift);
+      let total = Math.round(GAME.baseCustomers * demandLift * repLift * signLift * permitLift * volLift);
       total = clamp(total, GAME.customerCapMin, GAME.customerCapMax);
-
       state.customersTotal = total;
       state.customersRemaining = total;
       el.customersLeft.textContent = `${state.customersRemaining}/${state.customersTotal}`;
-    }
-
-    function renderSentiment(){
-      const badge = el.sentimentBadge;
-      badge.classList.remove("neutral","bear");
-      if(state.sentiment === "bull"){
-        el.sentimentText.textContent = "Bullish Market";
-        el.sentimentDot.style.background = "var(--good)";
-      } else if(state.sentiment === "bear"){
-        badge.classList.add("bear");
-        el.sentimentText.textContent = "Bearish Market";
-        el.sentimentDot.style.background = "var(--bad)";
-      } else {
-        badge.classList.add("neutral");
-        el.sentimentText.textContent = "Neutral Market";
-        el.sentimentDot.style.background = "#ffd166";
-      }
     }
 
     // ---------- Index ----------
@@ -1039,17 +1039,11 @@
       el.repText.textContent = "Level " + (state.reputation >= 80 ? "5" : state.reputation >= 60 ? "4" : state.reputation >= 40 ? "3" : state.reputation >= 20 ? "2" : "1");
       el.repImpact.textContent = state.reputation >= 60 ? "High" : state.reputation >= 30 ? "Medium" : "Low";
     }
-
     function repAdjustForPricing(){
       const delta = state.price - state.marketAvg;
-      if(delta > 0.30){
-        state.reputation = clamp(state.reputation - GAME.repOverpricePenalty, 0, 100);
-      } else if(delta < -0.35){
-        // too cheap can signal low quality, small penalty
-        state.reputation = clamp(state.reputation - GAME.repUnderpricePenalty, 0, 100);
-      } else {
-        state.reputation = clamp(state.reputation + GAME.repFairPriceGain, 0, 100);
-      }
+      if(delta > 0.30) state.reputation = clamp(state.reputation - GAME.repOverpricePenalty, 0, 100);
+      else if(delta < -0.35) state.reputation = clamp(state.reputation - GAME.repUnderpricePenalty, 0, 100);
+      else state.reputation = clamp(state.reputation + GAME.repFairPriceGain, 0, 100);
     }
 
     // ---------- Purchases ----------
@@ -1065,26 +1059,21 @@
       return true;
     }
 
-    // ---------- Sales (finite customers + real penalties) ----------
-    function canSell(){
-      return state.lemons > 0 && state.cups > 0 && state.sugar > 0;
-    }
+    // ---------- Sales ----------
+    function canSell(){ return state.lemons > 0 && state.cups > 0 && state.sugar > 0; }
 
     function sellOnce(){
       if(state.phase !== "live") return;
 
-      // stop if market exhausted
       if(state.customersRemaining <= 0){
         pushTicker("info", "Market demand is tapped out — no more customers today.");
         closeMarketDay();
         return;
       }
 
-      // one customer arrives
       state.customersRemaining -= 1;
       el.customersLeft.textContent = `${state.customersRemaining}/${state.customersTotal}`;
 
-      // if we can't sell, they leave and rep gets hit
       if(!canSell()){
         pushTicker("warn", "Sold out — customer walked away.");
         state.reputation = clamp(state.reputation - GAME.repOutOfStockPenalty, 0, 100);
@@ -1093,55 +1082,41 @@
         return;
       }
 
-      // walk-away chance increases when overpriced, decreases when demand is high
       const r = state.price / Math.max(0.01, state.marketAvg);
       const over = clamp(r - 1, 0, 1.5);
 
-      let walkChance = 0.18
-        + over * 0.28
-        + (0.55 - state.demand) * 0.22;
-
-      // marketing and sign reduce walk-away slightly
+      let walkChance = 0.18 + over * 0.28 + (0.55 - state.demand) * 0.22;
       walkChance -= (marketingFactor() - 1) * 0.10;
       if(state.hasSign) walkChance -= 0.02;
-
       walkChance = clamp(walkChance, 0.04, 0.55);
 
       if(Math.random() < walkChance){
         pushTicker("info", "Customer compared options and left.");
-        // slight rep drift down when priced wrong
         if(over > 0.25) state.reputation = clamp(state.reputation - 0.35, 0, 100);
         renderReputation();
         return;
       }
 
-      // sale size: sometimes 2 cups, rarely 3, based on demand + fair pricing
       const fair = Math.abs(state.price - state.marketAvg) <= 0.25;
       let multi = 1;
       const p2 = clamp((state.demand - 0.40) * 0.45 + (fair ? 0.06 : -0.02), 0.02, 0.30);
       const p3 = clamp((state.demand - 0.65) * 0.20, 0.00, 0.06);
-
       if(Math.random() < p3) multi = 3;
       else if(Math.random() < p2) multi = 2;
 
-      // cap to inventory
       const maxPossible = Math.min(state.lemons, state.cups, state.sugar);
       multi = Math.min(multi, maxPossible);
 
-      // consume inventory
       state.lemons -= multi;
       state.cups -= multi;
       state.sugar -= multi;
 
-      // revenue
       const sale = state.price * multi;
       state.cash += sale;
       state.revenueToday += sale;
       state.cupsSoldToday += multi;
 
-      // rep adjustments
       repAdjustForPricing();
-      // reward meeting demand (not selling out) a bit
       state.reputation = clamp(state.reputation + (fair ? 0.10 : 0.04), 0, 100);
 
       pushTicker("good", `+${money(sale)}  ${multi} cup${multi>1?"s":""} sold`);
@@ -1149,14 +1124,10 @@
     }
 
     function customerLoopIntervalMs(){
-      // finite customers; speed is vibe only
-      const base = 5200;
-      const fast = 1500;
+      const base = 5200, fast = 1500;
       const t = Math.round(base - (base-fast)*state.demand);
-      const jitter = randInt(-250, 250);
-      return clamp(t + jitter, 1000, 6500);
+      return clamp(t + randInt(-250, 250), 1000, 6500);
     }
-
     function scheduleNextCustomer(){
       if(state.phase !== "live") return;
       clearTimeout(state._timers.customerTick);
@@ -1170,12 +1141,6 @@
 
     // ---------- Events ----------
     const EVENTS = [
-      {
-        title: "Heat spike hits downtown",
-        body: "Foot traffic surges. Customers are thirsty.",
-        effect: (s)=>{ s.reputation = clamp(s.reputation + 1.2, 0, 100); s.marketingSpendToday = s.marketingSpendToday; },
-        tags: ["Reputation +1", "Traffic ↑"]
-      },
       {
         title: "Competitor undercuts your price",
         body: "A rival stand drops prices. Customers compare value.",
@@ -1211,7 +1176,6 @@
         tags: ["Customers +10..+22", "Reputation +3"]
       },
     ];
-
     function maybeEvent(){
       if(state.phase !== "live") return;
       const vol = state.volatility === "Low" ? 0.14 : state.volatility === "Medium" ? 0.22 : 0.33;
@@ -1221,7 +1185,6 @@
         openEvent(ev);
       }
     }
-
     function openEvent(ev){
       ev.effect(state);
       computeDemandSnapshot();
@@ -1235,12 +1198,9 @@
 
       pushTicker("warn", `EVENT: ${ev.title}`);
     }
+    function closeEvent(){ el.eventOverlay.style.display = "none"; }
 
-    function closeEvent(){
-      el.eventOverlay.style.display = "none";
-    }
-
-    // ---------- Time / Day ----------
+    // ---------- Time ----------
     function renderTime(){
       const pct = (state.marketMinutes / state.marketMinutesTotal) * 100;
       el.timeFill.style.width = clamp(pct,0,100) + "%";
@@ -1257,12 +1217,6 @@
       const ampm = hour >= 12 ? "PM" : "AM";
       const h12 = ((hour + 11) % 12) + 1;
       el.marketClock.textContent = (state.phase === "live" ? "Market Live · " : "Market Open · ") + `${h12}:${String(minute).padStart(2,"0")} ${ampm}`;
-
-      if(pct >= 80){
-        el.timeFill.style.background = "linear-gradient(90deg, rgba(255,204,102,.95), rgba(255,77,109,.90))";
-      } else {
-        el.timeFill.style.background = "linear-gradient(90deg, rgba(122,166,255,.95), rgba(40,209,124,.95))";
-      }
     }
 
     function setOpsEnabled(enabled){
@@ -1277,6 +1231,7 @@
       el.mkt12.disabled = !enabled;
     }
 
+    // ---------- Day Start / End ----------
     function startMarketDay(){
       if(state.phase !== "setup") return;
 
@@ -1286,13 +1241,23 @@
       state.expensesToday = 0;
       state.cupsSoldToday = 0;
       state.soldOutFlag = false;
-      state.marketingSpendToday = 0;
-      el.mktStatus.textContent = "Spend Today: $0";
-
       state._avgDemandAccumulator = {sum:0, count:0};
       state._eventsToday = 0;
 
-      setWeather(choice(WEATHER_POOL));
+      // Apply forecast: if it was "wrong", choose a different actual weather
+      let actual;
+      if(state.forecast && state.forecast.willBeWrong){
+        // pick a different weather than predicted
+        const predictedName = state.forecast.predictedWeatherName;
+        actual = choice(WEATHER_POOL.filter(w => w.name !== predictedName));
+        pushTicker("warn", "Forecast missed — conditions changed overnight.");
+      } else if(state.forecast){
+        actual = WEATHER_POOL.find(w => w.name === state.forecast.predictedWeatherName) || choice(WEATHER_POOL);
+        pushTicker("info", "Forecast held — conditions look as expected.");
+      } else {
+        actual = choice(WEATHER_POOL);
+      }
+      setWeather(actual);
 
       // permit ticks down per day
       state.permitDaysLeft -= 1;
@@ -1303,44 +1268,40 @@
         el.permitStatus.textContent = "Permit: Active (" + state.permitDaysLeft + "d)";
       }
 
-      // DAILY FIXED COSTS (stops “click to win”)
+      // DAILY FIXED COSTS
       let fixed = GAME.dailyStallFee;
       if(state.permitDaysLeft <= 0) fixed += GAME.expiredPermitSurcharge;
-
       state.cash -= fixed;
       state.expensesToday += fixed;
       pushTicker("bad", `-${money(fixed)}  Daily stall costs`);
 
-      if(state.cash < 0){
-        // teacher-friendly: allow game to continue, but warn and rep hit
-        pushTicker("warn", "Cash went negative — you're running on credit. Be careful.");
-        state.reputation = clamp(state.reputation - 2, 0, 100);
-      }
-
-      // lock purchases
+      // Lock purchases
       setOpsEnabled(false);
 
-      // demand + customer cap (finite market)
       computeDemandSnapshot();
       computeCustomerCap();
 
-      // loops
+      $("startDay").disabled = true;
+      $("closeDay").disabled = false;
+      el.phaseText.textContent = "Live Trading";
+
+      // hide forecast note during live
+      renderForecast();
+
       clearInterval(state._timers.marketTick);
       state._timers.marketTick = setInterval(()=>{
         state.marketMinutes += 10;
         renderTime();
 
-        // market avg shifts
         if(state.marketMinutes % 60 === 0){
           const drift = (Math.random()*2-1) * (state.volatility === "High" ? 0.12 : state.volatility === "Medium" ? 0.08 : 0.05);
           state.marketAvg = clamp(state.marketAvg + drift, 0.60, 1.60);
-          $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+          el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
           pushTicker("info", `Market Avg moved to $${state.marketAvg.toFixed(2)}.`);
         }
 
         maybeEvent();
 
-        // day end
         if(state.marketMinutes >= state.marketMinutesTotal){
           closeMarketDay();
         }
@@ -1354,41 +1315,26 @@
 
       scheduleNextCustomer();
 
-      $("startDay").disabled = true;
-      $("closeDay").disabled = false;
-      el.phaseText.textContent = "Live Trading";
-
       pushTicker("info", `Market opened — Day ${state.day}/${state.runDays}.`);
-      renderAll(false, false);
+      renderAll(false,false);
     }
 
     function endOfDaySpoilage(){
-      // spoilage punishes overbuying. Worse on hot days.
       const lemonRate = weather.hot
         ? (Math.random()*(GAME.lemonSpoilageHot[1]-GAME.lemonSpoilageHot[0]) + GAME.lemonSpoilageHot[0])
         : (Math.random()*(GAME.lemonSpoilageNormal[1]-GAME.lemonSpoilageNormal[0]) + GAME.lemonSpoilageNormal[0]);
-
       const sugarRate = (Math.random()*(GAME.sugarSpoilage[1]-GAME.sugarSpoilage[0]) + GAME.sugarSpoilage[0]);
 
       const lemonLost = Math.min(state.lemons, Math.round(state.lemons * lemonRate));
       const sugarLost = Math.min(state.sugar, Math.round(state.sugar * sugarRate));
 
-      if(lemonLost > 0){
-        state.lemons -= lemonLost;
-        pushTicker("warn", `End-of-day spoilage: 🍋 -${lemonLost}`);
-      }
-      if(sugarLost > 0){
-        state.sugar -= sugarLost;
-        pushTicker("warn", `End-of-day spoilage: 🍚 -${sugarLost}`);
-      }
+      if(lemonLost > 0){ state.lemons -= lemonLost; pushTicker("warn", `End-of-day spoilage: 🍋 -${lemonLost}`); }
+      if(sugarLost > 0){ state.sugar -= sugarLost; pushTicker("warn", `End-of-day spoilage: 🍚 -${sugarLost}`); }
 
-      // selling out hurts if customers were still available
       if(state.soldOutFlag && state.customersRemaining > 0){
         state.reputation = clamp(state.reputation - GAME.repSelloutPenalty, 0, 100);
         pushTicker("warn", `Sold out early — reputation -${GAME.repSelloutPenalty.toFixed(1)}`);
       }
-
-      // reward strong planning (sold a decent amount and didn’t sell out)
       if(state.cupsSoldToday >= Math.round(state.customersTotal*0.35) && !state.soldOutFlag){
         state.reputation = clamp(state.reputation + 1.2, 0, 100);
         pushTicker("good", "Strong execution — reputation +1");
@@ -1419,17 +1365,22 @@
         net: +net.toFixed(2),
         avgDemand: +avgDemand.toFixed(3),
         events: state._eventsToday,
+        cupsSold: state.cupsSoldToday,
+        customersTotal: state.customersTotal,
         cashEnd: +state.cash.toFixed(2),
         priceEnd: +state.price.toFixed(2),
         repEnd: Math.round(state.reputation),
         weather: weather.name,
         volatility: state.volatility,
-        cupsSold: state.cupsSoldToday,
-        customersTotal: state.customersTotal
+        // forecast fields
+        forecastWeather: state.forecast?.predictedWeatherName || "",
+        forecastVol: state.forecast?.predictedVol || "",
+        forecastAccuracy: state.forecast?.accuracyLabel || "",
+        forecastMiss: state.forecast?.willBeWrong ? "Yes" : "No"
       });
 
       el.closeTitle.textContent = `Market Closed — Day ${state.day}/${state.runDays}`;
-      el.closeBody.textContent = `Review your results and plan tomorrow.`;
+      el.closeBody.textContent = `Review results and plan tomorrow.`;
       el.kRevenue.textContent = money(state.revenueToday);
       el.kExpenses.textContent = money(state.expensesToday);
       el.kNet.textContent = (net>=0? "+" : "") + money(net);
@@ -1437,11 +1388,10 @@
 
       el.closeOverlay.style.display = "grid";
       el.phaseText.textContent = "Closed";
-
       $("closeDay").disabled = true;
 
       pushTicker(net>=0 ? "good" : "bad", `Market closed. Net: ${(net>=0?"+":"")}${money(net)}.`);
-      renderAll(false, false);
+      renderAll(false,false);
     }
 
     function nextDay(){
@@ -1456,7 +1406,8 @@
         $("startDay").disabled = false;
         $("closeDay").disabled = true;
         el.phaseText.textContent = "Setup Phase";
-        renderAll(false, false);
+        generateForecast();
+        renderAll(false,false);
         return;
       }
 
@@ -1467,14 +1418,15 @@
       $("closeDay").disabled = true;
       el.phaseText.textContent = "Setup Phase";
 
-      if(state.lemons < 5 || state.cups < 5 || state.sugar < 5){
-        pushTicker("warn", "Low inventory — consider buying before market opens.");
-      }
-
+      // mean reversion
       state.marketAvg = clamp((state.marketAvg*0.6 + 1.0*0.4), 0.60, 1.60);
-      $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+      el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
 
-      renderAll(false, false);
+      // NEW: generate a new forecast for the coming day
+      generateForecast();
+
+      renderForecast();
+      renderAll(false,false);
       pushTicker("info", `Setup for Day ${state.day}/${state.runDays}.`);
     }
 
@@ -1497,7 +1449,7 @@
       }
 
       el.priceVal.textContent = "$" + state.price.toFixed(2);
-      $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+      el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
 
       el.lemonsVal.textContent = state.lemons;
       el.cupsVal.textContent = state.cups;
@@ -1509,7 +1461,6 @@
       else el.permitStatus.textContent = `Permit: Active (${state.permitDaysLeft}d)`;
 
       renderReputation();
-
       renderTime();
 
       el.indexVal.textContent = state.index.toFixed(1);
@@ -1520,9 +1471,11 @@
         el.runHint.textContent = "React to events and price signals. Finite customers — every decision matters.";
         el.customersLeft.textContent = `${state.customersRemaining}/${state.customersTotal}`;
       } else {
-        el.runHint.textContent = "Buy supplies, set price, optionally market, then open the market.";
+        el.runHint.textContent = "Use forecast to plan inventory + price, then open the market.";
         el.customersLeft.textContent = "—";
       }
+
+      renderForecast();
     }
 
     // ---------- Save / Load / Export ----------
@@ -1544,10 +1497,7 @@
         state.indexSeries = state.indexSeries || [];
         pushTicker("good", "Loaded saved run.");
         return true;
-      }catch(e){
-        console.warn(e);
-        return false;
-      }
+      }catch(e){ console.warn(e); return false; }
     }
 
     function reset(){
@@ -1555,7 +1505,8 @@
       clearInterval(state._timers.sparkTick);
       clearTimeout(state._timers.customerTick);
 
-      const keepTicker = tickerBuffer.slice(0,3);
+      localStorage.removeItem(STORAGE_KEY);
+
       Object.assign(state, {
         runDays: DEFAULT_RUN_DAYS,
         day: 1,
@@ -1585,13 +1536,13 @@
         index: 100.0,
         indexSeries: [],
         dayLogs: [],
+        forecast: null,
         _timers: { marketTick:null, customerTick:null, sparkTick:null },
         _avgDemandAccumulator: {sum:0, count:0},
         _eventsToday: 0
       });
 
       tickerBuffer.length = 0;
-      keepTicker.forEach(x=>tickerBuffer.push(x));
       pushTicker("info", "Reset complete.");
       setOpsEnabled(true);
       $("startDay").disabled = false;
@@ -1599,6 +1550,7 @@
       closeEvent();
       el.closeOverlay.style.display = "none";
       setWeather(choice(WEATHER_POOL));
+      generateForecast();
       renderAll(false,false);
       save();
     }
@@ -1606,7 +1558,8 @@
     function exportCSV(){
       const rows = [];
       rows.push([
-        "day","weather","volatility","revenue","expenses","net","avgDemand","events","cupsSold","customersTotal","cashEnd","priceEnd","repEnd"
+        "day","weather","volatility","revenue","expenses","net","avgDemand","events","cupsSold","customersTotal",
+        "cashEnd","priceEnd","repEnd","forecastWeather","forecastVol","forecastAccuracy","forecastMiss"
       ].join(","));
       for(const d of state.dayLogs){
         rows.push([
@@ -1622,7 +1575,11 @@
           d.customersTotal,
           d.cashEnd.toFixed(2),
           d.priceEnd.toFixed(2),
-          d.repEnd
+          d.repEnd,
+          `"${d.forecastWeather||""}"`,
+          d.forecastVol||"",
+          d.forecastAccuracy||"",
+          d.forecastMiss||""
         ].join(","));
       }
       const csv = rows.join("\n");
@@ -1638,7 +1595,7 @@
       pushTicker("good", "Exported CSV.");
     }
 
-    // ---------- Button Wiring ----------
+    // ---------- Wiring ----------
     el.priceDown.addEventListener("click", ()=>{
       state.price = clamp(state.price - 0.05, 0.50, 3.00);
       pushTicker("info", `Price set to $${state.price.toFixed(2)}.`);
@@ -1652,27 +1609,9 @@
       renderAll(false,false);
     });
 
-    el.buyLemons.addEventListener("click", ()=>{
-      if(state.phase !== "setup") return;
-      if(spend(6, "Buy Lemons +10")){
-        state.lemons += 10;
-        renderAll(false,true);
-      }
-    });
-    el.buyCups.addEventListener("click", ()=>{
-      if(state.phase !== "setup") return;
-      if(spend(4, "Buy Cups +10")){
-        state.cups += 10;
-        renderAll(false,true);
-      }
-    });
-    el.buySugar.addEventListener("click", ()=>{
-      if(state.phase !== "setup") return;
-      if(spend(3, "Buy Sugar +10")){
-        state.sugar += 10;
-        renderAll(false,true);
-      }
-    });
+    el.buyLemons.addEventListener("click", ()=>{ if(state.phase==="setup" && spend(6,"Buy Lemons +10")){ state.lemons += 10; renderAll(false,true);} });
+    el.buyCups.addEventListener("click", ()=>{ if(state.phase==="setup" && spend(4,"Buy Cups +10")){ state.cups += 10; renderAll(false,true);} });
+    el.buySugar.addEventListener("click", ()=>{ if(state.phase==="setup" && spend(3,"Buy Sugar +10")){ state.sugar += 10; renderAll(false,true);} });
 
     el.buyPermit.addEventListener("click", ()=>{
       if(state.phase !== "setup") return;
@@ -1685,10 +1624,7 @@
 
     el.buySign.addEventListener("click", ()=>{
       if(state.phase !== "setup") return;
-      if(state.hasSign){
-        pushTicker("info", "You already have a sign.");
-        return;
-      }
+      if(state.hasSign){ pushTicker("info", "You already have a sign."); return; }
       if(spend(5, "Buy Sign")){
         state.hasSign = true;
         pushTicker("good", "Sign installed. Foot traffic boosted.");
@@ -1696,21 +1632,16 @@
       }
     });
 
-    // Marketing spend (setup only)
     function setMarketingSpend(x){
       if(state.phase !== "setup") return;
       const delta = x - state.marketingSpendToday;
       if(delta < 0){
-        // allow lowering spend for free (just a plan)
         state.marketingSpendToday = x;
         pushTicker("info", `Marketing plan set to $${x}.`);
         renderAll(false,false);
         return;
       }
-      if(delta === 0){
-        pushTicker("info", `Marketing plan already $${x}.`);
-        return;
-      }
+      if(delta === 0){ pushTicker("info", `Marketing plan already $${x}.`); return; }
       if(spend(delta, `Marketing spend +$${delta}`)){
         state.marketingSpendToday = x;
         pushTicker("good", `Marketing spend set to $${x}.`);
@@ -1727,49 +1658,32 @@
 
     el.btnSave.addEventListener("click", save);
     el.btnExport.addEventListener("click", exportCSV);
-    el.btnReset.addEventListener("click", ()=>{
-      localStorage.removeItem(STORAGE_KEY);
-      reset();
-    });
+    el.btnReset.addEventListener("click", reset);
 
-    // Event modal actions
     el.eventX.addEventListener("click", closeEvent);
-    el.eventHold.addEventListener("click", ()=>{
-      pushTicker("info", "Held position.");
-      closeEvent();
-    });
+    el.eventHold.addEventListener("click", ()=>{ pushTicker("info","Held position."); closeEvent(); });
     el.eventAdjust.addEventListener("click", ()=>{
-      if(state.sentiment === "bear"){
-        state.price = clamp(state.price - 0.10, 0.50, 3.00);
-        pushTicker("good", `Adjusted price down to $${state.price.toFixed(2)}.`);
-      } else if(state.sentiment === "bull"){
-        state.price = clamp(state.price + 0.05, 0.50, 3.00);
-        pushTicker("good", `Adjusted price up to $${state.price.toFixed(2)}.`);
-      } else {
-        state.price = clamp(state.price - 0.05, 0.50, 3.00);
-        pushTicker("good", `Adjusted price to $${state.price.toFixed(2)}.`);
-      }
+      if(state.sentiment === "bear") state.price = clamp(state.price - 0.10, 0.50, 3.00);
+      else if(state.sentiment === "bull") state.price = clamp(state.price + 0.05, 0.50, 3.00);
+      else state.price = clamp(state.price - 0.05, 0.50, 3.00);
+      pushTicker("good", `Adjusted price to $${state.price.toFixed(2)}.`);
       closeEvent();
       if(state.phase === "live") computeDemandSnapshot();
       renderAll(false,false);
     });
 
-    // Close modal actions
-    el.closeX.addEventListener("click", ()=>{ el.closeOverlay.style.display = "none"; });
-    el.nextDayBtn.addEventListener("click", ()=>{
-      save();
-      nextDay();
-      save();
-    });
-    el.printBtn.addEventListener("click", ()=> window.print());
+    el.closeX.addEventListener("click", ()=>{ el.closeOverlay.style.display="none"; });
+    el.nextDayBtn.addEventListener("click", ()=>{ save(); nextDay(); save(); });
+    el.printBtn.addEventListener("click", ()=>window.print());
 
     // ---------- Boot ----------
     function boot(){
       resizeCanvas();
       pushTicker("info", "Welcome to Market Mode.");
-      pushTicker("info", "Buy supplies, set price, optionally market, then open the market.");
+      pushTicker("info", "Forecast helps you plan. It is not always correct.");
 
       const loaded = load();
+
       setWeather(choice(WEATHER_POOL));
 
       if(loaded && state.phase === "live"){
@@ -1781,7 +1695,10 @@
       $("startDay").disabled = (state.phase !== "setup");
       $("closeDay").disabled = true;
 
-      $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
+      if(!state.forecast) generateForecast();
+      renderForecast();
+
+      el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
       renderAll(false,false);
       tickIndex();
       save();
