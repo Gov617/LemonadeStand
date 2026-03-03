@@ -459,6 +459,10 @@
                 <span>Demand: <strong id="demandPct">50%</strong></span>
                 <span>Foot Traffic: <strong id="trafficVal">Normal</strong></span>
               </div>
+              <div class="meterMeta" style="margin-top:8px;">
+                <span class="fade">Customers Left:</span>
+                <strong id="customersLeft">—</strong>
+              </div>
             </div>
 
           </div>
@@ -509,7 +513,7 @@
                 <button class="btn" id="priceUp">[+]</button>
               </div>
               <div class="tiny" style="margin-top:10px;">
-                Higher price can raise profit per sale, but demand may drop.
+                Pricing above market lowers sales fast. Pricing below market raises sales but lowers profit per cup.
               </div>
             </div>
 
@@ -527,12 +531,29 @@
               </div>
             </div>
 
+            <!-- NEW: Marketing (diminishing returns) -->
+            <div class="card">
+              <div class="cardTitle">
+                <span>📣 Marketing</span>
+                <span class="sub" id="mktStatus">Spend Today: $0</span>
+              </div>
+              <div class="btnRow">
+                <button class="btn" id="mkt0">$0</button>
+                <button class="btn primary" id="mkt3">+$3</button>
+                <button class="btn primary" id="mkt7">+$7</button>
+                <button class="btn primary" id="mkt12">+$12</button>
+              </div>
+              <div class="tiny" style="margin-top:10px;">
+                Marketing helps, but each extra dollar helps less than the last.
+              </div>
+            </div>
+
           </div>
 
           <div class="card" style="margin-top:12px;">
             <div class="cardTitle">
               <span>📦 Inventory</span>
-              <span class="sub" id="invHint">Keep enough stock to ride spikes.</span>
+              <span class="sub" id="invHint">Buy enough stock to meet demand — but waste hurts.</span>
             </div>
             <div class="invGrid">
               <div class="invItem"><div><div class="k">🍋 Lemons</div></div><div class="v" id="lemonsVal">0</div></div>
@@ -543,6 +564,9 @@
               <button class="btn" id="buyLemons">Buy Lemons +10 ($6)</button>
               <button class="btn" id="buyCups">Buy Cups +10 ($4)</button>
               <button class="btn" id="buySugar">Buy Sugar +10 ($3)</button>
+            </div>
+            <div class="tiny" style="margin-top:10px;">
+              Each cup sold uses 1 lemon + 1 cup + 1 sugar.
             </div>
           </div>
 
@@ -568,7 +592,7 @@
             <div class="meter"><div id="repFill" style="width:12%; background: linear-gradient(90deg, rgba(255,204,102,.95), rgba(122,166,255,.95));"></div></div>
             <div class="meterMeta">
               <span>Reputation: <strong id="repVal">12</strong>/100</span>
-              <span>Sentiment Impact: <strong id="repImpact">Low</strong></span>
+              <span>Demand Boost: <strong id="repImpact">Low</strong></span>
             </div>
           </div>
 
@@ -638,59 +662,85 @@
   </div>
 
   <script>
-    /*****************************************************************
-     * Lemonade Class — Market Mode (single-file MVP UI + basic sim)
-     * - Tycoon UI + stock-market feel (ticker, moving index, sentiment)
-     * - LocalStorage Save/Resume
-     * - CSV export (summary per day)
-     *
-     * IMPORTANT:
-     * If you already have game logic, keep the UI and replace the
-     * "simulation engine" parts (look for TODO: HOOK HERE).
-     *****************************************************************/
-
     // ---------- Helpers ----------
     const $ = (id) => document.getElementById(id);
     const money = (n) => (n < 0 ? "-$" + Math.abs(n).toFixed(2) : "$" + n.toFixed(2));
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
     const now = () => new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+    function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
     // ---------- State ----------
-    const STORAGE_KEY = "lemonadeclass_marketmode_v1";
+    const STORAGE_KEY = "lemonadeclass_marketmode_v11";
     const DEFAULT_RUN_DAYS = 5;
+
+    // Gameplay knobs (teacher-friendly defaults)
+    const GAME = {
+      dailyStallFee: 6.00,             // fixed cost per day
+      expiredPermitSurcharge: 3.00,     // extra daily cost if permit expired
+      baseCustomers: 220,              // typical day market size (before modifiers)
+      customerCapMin: 90,
+      customerCapMax: 420,
+      lemonSpoilageHot: [0.10, 0.22],  // fraction of lemons spoiled on hot days
+      lemonSpoilageNormal:[0.04, 0.12],
+      sugarSpoilage: [0.00, 0.06],
+      repSelloutPenalty: 2.5,
+      repOutOfStockPenalty: 1.0,
+      repFairPriceGain: 0.25,
+      repOverpricePenalty: 0.40,
+      repUnderpricePenalty: 0.10,
+      priceElasticity: 1.45,           // higher = harsher demand drop when overpriced
+      marketingCurve: 6.0              // higher = slower diminishing returns
+    };
 
     const state = {
       runDays: DEFAULT_RUN_DAYS,
       day: 1,
       phase: "setup", // setup | live | closed
-      // money
+
       cash: 25.00,
       revenueToday: 0,
       expensesToday: 0,
-      // operations
+
       price: 1.00,
       marketAvg: 1.00,
+
       lemons: 20,
       cups: 20,
       sugar: 20,
-      permitDaysLeft: 2, // expires if hits 0
+
+      permitDaysLeft: 2,
       hasSign: false,
+
       // demand + market
       demand: 0.50,        // 0..1
       traffic: "Normal",
-      volatility: "Medium", // Low Medium High
-      sentiment: "bull",    // bull neutral bear
+      volatility: "Medium",
+      sentiment: "bull",
       reputation: 12,       // 0..100
+
+      // NEW: finite market
+      customersTotal: 0,
+      customersRemaining: 0,
+      cupsSoldToday: 0,
+      soldOutFlag: false,
+
+      // NEW: marketing spend
+      marketingSpendToday: 0,
+
       // time simulation
-      marketMinutesTotal: 8 * 60, // 9AM-5PM
+      marketMinutesTotal: 8 * 60,
       marketMinutes: 0,
+
       // index data
       index: 100.0,
       indexSeries: [],
-      // log for CSV summary
-      dayLogs: [], // each: {day,revenue,expenses,net,avgDemand,events}
-      // running internals
-      _timers: { marketTick:null, customerTick:null, sparkTick:null, eventTick:null },
+
+      // log
+      dayLogs: [],
+
+      // runtime
+      _timers: { marketTick:null, customerTick:null, sparkTick:null },
       _avgDemandAccumulator: { sum:0, count:0 },
       _eventsToday: 0
     };
@@ -713,6 +763,7 @@
       demandPct: $("demandPct"),
       demandLabel: $("demandLabel"),
       trafficVal: $("trafficVal"),
+      customersLeft: $("customersLeft"),
       timeFill: $("timeFill"),
       timeLeftText: $("timeLeftText"),
       marketClock: $("marketClock"),
@@ -729,6 +780,13 @@
       tickerList: $("tickerList"),
       hoursText: $("hoursText"),
       runHint: $("runHint"),
+
+      // marketing
+      mktStatus: $("mktStatus"),
+      mkt0: $("mkt0"),
+      mkt3: $("mkt3"),
+      mkt7: $("mkt7"),
+      mkt12: $("mkt12"),
 
       // buttons
       btnSave: $("btnSave"),
@@ -785,7 +843,6 @@
       const h = spark.getBoundingClientRect().height;
       ctx.clearRect(0,0,w,h);
 
-      // grid line
       ctx.globalAlpha = 0.25;
       ctx.strokeStyle = "rgba(255,255,255,.18)";
       ctx.lineWidth = 1;
@@ -802,7 +859,6 @@
       const pad = 8;
       const range = (max - min) || 1;
 
-      // line
       ctx.globalAlpha = 0.9;
       ctx.lineWidth = 2;
       ctx.strokeStyle = "rgba(122,166,255,.95)";
@@ -815,7 +871,6 @@
       });
       ctx.stroke();
 
-      // last dot
       const last = series[series.length-1];
       const lx = pad + ((series.length-1)/(series.length-1))*(w - pad*2);
       const ly = pad + (1 - (last-min)/range)*(h - pad*2);
@@ -827,7 +882,6 @@
     // ---------- Ticker ----------
     const tickerBuffer = [];
     function pushTicker(type, msg){
-      // type: good bad warn info
       const stamp = now();
       const item = {type, msg, stamp};
       tickerBuffer.unshift(item);
@@ -839,7 +893,6 @@
         const cls = t.type ? `tickItem ${t.type}` : "tickItem";
         const icon = t.type === "good" ? "🟢" : t.type === "bad" ? "🔴" : t.type === "warn" ? "🟡" : "⚪";
         const strongWrap = (text) => `<strong>${text}</strong>`;
-        // make money/keywords pop slightly
         let msg = t.msg
           .replace(/\+\$\d+(\.\d{2})?/g, m => strongWrap(m))
           .replace(/\-\$\d+(\.\d{2})?/g, m => strongWrap(m))
@@ -848,13 +901,13 @@
       }).join("");
     }
 
-    // ---------- Market / Demand Logic (simple but lively) ----------
+    // ---------- Weather ----------
     const WEATHER_POOL = [
-      {icon:"☀", name:"Sunny", temp:[78,92], demand:+0.08, vol:"Low"},
-      {icon:"🌤", name:"Warm", temp:[72,86], demand:+0.04, vol:"Medium"},
-      {icon:"☁", name:"Cloudy", temp:[60,78], demand:-0.04, vol:"Medium"},
-      {icon:"🌧", name:"Rainy", temp:[55,70], demand:-0.10, vol:"High"},
-      {icon:"🔥", name:"Heat Wave", temp:[90,102], demand:+0.14, vol:"High"},
+      {icon:"☀", name:"Sunny", temp:[78,92], base:+0.06, vol:"Low", hot:false},
+      {icon:"🌤", name:"Warm", temp:[72,86], base:+0.03, vol:"Medium", hot:false},
+      {icon:"☁", name:"Cloudy", temp:[60,78], base:-0.05, vol:"Medium", hot:false},
+      {icon:"🌧", name:"Rainy", temp:[55,70], base:-0.12, vol:"High", hot:false},
+      {icon:"🔥", name:"Heat Wave", temp:[90,102], base:+0.12, vol:"High", hot:true},
     ];
     let weather = WEATHER_POOL[0];
 
@@ -869,47 +922,85 @@
       pushTicker("info", `Weather shift: ${w.name} (${temp}°).`);
     }
 
-    function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-    function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+    // ---------- Demand Engine (no longer runs inside renderAll) ----------
+    function marketingFactor(){
+      // diminishing returns: 0 -> 1.00, 3 -> ~1.10, 7 -> ~1.18, 12 -> ~1.25 (ish)
+      const x = state.marketingSpendToday;
+      return 1 + 0.30 * (1 - Math.exp(-x / GAME.marketingCurve));
+    }
 
-    function computeDemand(){
-      // base from weather + reputation + sign + permit status + price vs market
-      const priceDelta = (state.price - state.marketAvg); // + means expensive
-      const priceImpact = clamp(-0.35 * priceDelta, -0.25, 0.25); // expensive lowers demand
-      const repImpact = (state.reputation/100) * 0.12;
-      const signImpact = state.hasSign ? 0.06 : 0.0;
-      const permitImpact = state.permitDaysLeft <= 0 ? -0.10 : 0.0;
+    function priceFactor(){
+      // ratio above market gets punished hard; below market helps but capped
+      const r = state.price / Math.max(0.01, state.marketAvg);
+      // exp curve: if r=1 -> 1.0, r=1.3 -> drop, r=0.8 -> boost
+      let f = Math.exp(-GAME.priceElasticity * (r - 1));
+      f = clamp(f, 0.20, 1.55);
+      return f;
+    }
 
-      // volatility noise
+    function repFactor(){
+      // 0..100 -> multiplier 0.70 .. 1.30
+      return 0.70 + (state.reputation/100) * 0.60;
+    }
+
+    function computeDemandSnapshot(){
+      const sign = state.hasSign ? 1.08 : 1.00;
+      const permit = (state.permitDaysLeft <= 0) ? 0.90 : 1.00;
+
+      // baseline around 0.50 plus weather bias
+      let base = 0.50 + weather.base;
+
+      // convert multipliers into additive-ish effect using log space
+      const mult = priceFactor() * marketingFactor() * repFactor() * sign * permit;
+
+      // mild volatility noise
       const volNoise = state.volatility === "Low" ? 0.02 : state.volatility === "Medium" ? 0.04 : 0.08;
       const noise = (Math.random()*2-1) * volNoise;
 
-      // combine
-      let d = 0.50 + weather.demand + priceImpact + repImpact + signImpact + permitImpact + noise;
-      d = clamp(d, 0.05, 0.95);
+      // map multiplier into demand shift
+      // mult=1 -> +0, mult>1 -> +, mult<1 -> -
+      const multShift = (Math.log(mult) / Math.log(1.8)) * 0.22; // smooth & bounded
+
+      let d = base + multShift + noise;
+      d = clamp(d, 0.06, 0.94);
 
       state.demand = d;
 
-      // labels
-      const label = d >= 0.70 ? "Hot" : d >= 0.55 ? "Strong" : d >= 0.45 ? "Neutral" : d >= 0.30 ? "Soft" : "Cold";
+      // label + traffic
+      const label = d >= 0.72 ? "Hot" : d >= 0.58 ? "Strong" : d >= 0.44 ? "Neutral" : d >= 0.30 ? "Soft" : "Cold";
       el.demandLabel.textContent = label;
 
-      // traffic
       state.traffic = d >= 0.68 ? "Busy" : d >= 0.52 ? "Normal" : d >= 0.35 ? "Quiet" : "Dead";
       el.trafficVal.textContent = state.traffic;
 
-      // sentiment
       const s = d >= 0.62 ? "bull" : d <= 0.38 ? "bear" : "neutral";
       state.sentiment = s;
       renderSentiment();
 
-      // accumulate for summary
       state._avgDemandAccumulator.sum += d;
       state._avgDemandAccumulator.count += 1;
 
-      // UI
       el.demandFill.style.width = Math.round(d*100) + "%";
       el.demandPct.textContent = Math.round(d*100) + "%";
+    }
+
+    function computeCustomerCap(){
+      // finite customers per day
+      const base = GAME.baseCustomers;
+
+      const demandLift = 0.75 + state.demand * 0.85;       // ~0.80..1.55
+      const repLift = 0.85 + (state.reputation/100)*0.35;   // ~0.85..1.20
+      const signLift = state.hasSign ? 1.08 : 1.00;
+      const permitLift = (state.permitDaysLeft<=0) ? 0.92 : 1.00;
+
+      const volLift = state.volatility === "High" ? 1.05 : state.volatility === "Low" ? 0.97 : 1.00;
+
+      let total = Math.round(base * demandLift * repLift * signLift * permitLift * volLift);
+      total = clamp(total, GAME.customerCapMin, GAME.customerCapMax);
+
+      state.customersTotal = total;
+      state.customersRemaining = total;
+      el.customersLeft.textContent = `${state.customersRemaining}/${state.customersTotal}`;
     }
 
     function renderSentiment(){
@@ -929,9 +1020,8 @@
       }
     }
 
-    // Index follows demand (stock-ish vibe)
+    // ---------- Index ----------
     function tickIndex(){
-      // drift based on sentiment + volatility
       const drift = (state.demand - 0.5) * 0.25;
       const vol = state.volatility === "Low" ? 0.18 : state.volatility === "Medium" ? 0.32 : 0.55;
       const shock = (Math.random()*2-1) * vol;
@@ -942,57 +1032,127 @@
       drawSpark();
     }
 
-    // ---------- Customer + Sales ----------
+    // ---------- Reputation ----------
+    function renderReputation(){
+      el.repVal.textContent = Math.round(state.reputation);
+      el.repFill.style.width = Math.round(state.reputation) + "%";
+      el.repText.textContent = "Level " + (state.reputation >= 80 ? "5" : state.reputation >= 60 ? "4" : state.reputation >= 40 ? "3" : state.reputation >= 20 ? "2" : "1");
+      el.repImpact.textContent = state.reputation >= 60 ? "High" : state.reputation >= 30 ? "Medium" : "Low";
+    }
+
+    function repAdjustForPricing(){
+      const delta = state.price - state.marketAvg;
+      if(delta > 0.30){
+        state.reputation = clamp(state.reputation - GAME.repOverpricePenalty, 0, 100);
+      } else if(delta < -0.35){
+        // too cheap can signal low quality, small penalty
+        state.reputation = clamp(state.reputation - GAME.repUnderpricePenalty, 0, 100);
+      } else {
+        state.reputation = clamp(state.reputation + GAME.repFairPriceGain, 0, 100);
+      }
+    }
+
+    // ---------- Purchases ----------
+    function spend(amount, note){
+      if(state.cash < amount){
+        pushTicker("bad", `Not enough cash for ${note}.`);
+        return false;
+      }
+      state.cash -= amount;
+      state.expensesToday += amount;
+      pushTicker("bad", `-${money(amount)}  ${note}`);
+      renderAll(false, true);
+      return true;
+    }
+
+    // ---------- Sales (finite customers + real penalties) ----------
     function canSell(){
       return state.lemons > 0 && state.cups > 0 && state.sugar > 0;
     }
 
     function sellOnce(){
+      if(state.phase !== "live") return;
+
+      // stop if market exhausted
+      if(state.customersRemaining <= 0){
+        pushTicker("info", "Market demand is tapped out — no more customers today.");
+        closeMarketDay();
+        return;
+      }
+
+      // one customer arrives
+      state.customersRemaining -= 1;
+      el.customersLeft.textContent = `${state.customersRemaining}/${state.customersTotal}`;
+
+      // if we can't sell, they leave and rep gets hit
       if(!canSell()){
-        pushTicker("warn", "Out of stock — customer walked away.");
-        // reputation penalty if repeatedly OOS
-        state.reputation = clamp(state.reputation - 1, 0, 100);
+        pushTicker("warn", "Sold out — customer walked away.");
+        state.reputation = clamp(state.reputation - GAME.repOutOfStockPenalty, 0, 100);
+        state.soldOutFlag = true;
         renderReputation();
         return;
       }
 
-      // chance to walk away based on demand & price
-      const walkChance = clamp(0.35 - (state.demand*0.30), 0.05, 0.35);
+      // walk-away chance increases when overpriced, decreases when demand is high
+      const r = state.price / Math.max(0.01, state.marketAvg);
+      const over = clamp(r - 1, 0, 1.5);
+
+      let walkChance = 0.18
+        + over * 0.28
+        + (0.55 - state.demand) * 0.22;
+
+      // marketing and sign reduce walk-away slightly
+      walkChance -= (marketingFactor() - 1) * 0.10;
+      if(state.hasSign) walkChance -= 0.02;
+
+      walkChance = clamp(walkChance, 0.04, 0.55);
+
       if(Math.random() < walkChance){
-        pushTicker("info", "Customer walked away.");
-        state.reputation = clamp(state.reputation - 0.3, 0, 100);
+        pushTicker("info", "Customer compared options and left.");
+        // slight rep drift down when priced wrong
+        if(over > 0.25) state.reputation = clamp(state.reputation - 0.35, 0, 100);
         renderReputation();
         return;
       }
 
-      // sale size (sometimes 2 cups)
-      const multi = Math.random() < clamp(state.demand - 0.45, 0.05, 0.35) ? 2 : 1;
+      // sale size: sometimes 2 cups, rarely 3, based on demand + fair pricing
+      const fair = Math.abs(state.price - state.marketAvg) <= 0.25;
+      let multi = 1;
+      const p2 = clamp((state.demand - 0.40) * 0.45 + (fair ? 0.06 : -0.02), 0.02, 0.30);
+      const p3 = clamp((state.demand - 0.65) * 0.20, 0.00, 0.06);
+
+      if(Math.random() < p3) multi = 3;
+      else if(Math.random() < p2) multi = 2;
+
+      // cap to inventory
+      const maxPossible = Math.min(state.lemons, state.cups, state.sugar);
+      multi = Math.min(multi, maxPossible);
 
       // consume inventory
       state.lemons -= multi;
       state.cups -= multi;
       state.sugar -= multi;
 
+      // revenue
       const sale = state.price * multi;
       state.cash += sale;
       state.revenueToday += sale;
+      state.cupsSoldToday += multi;
 
-      // reputation grows on good demand + fair pricing
-      const fairPrice = Math.abs(state.price - state.marketAvg) <= 0.25;
-      const repGain = fairPrice ? 0.8 : 0.35;
-      state.reputation = clamp(state.reputation + repGain, 0, 100);
+      // rep adjustments
+      repAdjustForPricing();
+      // reward meeting demand (not selling out) a bit
+      state.reputation = clamp(state.reputation + (fair ? 0.10 : 0.04), 0, 100);
 
       pushTicker("good", `+${money(sale)}  ${multi} cup${multi>1?"s":""} sold`);
       renderAll(true, false);
     }
 
-    function customerLoop(){
-      // pace is the vibe: higher demand = faster sales
-      // convert demand to interval ms
-      const base = 5200;             // slow
-      const fast = 1500;             // busy
+    function customerLoopIntervalMs(){
+      // finite customers; speed is vibe only
+      const base = 5200;
+      const fast = 1500;
       const t = Math.round(base - (base-fast)*state.demand);
-      // jitter for life
       const jitter = randInt(-250, 250);
       return clamp(t + jitter, 1000, 6500);
     }
@@ -1001,11 +1161,11 @@
       if(state.phase !== "live") return;
       clearTimeout(state._timers.customerTick);
       state._timers.customerTick = setTimeout(()=>{
-        // update demand before customer (makes UI feel alive)
-        computeDemand();
+        computeDemandSnapshot();
+        tickIndex();
         sellOnce();
         scheduleNextCustomer();
-      }, customerLoop());
+      }, customerLoopIntervalMs());
     }
 
     // ---------- Events ----------
@@ -1013,29 +1173,29 @@
       {
         title: "Heat spike hits downtown",
         body: "Foot traffic surges. Customers are thirsty.",
-        effect: (s)=>{ s.demand = clamp(s.demand + 0.12, 0.05, 0.95); s.reputation = clamp(s.reputation + 1, 0, 100); },
-        tags: ["Demand +12%", "Reputation +1"]
+        effect: (s)=>{ s.reputation = clamp(s.reputation + 1.2, 0, 100); s.marketingSpendToday = s.marketingSpendToday; },
+        tags: ["Reputation +1", "Traffic ↑"]
       },
       {
         title: "Competitor undercuts your price",
-        body: "A rival stand drops to $0.75. Customers compare value.",
-        effect: (s)=>{ s.marketAvg = clamp(s.marketAvg - 0.10, 0.6, 1.6); s.demand = clamp(s.demand - 0.06, 0.05, 0.95); },
-        tags: ["Market Avg ↓", "Demand -6%"]
+        body: "A rival stand drops prices. Customers compare value.",
+        effect: (s)=>{ s.marketAvg = clamp(s.marketAvg - 0.12, 0.6, 1.6); },
+        tags: ["Market Avg ↓", "Walk-away ↑"]
       },
       {
         title: "Lemons spoil in the heat",
         body: "Inventory loss due to poor storage.",
-        effect: (s)=>{ const lost = Math.min(s.lemons, randInt(3,8)); s.lemons -= lost; s.reputation = clamp(s.reputation - 1, 0, 100); pushTicker("warn", `🍋 Lemons spoiled: -${lost}`); },
-        tags: ["Lemons -3..-8", "Reputation -1"]
+        effect: (s)=>{ const lost = Math.min(s.lemons, randInt(4,10)); s.lemons -= lost; s.reputation = clamp(s.reputation - 1, 0, 100); pushTicker("warn", `🍋 Lemons spoiled: -${lost}`); },
+        tags: ["Lemons -4..-10", "Reputation -1"]
       },
       {
         title: "Health inspector passes by",
-        body: "If your permit is expired, you risk a fine.",
+        body: "Expired permit increases your risk today.",
         effect: (s)=> {
           if(s.permitDaysLeft <= 0){
-            const fine = 10;
+            const fine = 12;
             s.cash -= fine; s.expensesToday += fine;
-            s.reputation = clamp(s.reputation - 2, 0, 100);
+            s.reputation = clamp(s.reputation - 3, 0, 100);
             pushTicker("bad", `Permit expired — fine ${money(fine)}.`);
           } else {
             s.reputation = clamp(s.reputation + 1.5, 0, 100);
@@ -1047,14 +1207,14 @@
       {
         title: "Local influencer mentions you",
         body: "A quick post sends new customers your way.",
-        effect: (s)=>{ s.reputation = clamp(s.reputation + 4, 0, 100); s.demand = clamp(s.demand + 0.08, 0.05, 0.95); },
-        tags: ["Reputation +4", "Demand +8%"]
+        effect: (s)=>{ s.reputation = clamp(s.reputation + 3.5, 0, 100); s.customersRemaining = Math.min(s.customersTotal, s.customersRemaining + randInt(10,22)); },
+        tags: ["Customers +10..+22", "Reputation +3"]
       },
     ];
 
     function maybeEvent(){
       if(state.phase !== "live") return;
-      const vol = state.volatility === "Low" ? 0.18 : state.volatility === "Medium" ? 0.28 : 0.40;
+      const vol = state.volatility === "Low" ? 0.14 : state.volatility === "Medium" ? 0.22 : 0.33;
       if(Math.random() < vol){
         const ev = choice(EVENTS);
         state._eventsToday += 1;
@@ -1063,9 +1223,8 @@
     }
 
     function openEvent(ev){
-      // apply effect immediately (world reacts)
       ev.effect(state);
-      computeDemand();
+      computeDemandSnapshot();
       renderAll(false, false);
 
       el.eventTitle.textContent = ev.title;
@@ -1081,27 +1240,6 @@
       el.eventOverlay.style.display = "none";
     }
 
-    // ---------- Reputation ----------
-    function renderReputation(){
-      el.repVal.textContent = Math.round(state.reputation);
-      el.repFill.style.width = Math.round(state.reputation) + "%";
-      el.repText.textContent = "Level " + (state.reputation >= 80 ? "5" : state.reputation >= 60 ? "4" : state.reputation >= 40 ? "3" : state.reputation >= 20 ? "2" : "1");
-      el.repImpact.textContent = state.reputation >= 60 ? "High" : state.reputation >= 30 ? "Medium" : "Low";
-    }
-
-    // ---------- Purchases ----------
-    function spend(amount, note){
-      if(state.cash < amount){
-        pushTicker("bad", `Not enough cash for ${note}.`);
-        return false;
-      }
-      state.cash -= amount;
-      state.expensesToday += amount;
-      pushTicker("bad", `-${money(amount)}  ${note}`);
-      renderAll(false, false);
-      return true;
-    }
-
     // ---------- Time / Day ----------
     function renderTime(){
       const pct = (state.marketMinutes / state.marketMinutesTotal) * 100;
@@ -1112,22 +1250,31 @@
       const mins = minsLeft % 60;
       el.timeLeftText.textContent = `Time Left: ${hrs}h ${mins}m`;
 
-      // market clock label
       const startHour = 9;
-      const total = state.marketMinutesTotal;
-      const mins = state.marketMinutes;
-      const hour = startHour + Math.floor(mins/60);
-      const minute = mins % 60;
+      const minsNow = state.marketMinutes;
+      const hour = startHour + Math.floor(minsNow/60);
+      const minute = minsNow % 60;
       const ampm = hour >= 12 ? "PM" : "AM";
       const h12 = ((hour + 11) % 12) + 1;
       el.marketClock.textContent = (state.phase === "live" ? "Market Live · " : "Market Open · ") + `${h12}:${String(minute).padStart(2,"0")} ${ampm}`;
 
-      // add urgency glow near close
       if(pct >= 80){
         el.timeFill.style.background = "linear-gradient(90deg, rgba(255,204,102,.95), rgba(255,77,109,.90))";
       } else {
         el.timeFill.style.background = "linear-gradient(90deg, rgba(122,166,255,.95), rgba(40,209,124,.95))";
       }
+    }
+
+    function setOpsEnabled(enabled){
+      el.buyLemons.disabled = !enabled;
+      el.buyCups.disabled = !enabled;
+      el.buySugar.disabled = !enabled;
+      el.buyPermit.disabled = !enabled;
+      el.buySign.disabled = !enabled;
+      el.mkt0.disabled = !enabled;
+      el.mkt3.disabled = !enabled;
+      el.mkt7.disabled = !enabled;
+      el.mkt12.disabled = !enabled;
     }
 
     function startMarketDay(){
@@ -1137,83 +1284,131 @@
       state.marketMinutes = 0;
       state.revenueToday = 0;
       state.expensesToday = 0;
+      state.cupsSoldToday = 0;
+      state.soldOutFlag = false;
+      state.marketingSpendToday = 0;
+      el.mktStatus.textContent = "Spend Today: $0";
+
       state._avgDemandAccumulator = {sum:0, count:0};
       state._eventsToday = 0;
 
-      // weather rotates daily
       setWeather(choice(WEATHER_POOL));
 
-      // permit ticks down per day (at day start)
+      // permit ticks down per day
       state.permitDaysLeft -= 1;
       if(state.permitDaysLeft <= 0){
         el.permitStatus.textContent = "Permit: Expired";
-        pushTicker("warn", "Permit expired — inspection risk increased.");
+        pushTicker("warn", "Permit expired — risk increased.");
       } else {
         el.permitStatus.textContent = "Permit: Active (" + state.permitDaysLeft + "d)";
       }
 
-      // disable purchases during live
+      // DAILY FIXED COSTS (stops “click to win”)
+      let fixed = GAME.dailyStallFee;
+      if(state.permitDaysLeft <= 0) fixed += GAME.expiredPermitSurcharge;
+
+      state.cash -= fixed;
+      state.expensesToday += fixed;
+      pushTicker("bad", `-${money(fixed)}  Daily stall costs`);
+
+      if(state.cash < 0){
+        // teacher-friendly: allow game to continue, but warn and rep hit
+        pushTicker("warn", "Cash went negative — you're running on credit. Be careful.");
+        state.reputation = clamp(state.reputation - 2, 0, 100);
+      }
+
+      // lock purchases
       setOpsEnabled(false);
 
-      // begin loops
-      computeDemand();
-      tickIndex();
+      // demand + customer cap (finite market)
+      computeDemandSnapshot();
+      computeCustomerCap();
 
-      // market time ticks each second = 10 minutes (for vibe)
+      // loops
       clearInterval(state._timers.marketTick);
       state._timers.marketTick = setInterval(()=>{
         state.marketMinutes += 10;
         renderTime();
 
-        // periodic market average shift (market moves without you)
+        // market avg shifts
         if(state.marketMinutes % 60 === 0){
           const drift = (Math.random()*2-1) * (state.volatility === "High" ? 0.12 : state.volatility === "Medium" ? 0.08 : 0.05);
           state.marketAvg = clamp(state.marketAvg + drift, 0.60, 1.60);
-          el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
-          el.marketAvg && (el.marketAvg.textContent = "Market Avg: $" + state.marketAvg.toFixed(2));
           $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
           pushTicker("info", `Market Avg moved to $${state.marketAvg.toFixed(2)}.`);
         }
 
-        // random event chance
         maybeEvent();
 
-        // end of day
+        // day end
         if(state.marketMinutes >= state.marketMinutesTotal){
           closeMarketDay();
         }
       }, 1000);
 
-      // sparkline ticks
       clearInterval(state._timers.sparkTick);
       state._timers.sparkTick = setInterval(()=>{
-        computeDemand();
+        computeDemandSnapshot();
         tickIndex();
       }, 1200);
 
-      // start customers
       scheduleNextCustomer();
 
-      el.phaseText.textContent = "Live Trading";
-      $("phaseText").textContent = "Live Trading";
       $("startDay").disabled = true;
       $("closeDay").disabled = false;
+      el.phaseText.textContent = "Live Trading";
 
       pushTicker("info", `Market opened — Day ${state.day}/${state.runDays}.`);
       renderAll(false, false);
     }
 
+    function endOfDaySpoilage(){
+      // spoilage punishes overbuying. Worse on hot days.
+      const lemonRate = weather.hot
+        ? (Math.random()*(GAME.lemonSpoilageHot[1]-GAME.lemonSpoilageHot[0]) + GAME.lemonSpoilageHot[0])
+        : (Math.random()*(GAME.lemonSpoilageNormal[1]-GAME.lemonSpoilageNormal[0]) + GAME.lemonSpoilageNormal[0]);
+
+      const sugarRate = (Math.random()*(GAME.sugarSpoilage[1]-GAME.sugarSpoilage[0]) + GAME.sugarSpoilage[0]);
+
+      const lemonLost = Math.min(state.lemons, Math.round(state.lemons * lemonRate));
+      const sugarLost = Math.min(state.sugar, Math.round(state.sugar * sugarRate));
+
+      if(lemonLost > 0){
+        state.lemons -= lemonLost;
+        pushTicker("warn", `End-of-day spoilage: 🍋 -${lemonLost}`);
+      }
+      if(sugarLost > 0){
+        state.sugar -= sugarLost;
+        pushTicker("warn", `End-of-day spoilage: 🍚 -${sugarLost}`);
+      }
+
+      // selling out hurts if customers were still available
+      if(state.soldOutFlag && state.customersRemaining > 0){
+        state.reputation = clamp(state.reputation - GAME.repSelloutPenalty, 0, 100);
+        pushTicker("warn", `Sold out early — reputation -${GAME.repSelloutPenalty.toFixed(1)}`);
+      }
+
+      // reward strong planning (sold a decent amount and didn’t sell out)
+      if(state.cupsSoldToday >= Math.round(state.customersTotal*0.35) && !state.soldOutFlag){
+        state.reputation = clamp(state.reputation + 1.2, 0, 100);
+        pushTicker("good", "Strong execution — reputation +1");
+      }
+    }
+
     function closeMarketDay(){
       if(state.phase !== "live") return;
 
-      // stop loops
       state.phase = "closed";
       clearInterval(state._timers.marketTick);
       clearInterval(state._timers.sparkTick);
       clearTimeout(state._timers.customerTick);
 
-      // summary
-      const avgDemand = state._avgDemandAccumulator.count ? (state._avgDemandAccumulator.sum / state._avgDemandAccumulator.count) : state.demand;
+      endOfDaySpoilage();
+
+      const avgDemand = state._avgDemandAccumulator.count
+        ? (state._avgDemandAccumulator.sum / state._avgDemandAccumulator.count)
+        : state.demand;
+
       const net = state.revenueToday - state.expensesToday;
       const trend = avgDemand >= 0.62 ? "Upward" : avgDemand <= 0.38 ? "Downward" : "Flat";
 
@@ -1228,12 +1423,13 @@
         priceEnd: +state.price.toFixed(2),
         repEnd: Math.round(state.reputation),
         weather: weather.name,
-        volatility: state.volatility
+        volatility: state.volatility,
+        cupsSold: state.cupsSoldToday,
+        customersTotal: state.customersTotal
       });
 
-      // close modal
       el.closeTitle.textContent = `Market Closed — Day ${state.day}/${state.runDays}`;
-      el.closeBody.textContent = `You navigated today’s market conditions. Review your results and plan tomorrow.`;
+      el.closeBody.textContent = `Review your results and plan tomorrow.`;
       el.kRevenue.textContent = money(state.revenueToday);
       el.kExpenses.textContent = money(state.expensesToday);
       el.kNet.textContent = (net>=0? "+" : "") + money(net);
@@ -1241,7 +1437,6 @@
 
       el.closeOverlay.style.display = "grid";
       el.phaseText.textContent = "Closed";
-      $("phaseText").textContent = "Closed";
 
       $("closeDay").disabled = true;
 
@@ -1255,14 +1450,12 @@
       el.reflect2.value = "";
 
       if(state.day >= state.runDays){
-        // run over — restart
         pushTicker("info", "Run complete. Reset to play again.");
         state.phase = "setup";
         setOpsEnabled(true);
         $("startDay").disabled = false;
         $("closeDay").disabled = true;
         el.phaseText.textContent = "Setup Phase";
-        $("phaseText").textContent = "Setup Phase";
         renderAll(false, false);
         return;
       }
@@ -1273,36 +1466,22 @@
       $("startDay").disabled = false;
       $("closeDay").disabled = true;
       el.phaseText.textContent = "Setup Phase";
-      $("phaseText").textContent = "Setup Phase";
 
-      // small carryover effect: if very low stock, warn
       if(state.lemons < 5 || state.cups < 5 || state.sugar < 5){
         pushTicker("warn", "Low inventory — consider buying before market opens.");
       }
 
-      // gentle market avg mean reversion
-      state.marketAvg = clamp( (state.marketAvg*0.6 + 1.0*0.4), 0.60, 1.60);
+      state.marketAvg = clamp((state.marketAvg*0.6 + 1.0*0.4), 0.60, 1.60);
       $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
 
       renderAll(false, false);
       pushTicker("info", `Setup for Day ${state.day}/${state.runDays}.`);
     }
 
-    function setOpsEnabled(enabled){
-      // purchases
-      el.buyLemons.disabled = !enabled;
-      el.buyCups.disabled = !enabled;
-      el.buySugar.disabled = !enabled;
-      el.buyPermit.disabled = !enabled;
-      el.buySign.disabled = !enabled;
-    }
-
     // ---------- Render ----------
     function renderAll(pulseCash=false, pulseBad=false){
-      // day label
       el.dayText.textContent = `· Day ${state.day}/${state.runDays}`;
 
-      // cash + net
       el.cashVal.textContent = money(state.cash);
       const net = state.revenueToday - state.expensesToday;
       el.netToday.textContent = (net>=0?"+":"") + money(net);
@@ -1317,45 +1496,39 @@
         setTimeout(()=> el.cashVal.classList.remove("pulseBad"), 360);
       }
 
-      // price + market avg
       el.priceVal.textContent = "$" + state.price.toFixed(2);
       $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
 
-      // inventory
       el.lemonsVal.textContent = state.lemons;
       el.cupsVal.textContent = state.cups;
       el.sugarVal.textContent = state.sugar;
 
-      // permit
+      el.mktStatus.textContent = `Spend Today: $${state.marketingSpendToday}`;
+
       if(state.permitDaysLeft <= 0) el.permitStatus.textContent = "Permit: Expired";
       else el.permitStatus.textContent = `Permit: Active (${state.permitDaysLeft}d)`;
 
-      // reputation
       renderReputation();
 
-      // demand + time
-      computeDemand();
       renderTime();
 
-      // index
       el.indexVal.textContent = state.index.toFixed(1);
 
-      // phase text
       el.phaseText.textContent = state.phase === "setup" ? "Setup Phase" : state.phase === "live" ? "Live Trading" : "Closed";
 
-      // hint updates
       if(state.phase === "live"){
-        el.runHint.textContent = "React to events and price signals.";
+        el.runHint.textContent = "React to events and price signals. Finite customers — every decision matters.";
+        el.customersLeft.textContent = `${state.customersRemaining}/${state.customersTotal}`;
       } else {
-        el.runHint.textContent = "Buy supplies, set price, then open the market.";
+        el.runHint.textContent = "Buy supplies, set price, optionally market, then open the market.";
+        el.customersLeft.textContent = "—";
       }
     }
 
     // ---------- Save / Load / Export ----------
     function save(){
       const safe = JSON.parse(JSON.stringify(state));
-      // remove timers
-      safe._timers = { marketTick:null, customerTick:null, sparkTick:null, eventTick:null };
+      safe._timers = { marketTick:null, customerTick:null, sparkTick:null };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
       pushTicker("good", "Saved run to browser.");
     }
@@ -1366,8 +1539,7 @@
       try{
         const saved = JSON.parse(raw);
         Object.assign(state, saved);
-        // reset runtime internals
-        state._timers = { marketTick:null, customerTick:null, sparkTick:null, eventTick:null };
+        state._timers = { marketTick:null, customerTick:null, sparkTick:null };
         state._avgDemandAccumulator = state._avgDemandAccumulator || {sum:0, count:0};
         state.indexSeries = state.indexSeries || [];
         pushTicker("good", "Loaded saved run.");
@@ -1379,12 +1551,10 @@
     }
 
     function reset(){
-      // stop all timers
       clearInterval(state._timers.marketTick);
       clearInterval(state._timers.sparkTick);
       clearTimeout(state._timers.customerTick);
 
-      // hard reset
       const keepTicker = tickerBuffer.slice(0,3);
       Object.assign(state, {
         runDays: DEFAULT_RUN_DAYS,
@@ -1405,12 +1575,17 @@
         volatility: "Medium",
         sentiment: "bull",
         reputation: 12,
+        customersTotal: 0,
+        customersRemaining: 0,
+        cupsSoldToday: 0,
+        soldOutFlag: false,
+        marketingSpendToday: 0,
         marketMinutesTotal: 8*60,
         marketMinutes: 0,
         index: 100.0,
         indexSeries: [],
         dayLogs: [],
-        _timers: { marketTick:null, customerTick:null, sparkTick:null, eventTick:null },
+        _timers: { marketTick:null, customerTick:null, sparkTick:null },
         _avgDemandAccumulator: {sum:0, count:0},
         _eventsToday: 0
       });
@@ -1431,7 +1606,7 @@
     function exportCSV(){
       const rows = [];
       rows.push([
-        "day","weather","volatility","revenue","expenses","net","avgDemand","events","cashEnd","priceEnd","repEnd"
+        "day","weather","volatility","revenue","expenses","net","avgDemand","events","cupsSold","customersTotal","cashEnd","priceEnd","repEnd"
       ].join(","));
       for(const d of state.dayLogs){
         rows.push([
@@ -1443,6 +1618,8 @@
           d.net.toFixed(2),
           d.avgDemand.toFixed(3),
           d.events,
+          d.cupsSold,
+          d.customersTotal,
           d.cashEnd.toFixed(2),
           d.priceEnd.toFixed(2),
           d.repEnd
@@ -1465,11 +1642,13 @@
     el.priceDown.addEventListener("click", ()=>{
       state.price = clamp(state.price - 0.05, 0.50, 3.00);
       pushTicker("info", `Price set to $${state.price.toFixed(2)}.`);
+      if(state.phase === "live") computeDemandSnapshot();
       renderAll(false,false);
     });
     el.priceUp.addEventListener("click", ()=>{
       state.price = clamp(state.price + 0.05, 0.50, 3.00);
       pushTicker("info", `Price set to $${state.price.toFixed(2)}.`);
+      if(state.phase === "live") computeDemandSnapshot();
       renderAll(false,false);
     });
 
@@ -1517,6 +1696,32 @@
       }
     });
 
+    // Marketing spend (setup only)
+    function setMarketingSpend(x){
+      if(state.phase !== "setup") return;
+      const delta = x - state.marketingSpendToday;
+      if(delta < 0){
+        // allow lowering spend for free (just a plan)
+        state.marketingSpendToday = x;
+        pushTicker("info", `Marketing plan set to $${x}.`);
+        renderAll(false,false);
+        return;
+      }
+      if(delta === 0){
+        pushTicker("info", `Marketing plan already $${x}.`);
+        return;
+      }
+      if(spend(delta, `Marketing spend +$${delta}`)){
+        state.marketingSpendToday = x;
+        pushTicker("good", `Marketing spend set to $${x}.`);
+        renderAll(false,true);
+      }
+    }
+    el.mkt0.addEventListener("click", ()=>setMarketingSpend(0));
+    el.mkt3.addEventListener("click", ()=>setMarketingSpend(3));
+    el.mkt7.addEventListener("click", ()=>setMarketingSpend(7));
+    el.mkt12.addEventListener("click", ()=>setMarketingSpend(12));
+
     el.startDay.addEventListener("click", startMarketDay);
     el.closeDay.addEventListener("click", closeMarketDay);
 
@@ -1534,7 +1739,6 @@
       closeEvent();
     });
     el.eventAdjust.addEventListener("click", ()=>{
-      // quick nudge suggestion: if bearish, lower; if bullish, raise slightly
       if(state.sentiment === "bear"){
         state.price = clamp(state.price - 0.10, 0.50, 3.00);
         pushTicker("good", `Adjusted price down to $${state.price.toFixed(2)}.`);
@@ -1546,14 +1750,13 @@
         pushTicker("good", `Adjusted price to $${state.price.toFixed(2)}.`);
       }
       closeEvent();
+      if(state.phase === "live") computeDemandSnapshot();
       renderAll(false,false);
     });
 
     // Close modal actions
     el.closeX.addEventListener("click", ()=>{ el.closeOverlay.style.display = "none"; });
     el.nextDayBtn.addEventListener("click", ()=>{
-      // store reflections (optional)
-      // TODO: HOOK HERE if you want to persist reflections per day
       save();
       nextDay();
       save();
@@ -1563,17 +1766,13 @@
     // ---------- Boot ----------
     function boot(){
       resizeCanvas();
-      // seed ticker
       pushTicker("info", "Welcome to Market Mode.");
-      pushTicker("info", "Set price, stock up, then open the market.");
+      pushTicker("info", "Buy supplies, set price, optionally market, then open the market.");
 
-      // load save if exists
       const loaded = load();
       setWeather(choice(WEATHER_POOL));
 
-      // if loaded in live state, force back to setup (safer) OR you can resume live:
       if(loaded && state.phase === "live"){
-        // safer choice: return to setup so you don't resume timers weirdly
         state.phase = "setup";
         pushTicker("warn", "Resuming in Setup Phase for safety (saved mid-day).");
       }
@@ -1582,7 +1781,6 @@
       $("startDay").disabled = (state.phase !== "setup");
       $("closeDay").disabled = true;
 
-      // ensure UI values
       $("marketAvg").textContent = "Market Avg: $" + state.marketAvg.toFixed(2);
       renderAll(false,false);
       tickIndex();
